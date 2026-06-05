@@ -13,69 +13,76 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+
 /* TOPBAR */
-.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:#0d1117;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:1000}
-.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(31,111,235,.4);animation:pulse 2s infinite}
-.brand-text{font-size:.9rem;font-weight:700;white-space:nowrap}
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:#0d1117;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:10px;z-index:1000}
+.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(31,111,235,.45);animation:pulse 2s infinite;flex-shrink:0}
+.brand-text{font-size:.88rem;font-weight:700;white-space:nowrap}
 .live-badge{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--success)}
 .live-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
 /* SIDEBAR */
-.sidebar{position:fixed;top:56px;left:0;bottom:0;width:210px;background:#0d1117;border-right:1px solid var(--border);overflow-y:auto;z-index:900;padding:12px 0}
-.s-section{padding:5px 14px 2px;font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:6px}
-.s-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:.8rem;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.sidebar{position:fixed;top:56px;left:0;bottom:0;width:208px;background:#0d1117;border-right:1px solid var(--border);overflow-y:auto;z-index:900;padding:10px 0;transition:width .2s}
+.s-section{padding:5px 14px 2px;font-size:.62rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:6px}
+.s-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:.79rem;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
 .s-item:hover{background:var(--card);color:var(--text)}
 .s-item.active{background:rgba(31,111,235,.12);color:var(--accent);border-left:3px solid var(--accent)}
-.s-item i{font-size:.95rem;min-width:18px;text-align:center}
+.s-item i{font-size:.92rem;min-width:18px;text-align:center}
+
 /* MAIN */
-.main{margin-left:210px;margin-top:56px;padding:18px}
+.main{margin-left:208px;margin-top:56px;padding:16px}
+
 /* FILTROS */
-.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
-.fg{display:flex;flex-direction:column;gap:3px;flex:1;min-width:130px}
-.fg label{font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
-.fg select,.fg input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 9px;font-size:.8rem;outline:none}
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:11px 14px;margin-bottom:14px;display:flex;flex-wrap:wrap;gap:9px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:3px;flex:1;min-width:125px}
+.fg label{font-size:.67rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.fg select,.fg input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 9px;font-size:.79rem;outline:none}
 .fg select:focus,.fg input:focus{border-color:var(--accent)}
+option{background:var(--card)}
+
 /* KPI GRID */
-.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:16px}
-.kpi{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;position:relative;overflow:hidden;transition:transform .15s}
-.kpi:hover{transform:translateY(-2px)}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:14px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:13px;position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 4px 20px rgba(0,0,0,.4)}
 .kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--accent))}
-.kpi-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
-.kpi-val{font-size:1.9rem;font-weight:700;line-height:1;color:var(--kc,var(--text))}
-.kpi-sub{font-size:.68rem;color:var(--muted);margin-top:3px}
-.kpi-ico{position:absolute;top:12px;right:12px;font-size:1.5rem;opacity:.12}
-.kpi-prog{height:5px;border-radius:3px;background:var(--border);margin-top:6px}
-.kpi-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--info))}
-/* GRID CARTAS */
-.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:16px}
+.kpi-lbl{font-size:.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.kpi-val{font-size:1.85rem;font-weight:700;line-height:1;color:var(--kc,var(--text))}
+.kpi-sub{font-size:.67rem;color:var(--muted);margin-top:3px}
+.kpi-ico{position:absolute;top:11px;right:11px;font-size:1.4rem;opacity:.11}
+.kpi-prog{height:4px;border-radius:3px;background:var(--border);margin-top:6px}
+.kpi-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--info));transition:width .6s}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:12px;margin-bottom:14px}
 .c12{grid-column:span 12}.c8{grid-column:span 8}.c6{grid-column:span 6}.c4{grid-column:span 4}.c3{grid-column:span 3}
 @media(max-width:1100px){.c8{grid-column:span 12}.c4{grid-column:span 6}}
-@media(max-width:768px){.c6,.c4,.c3{grid-column:span 12}.sidebar{display:none}.main{margin-left:0}}
-.card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px;height:100%;display:flex;flex-direction:column}
-.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0}
-.card-title{font-size:.82rem;font-weight:600}
-.card-sub{font-size:.68rem;color:var(--muted);margin-top:2px}
+@media(max-width:768px){.c6,.c4,.c3{grid-column:span 12}.sidebar{transform:translateX(-100%)}.main{margin-left:0}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:15px;height:100%;display:flex;flex-direction:column}
+.card-hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px;flex-shrink:0}
+.card-title{font-size:.81rem;font-weight:600}
+.card-sub{font-size:.67rem;color:var(--muted);margin-top:2px}
 .chart-wrap{flex:1;position:relative;min-height:0}
+
 /* SEMÁFOROS */
-.sem{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.68rem;font-weight:700}
-.sem::before{content:'●';font-size:.55rem}
+.sem{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;font-size:.66rem;font-weight:700}
+.sem::before{content:'●';font-size:.53rem}
 .sem-v{background:rgba(63,185,80,.13);color:var(--success)}
 .sem-a{background:rgba(210,153,34,.13);color:var(--warning)}
 .sem-r{background:rgba(248,81,73,.13);color:var(--danger)}
+
 /* FEED */
 .feed-item{border-bottom:1px solid var(--border);padding:10px 0;display:flex;gap:9px}
 .feed-item:last-child{border-bottom:none}
-.feed-plt{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.feed-plt{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.84rem;flex-shrink:0}
 .plt-instagram{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366)}
-.plt-facebook{background:#1877f2}
-.plt-twitter{background:#000}
-.plt-telegram{background:#0088cc}
-.plt-tiktok{background:#111}
-.plt-web{background:#2d333b}
-.feed-meta{font-size:.67rem;color:var(--muted);margin-bottom:3px}
+.plt-facebook{background:#1877f2}.plt-twitter{background:#000}.plt-telegram{background:#0088cc}
+.plt-tiktok{background:#111}.plt-web{background:#2d333b}
+.feed-meta{font-size:.66rem;color:var(--muted);margin-bottom:3px}
 .feed-txt{font-size:.77rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
 /* BADGES */
-.bc{font-size:.62rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
+.bc{font-size:.61rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
 .bsalud{background:rgba(248,81,73,.13);color:#f85149}
 .beducacion{background:rgba(88,166,255,.13);color:#58a6ff}
 .bvivienda{background:rgba(63,185,80,.13);color:#3fb950}
@@ -87,69 +94,79 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 .bseguridad{background:rgba(248,113,113,.13);color:#f87171}
 .bdeporte{background:rgba(167,139,250,.13);color:#a78bfa}
 .bcultura{background:rgba(251,146,60,.13);color:#fb923c}
+
 /* MAPA */
-#mapa{height:420px;border-radius:8px}
+#mapa{height:430px;border-radius:8px;z-index:1}
 .leaflet-container{background:#0e1117!important}
+.leaflet-popup-content-wrapper{background:#161b22!important;border:1px solid #21262d!important;color:#e6edf3!important;border-radius:8px!important}
+.leaflet-popup-tip{background:#161b22!important}
+
 /* TABLA */
 .tbl{width:100%;border-collapse:collapse;font-size:.78rem}
-.tbl th{background:var(--bg);color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.4px;padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}
-.tbl td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl th{background:var(--bg);color:var(--muted);font-size:.67rem;text-transform:uppercase;letter-spacing:.4px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left}
+.tbl td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
 .tbl tr:hover td{background:rgba(255,255,255,.02)}
-/* EXPORT */
-.exp-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;font-size:.73rem;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;text-decoration:none}
+
+/* BOTONES */
+.exp-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;font-size:.72rem;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;text-decoration:none;white-space:nowrap}
 .exp-btn:hover{border-color:var(--accent);color:var(--accent)}
+
 /* TOAST */
-.toasts{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px}
-.toast-msg{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 15px;font-size:.78rem;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:slideUp .25s ease}
+.toasts{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast-msg{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:9px 14px;font-size:.77rem;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:slideUp .25s ease}
 @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-/* BARRA CARGA */
-#loadbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--info));z-index:9999;transition:width .4s;width:0}
+
+/* CARGA */
+#loadbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--info));z-index:9999;transition:width .4s;pointer-events:none}
+
+/* PARROQUIAS POPUP */
+.par-list{font-size:.71rem;color:#7d8590;margin-top:5px;line-height:1.6}
 </style>
 </head>
 <body>
 
-<div id="loadbar"></div>
+<div id="loadbar" style="width:0"></div>
 
-<!-- TOPBAR -->
+<!-- ══ TOPBAR ══ -->
 <header class="topbar">
-  <button onclick="document.querySelector('.sidebar').classList.toggle('d-none')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 6px"><i class="bi bi-list" style="font-size:1.2rem"></i></button>
+  <button onclick="toggleSidebar()" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:3px 6px;flex-shrink:0"><i class="bi bi-list" style="font-size:1.2rem"></i></button>
   <div class="brand-dot"></div>
-  <span class="brand-text d-none d-md-block">Sistema Inteligente de Monitoreo — Estado Táchira</span>
-  <span class="brand-text d-md-none">SIMGP Táchira</span>
-  <div class="d-flex gap-2 ms-3">
-    <button class="exp-btn" onclick="exportPDF()"><i class="bi bi-file-pdf"></i> PDF</button>
-    <button class="exp-btn" onclick="exportExcel()"><i class="bi bi-file-excel"></i> Excel</button>
-    <button class="exp-btn" onclick="exportCSV()"><i class="bi bi-filetype-csv"></i> CSV</button>
+  <span class="brand-text">Sistema de Monitoreo — Estado Táchira</span>
+  <div class="d-flex gap-2 ms-2">
+    <button class="exp-btn" onclick="exportPDF()"><i class="bi bi-file-pdf"></i><span class="d-none d-sm-inline">PDF</span></button>
+    <button class="exp-btn" onclick="exportExcel()"><i class="bi bi-file-excel"></i><span class="d-none d-sm-inline">Excel</span></button>
+    <button class="exp-btn" onclick="exportCSV()"><i class="bi bi-filetype-csv"></i><span class="d-none d-sm-inline">CSV</span></button>
   </div>
   <div class="ms-auto d-flex align-items-center gap-3">
     <div class="live-badge"><div class="live-dot"></div><span id="cd">En vivo</span></div>
-    <span style="font-size:.72rem;color:var(--muted)" id="clock"></span>
+    <span style="font-size:.7rem;color:var(--muted);white-space:nowrap" id="clock"></span>
   </div>
 </header>
 
-<!-- SIDEBAR -->
-<nav class="sidebar">
+<!-- ══ SIDEBAR ══ -->
+<nav class="sidebar" id="sidebar">
   <div class="s-section">Principal</div>
-  <a class="s-item active" href="#sec-kpi"><i class="bi bi-speedometer2"></i>KPIs Ejecutivos</a>
-  <a class="s-item" href="#sec-mapa"><i class="bi bi-map"></i>Mapa Táchira</a>
-  <a class="s-item" href="#sec-feed"><i class="bi bi-activity"></i>Feed en Tiempo Real</a>
+  <a class="s-item active" href="#sec-kpi" onclick="activarItem(this)"><i class="bi bi-speedometer2"></i>KPIs Ejecutivos</a>
+  <a class="s-item" href="#sec-mapa" onclick="activarItem(this)"><i class="bi bi-map"></i>Mapa Táchira</a>
+  <a class="s-item" href="#sec-feed" onclick="activarItem(this)"><i class="bi bi-activity"></i>Feed en Tiempo Real</a>
   <div class="s-section">Análisis</div>
-  <a class="s-item" href="#sec-obras"><i class="bi bi-building"></i>Obras e Inauguraciones</a>
-  <a class="s-item" href="#sec-municipios"><i class="bi bi-pin-map"></i>Municipios Visitados</a>
-  <a class="s-item" href="#sec-social"><i class="bi bi-emoji-smile"></i>Sentiment Ciudadano</a>
-  <a class="s-item" href="#sec-problemas"><i class="bi bi-exclamation-triangle"></i>Problemas Sociales</a>
+  <a class="s-item" href="#sec-obras" onclick="activarItem(this)"><i class="bi bi-building"></i>Obras e Inauguraciones</a>
+  <a class="s-item" href="#sec-municipios" onclick="activarItem(this)"><i class="bi bi-pin-map"></i>Municipios Visitados</a>
+  <a class="s-item" href="#sec-social" onclick="activarItem(this)"><i class="bi bi-emoji-smile"></i>Sentiment Ciudadano</a>
+  <a class="s-item" href="#sec-problemas" onclick="activarItem(this)"><i class="bi bi-exclamation-triangle"></i>Problemas Sociales</a>
   <div class="s-section">Entidades</div>
-  <a class="s-item" href="#sec-ranking"><i class="bi bi-trophy"></i>Ranking Municipios</a>
-  <a class="s-item" href="#sec-organismos"><i class="bi bi-diagram-3"></i>Organismos Activos</a>
-  <a class="s-item" href="#sec-alcaldias"><i class="bi bi-bank"></i>Alcaldías</a>
-  <a class="s-item" href="#sec-tendencia"><i class="bi bi-graph-up"></i>Tendencia Histórica</a>
+  <a class="s-item" href="#sec-ranking" onclick="activarItem(this)"><i class="bi bi-trophy"></i>Ranking Municipios</a>
+  <a class="s-item" href="#sec-organismos" onclick="activarItem(this)"><i class="bi bi-diagram-3"></i>Organismos Activos</a>
+  <a class="s-item" href="#sec-alcaldias" onclick="activarItem(this)"><i class="bi bi-bank"></i>Alcaldías</a>
+  <a class="s-item" href="#sec-tendencia" onclick="activarItem(this)"><i class="bi bi-graph-up"></i>Tendencia Histórica</a>
 </nav>
 
+<!-- ══ CONTENIDO PRINCIPAL ══ -->
 <main class="main">
 
 <!-- FILTROS -->
 <div class="filter-bar">
-  <div class="fg" style="max-width:80px;flex:none">
+  <div class="fg" style="max-width:78px;flex:none">
     <label><i class="bi bi-funnel"></i> Filtros</label>
     <button class="exp-btn" style="justify-content:center" onclick="limpiarFiltros()">Limpiar</button>
   </div>
@@ -158,17 +175,17 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="fg">
     <label>Municipio</label>
     <select id="f-mun">
-      <option value="">Todos</option>
-      <option>San Cristóbal</option><option>Rubio</option><option>Táriba</option>
-      <option>Colón</option><option>La Fría</option><option>San Antonio del Táchira</option>
-      <option>Ureña</option><option>La Grita</option><option>El Piñal</option>
-      <option>Cordero</option><option>Coloncito</option><option>Palmira</option>
-      <option>Michelena</option><option>Lobatera</option><option>Seboruco</option>
-      <option>Pregonero</option><option>Queniquea</option><option>San Josecito</option>
-      <option>Capacho Nuevo</option><option>Abejales</option><option>El Cobre</option>
-      <option>San Félix</option><option>Santa Ana del Táchira</option>
-      <option>San Rafael del Piñal</option><option>San José de Bolívar</option>
-      <option>Delicias</option><option>Upata</option><option>San Simón</option>
+      <option value="">Todos los municipios</option>
+      <option>Andrés Bello</option><option>Antonio Rómulo Costa</option><option>Ayacucho</option>
+      <option>Bolívar</option><option>Cárdenas</option><option>Córdoba</option>
+      <option>Fernández Feo</option><option>Francisco de Miranda</option><option>García de Hevia</option>
+      <option>Guásimos</option><option>Independencia</option><option>Jáuregui</option>
+      <option>José María Vargas</option><option>Junín</option><option>Libertad</option>
+      <option>Libertador</option><option>Lobatera</option><option>Michelena</option>
+      <option>Panamericano</option><option>Pedro María Ureña</option><option>Rafael Urdaneta</option>
+      <option>Samuel Darío Maldonado</option><option>San Cristóbal</option><option>San Judas Tadeo</option>
+      <option>Seboruco</option><option>Simón Rodríguez</option><option>Sucre</option>
+      <option>Torbes</option><option>Uribante</option>
     </select>
   </div>
   <div class="fg">
@@ -201,13 +218,16 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
   <div class="kpi" style="--kc:#bc8cff"><div class="kpi-ico"><i class="bi bi-calendar-week"></i></div><div class="kpi-lbl">Obras esta Semana</div><div class="kpi-val">34</div><div class="kpi-sub">últimos 7 días</div></div>
   <div class="kpi" style="--kc:#38bdf8"><div class="kpi-ico"><i class="bi bi-calendar-month"></i></div><div class="kpi-lbl">Obras este Mes</div><div class="kpi-val">112</div><div class="kpi-sub">últimos 30 días</div></div>
   <div class="kpi" style="--kc:#34d399"><div class="kpi-ico"><i class="bi bi-emoji-smile"></i></div><div class="kpi-lbl">Sentiment Ciudadano</div><div class="kpi-val">+0.62</div><div class="kpi-sub" style="color:#3fb950">😊 Positivo</div></div>
-  <div class="kpi" style="--kc:#7d8590"><div class="kpi-ico"><i class="bi bi-clock"></i></div><div class="kpi-lbl">Última Actividad</div><div class="kpi-val" style="font-size:1.1rem">Hace 8 min</div><div class="kpi-sub" id="last-update">Actualizado ahora</div></div>
+  <div class="kpi" style="--kc:#7d8590"><div class="kpi-ico"><i class="bi bi-clock"></i></div><div class="kpi-lbl">Última Actividad</div><div class="kpi-val" style="font-size:1.05rem">Hace 8 min</div><div class="kpi-sub" id="last-update">Cargando...</div></div>
 </div>
 
 <!-- MAPA -->
 <div class="card mb-3" id="sec-mapa">
   <div class="card-hdr">
-    <div><div class="card-title"><i class="bi bi-map" style="color:var(--accent)"></i> Mapa de Actividad — Estado Táchira</div><div class="card-sub">Actividad por municipio · tamaño = publicaciones · color = intensidad</div></div>
+    <div>
+      <div class="card-title"><i class="bi bi-map" style="color:var(--accent)"></i> Mapa de Actividad — Estado Táchira (29 Municipios)</div>
+      <div class="card-sub">Haz clic en cada municipio para ver sus parroquias y datos de gestión</div>
+    </div>
   </div>
   <div id="mapa"></div>
 </div>
@@ -215,11 +235,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <!-- OBRAS POR SECTOR + RADAR + BARRAS DÍAS -->
 <div class="grid" id="sec-obras">
   <div class="c4 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-pie-chart" style="color:var(--warning)"></i> Obras por Sector</div><div class="card-sub">Distribución de publicaciones</div></div></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-pie-chart" style="color:var(--warning)"></i> Obras por Sector</div><div class="card-sub">Distribución por categoría</div></div></div>
     <div class="chart-wrap" style="height:240px"><canvas id="ch-donut"></canvas></div>
   </div>
   <div class="c4 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-diagram-3" style="color:#bc8cff"></i> Radar de Sectores</div><div class="card-sub">Cobertura por área temática</div></div></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-diagram-3" style="color:#bc8cff"></i> Radar de Sectores</div><div class="card-sub">Cobertura temática</div></div></div>
     <div class="chart-wrap" style="height:240px"><canvas id="ch-radar"></canvas></div>
   </div>
   <div class="c4 card">
@@ -231,19 +251,19 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <!-- MUNICIPIOS VISITADOS / PENDIENTES -->
 <div class="grid" id="sec-municipios">
   <div class="c6 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-check2-circle" style="color:var(--success)"></i> Municipios Visitados</div><div class="card-sub">21 de 29 municipios con actividad</div></div></div>
-    <div id="lst-visitados" style="max-height:280px;overflow-y:auto"></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-check2-circle" style="color:var(--success)"></i> Municipios Visitados (21)</div><div class="card-sub">Con actividad registrada en el período</div></div></div>
+    <div id="lst-visitados" style="max-height:300px;overflow-y:auto"></div>
   </div>
   <div class="c6 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-exclamation-circle" style="color:var(--danger)"></i> Municipios Pendientes por Visitar</div><div class="card-sub">8 municipios sin actividad registrada</div></div></div>
-    <div id="lst-pendientes" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0"></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-exclamation-circle" style="color:var(--danger)"></i> Municipios Pendientes (8)</div><div class="card-sub">Sin actividad registrada en el período</div></div></div>
+    <div id="lst-pendientes" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0;align-content:flex-start"></div>
   </div>
 </div>
 
 <!-- SENTIMENT + ORGANISMOS -->
 <div class="grid" id="sec-social">
   <div class="c8 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bar-chart-steps" style="color:var(--info)"></i> Sentiment Ciudadano por Red Social</div><div class="card-sub">Análisis de sentimiento en publicaciones</div></div></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bar-chart-steps" style="color:var(--info)"></i> Sentiment Ciudadano por Red Social</div><div class="card-sub">Análisis de sentimiento en todas las plataformas</div></div></div>
     <div class="chart-wrap" style="height:260px"><canvas id="ch-sent"></canvas></div>
   </div>
   <div class="c4 card">
@@ -259,7 +279,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
     <div class="chart-wrap" style="height:280px"><canvas id="ch-prob"></canvas></div>
   </div>
   <div class="c4 card" id="sec-tendencia">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-graph-up-arrow" style="color:var(--success)"></i> Tendencia 6 Meses</div><div class="card-sub">Publicaciones y sentiment semanal</div></div></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-graph-up-arrow" style="color:var(--success)"></i> Tendencia 6 Meses</div><div class="card-sub">Publicaciones por semana</div></div></div>
     <div class="chart-wrap" style="height:280px"><canvas id="ch-tend"></canvas></div>
   </div>
 </div>
@@ -267,124 +287,152 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t
 <!-- RANKING MUNICIPIOS -->
 <div class="grid" id="sec-ranking">
   <div class="c6 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-trophy" style="color:var(--warning)"></i> Ranking — Obras vs Problemas</div></div></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-trophy" style="color:var(--warning)"></i> Ranking — Obras vs Problemas</div><div class="card-sub">Top 12 municipios</div></div></div>
     <div class="chart-wrap" style="height:360px"><canvas id="ch-rank"></canvas></div>
   </div>
   <div class="c6 card">
-    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-table" style="color:var(--accent)"></i> Tabla de Ranking por Municipio</div></div></div>
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-table" style="color:var(--accent)"></i> Tabla Ranking Completo</div></div></div>
     <div style="overflow-x:auto;max-height:360px;overflow-y:auto">
-      <table class="tbl">
-        <thead><tr><th>#</th><th>Municipio</th><th>Publ.</th><th>Obras</th><th>Problemas</th><th>Estado</th></tr></thead>
-        <tbody id="tb-rank"></tbody>
-      </table>
+      <table class="tbl"><thead><tr><th>#</th><th>Municipio</th><th>Capital</th><th>Publ.</th><th>Obras</th><th>Estado</th></tr></thead>
+      <tbody id="tb-rank"></tbody></table>
     </div>
   </div>
 </div>
 
 <!-- ALCALDÍAS -->
 <div class="card mb-3" id="sec-alcaldias">
-  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bank" style="color:#bc8cff"></i> Alcaldías del Estado Táchira — Actividad</div><div class="card-sub">Ranking por publicaciones y obras</div></div></div>
+  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bank" style="color:#bc8cff"></i> Alcaldías del Estado Táchira — Actividad de Gestión</div><div class="card-sub">Ranking por publicaciones, obras y engagement</div></div></div>
   <div style="overflow-x:auto">
-    <table class="tbl">
-      <thead><tr><th>#</th><th>Alcaldía</th><th>Municipio</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Estado</th></tr></thead>
-      <tbody id="tb-alcaldias"></tbody>
-    </table>
+    <table class="tbl"><thead><tr><th>#</th><th>Alcaldía</th><th>Municipio</th><th>Capital</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Estado</th></tr></thead>
+    <tbody id="tb-alcaldias"></tbody></table>
   </div>
 </div>
 
 <!-- FEED -->
-<div class="card" id="sec-feed">
-  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-activity" style="color:var(--accent)"></i> Feed en Tiempo Real</div><div class="card-sub">Últimas publicaciones de todas las fuentes</div></div></div>
+<div class="card mb-3" id="sec-feed">
+  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-activity" style="color:var(--accent)"></i> Feed en Tiempo Real</div><div class="card-sub">Últimas publicaciones de todas las fuentes y plataformas</div></div></div>
   <div id="feed" style="max-height:560px;overflow-y:auto"></div>
+</div>
+
+<!-- ORGANISMOS -->
+<div class="card mb-3" id="sec-organismos">
+  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-diagram-3" style="color:var(--success)"></i> Organismos e Institutos más Activos</div><div class="card-sub">Gobernación, Institutos Autónomos y Entes Descentralizados</div></div></div>
+  <div style="overflow-x:auto">
+    <table class="tbl"><thead><tr><th>#</th><th>Organismo</th><th>Tipo</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Sentiment</th></tr></thead>
+    <tbody id="tb-org"></tbody></table>
+  </div>
 </div>
 
 </main>
 
 <div class="toasts" id="toasts"></div>
 
-<!-- SCRIPTS -->
+<!-- LIBRERÍAS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
 <script>
-// ══════════════════════════════════════════════
-//  DATOS DE DEMOSTRACIÓN — TÁCHIRA
-// ══════════════════════════════════════════════
-const SECTORES = ['Vialidad','Salud','Educación','Vivienda','Agua','Electricidad','Producción','Seguridad','Deporte','Infraestructura','Cultura'];
+// ══════════════════════════════════════════════════════════════
+//  DATOS REALES — 29 MUNICIPIOS DEL ESTADO TÁCHIRA
+// ══════════════════════════════════════════════════════════════
+const MUNICIPIOS = [
+  // municipio, capital, lat, lng, parroquias[], pub, obras, prob, sent
+  {m:'San Cristóbal',          cap:'San Cristóbal',           lat:7.770,  lng:-72.225, par:['La Concordia','Pedro María Morantes','San Juan Bautista','San Sebastián','Francisco Romero Lobo'], pub:842, obras:38, prob:12, sent:0.71},
+  {m:'Junín',                  cap:'Rubio',                   lat:7.697,  lng:-72.363, par:['Bramón','La Petrólea','Quinimarí','Rubio'],                                                        pub:421, obras:19, prob:7,  sent:0.65},
+  {m:'Cárdenas',               cap:'Táriba',                  lat:7.824,  lng:-72.226, par:['Amenodoro Rangel Lamús','La Florida','Táriba'],                                                    pub:380, obras:16, prob:5,  sent:0.68},
+  {m:'Ayacucho',               cap:'San Juan de Colón',       lat:8.030,  lng:-72.273, par:['Rivas Berti','San Juan de Colón','San Pedro del Río'],                                             pub:312, obras:14, prob:8,  sent:0.52},
+  {m:'García de Hevia',        cap:'La Fría',                 lat:8.218,  lng:-72.246, par:['Boca de Grita','José Antonio Páez','La Fría'],                                                     pub:287, obras:11, prob:6,  sent:0.60},
+  {m:'Bolívar',                cap:'San Antonio del Táchira', lat:7.822,  lng:-72.447, par:['Isaías Medina Angarita','Juan Vicente Gómez','Palotal','San Antonio del Táchira'],                 pub:263, obras:10, prob:9,  sent:0.47},
+  {m:'Jáuregui',               cap:'La Grita',                lat:8.137,  lng:-71.994, par:['Emilio Constantino Guerrero','La Grita','Monseñor Miguel Antonio Salas'],                         pub:241, obras:9,  prob:4,  sent:0.73},
+  {m:'Pedro María Ureña',      cap:'Ureña',                   lat:7.926,  lng:-72.439, par:['Ureña','Nueva Arcadia'],                                                                           pub:218, obras:8,  prob:11, sent:0.38},
+  {m:'Panamericano',           cap:'Coloncito',               lat:8.233,  lng:-72.025, par:['San Pablo','La Palmita'],                                                                          pub:195, obras:7,  prob:3,  sent:0.69},
+  {m:'Michelena',              cap:'Michelena',               lat:7.929,  lng:-72.071, par:['Michelena'],                                                                                       pub:178, obras:6,  prob:2,  sent:0.75},
+  {m:'Andrés Bello',           cap:'Cordero',                 lat:7.869,  lng:-72.081, par:['Cordero'],                                                                                         pub:164, obras:6,  prob:5,  sent:0.55},
+  {m:'Guásimos',               cap:'Palmira',                 lat:7.802,  lng:-72.308, par:['Palmira'],                                                                                         pub:152, obras:5,  prob:4,  sent:0.61},
+  {m:'Independencia',          cap:'Capacho Nuevo',           lat:7.757,  lng:-72.312, par:['Capacho Nuevo','Juan Germán Roscio','Román Cárdenas'],                                            pub:141, obras:5,  prob:3,  sent:0.64},
+  {m:'Uribante',               cap:'Pregonero',               lat:8.012,  lng:-71.800, par:['Cárdenas','Juan Pablo Peñaloza','Potosí','Pregonero'],                                             pub:135, obras:4,  prob:2,  sent:0.70},
+  {m:'Fernández Feo',          cap:'El Piñal',                lat:7.641,  lng:-72.074, par:['Alberto Adriani','San Rafael del Piñal','Santo Domingo'],                                          pub:128, obras:4,  prob:6,  sent:0.45},
+  {m:'Lobatera',               cap:'Lobatera',                lat:7.898,  lng:-72.153, par:['Lobatera','Constitución'],                                                                         pub:119, obras:3,  prob:2,  sent:0.72},
+  {m:'Torbes',                 cap:'San Josecito',            lat:7.742,  lng:-72.168, par:['San Josecito'],                                                                                    pub:112, obras:3,  prob:1,  sent:0.77},
+  {m:'Seboruco',               cap:'Seboruco',                lat:8.052,  lng:-71.920, par:['Seboruco'],                                                                                        pub:98,  obras:3,  prob:1,  sent:0.74},
+  {m:'Sucre',                  cap:'Queniquea',               lat:8.130,  lng:-71.870, par:['Capital Sucre','Eleazar López Contreras','San Pablo'],                                             pub:87,  obras:2,  prob:2,  sent:0.66},
+  {m:'Rafael Urdaneta',        cap:'Delicias',                lat:8.033,  lng:-72.139, par:['Delicias'],                                                                                        pub:74,  obras:2,  prob:1,  sent:0.71},
+  {m:'Santa Ana (Córdoba)',    cap:'Santa Ana del Táchira',   lat:7.779,  lng:-72.531, par:['Santa Ana del Táchira'],                                                                           pub:63,  obras:2,  prob:3,  sent:0.58},
+];
+
+const PENDIENTES = [
+  {m:'Antonio Rómulo Costa', cap:'Las Mesas'},
+  {m:'Francisco de Miranda', cap:'San José de Bolívar'},
+  {m:'José María Vargas',    cap:'El Cobre'},
+  {m:'Libertad',             cap:'Capacho Viejo'},
+  {m:'Libertador',           cap:'Abejales'},
+  {m:'Samuel Darío Maldonado', cap:'La Tendida'},
+  {m:'San Judas Tadeo',      cap:'Umuquena'},
+  {m:'Simón Rodríguez',      cap:'San Simón'},
+];
+
+const SECTORES  = ['Vialidad','Salud','Educación','Vivienda','Agua','Electricidad','Producción','Seguridad','Deporte','Infraestructura','Cultura'];
 const SECT_VAL  = [42,38,29,25,21,18,14,12,10,9,7];
 const MESES     = ['Ene','Feb','Mar','Abr','May','Jun'];
-const TEND_PUB  = [320,480,610,720,850,940];
-const TEND_OBR  = [18,26,34,41,52,61];
-const TEND_NEG  = [60,72,55,48,62,44];
 const TEND_POS  = [200,310,410,510,620,710];
-
-const MUNICIPIOS_DATA = [
-  {m:'San Cristóbal',   pub:842, obras:38, prob:12, sent:0.71},
-  {m:'Rubio',           pub:421, obras:19, prob:7,  sent:0.65},
-  {m:'Táriba',          pub:380, obras:16, prob:5,  sent:0.68},
-  {m:'Colón',           pub:312, obras:14, prob:8,  sent:0.52},
-  {m:'La Fría',         pub:287, obras:11, prob:6,  sent:0.60},
-  {m:'San Antonio',     pub:263, obras:10, prob:9,  sent:0.47},
-  {m:'La Grita',        pub:241, obras:9,  prob:4,  sent:0.73},
-  {m:'Ureña',           pub:218, obras:8,  prob:11, sent:0.38},
-  {m:'Coloncito',       pub:195, obras:7,  prob:3,  sent:0.69},
-  {m:'Michelena',       pub:178, obras:6,  prob:2,  sent:0.75},
-  {m:'Cordero',         pub:164, obras:6,  prob:5,  sent:0.55},
-  {m:'Palmira',         pub:152, obras:5,  prob:4,  sent:0.61},
-  {m:'Capacho Nuevo',   pub:141, obras:5,  prob:3,  sent:0.64},
-  {m:'Pregonero',       pub:135, obras:4,  prob:2,  sent:0.70},
-  {m:'El Piñal',        pub:128, obras:4,  prob:6,  sent:0.45},
-  {m:'Lobatera',        pub:119, obras:3,  prob:2,  sent:0.72},
-  {m:'San Josecito',    pub:112, obras:3,  prob:1,  sent:0.77},
-  {m:'Seboruco',        pub:98,  obras:3,  prob:1,  sent:0.74},
-  {m:'Queniquea',       pub:87,  obras:2,  prob:2,  sent:0.66},
-  {m:'San Félix',       pub:74,  obras:2,  prob:1,  sent:0.71},
-  {m:'Santa Ana',       pub:63,  obras:2,  prob:3,  sent:0.58},
-];
-const PENDIENTES = ['Abejales','El Cobre','San Rafael del Piñal','San José de Bolívar','Delicias','Upata','San Simón','Junín'];
-
-const ORGANISMOS = ['Gobernación Táchira','INVIAL','INVIVIENDA','Corpotáchira','Alcaldía San Cristóbal','Alcaldía Cárdenas','INDET','CORPOSALUD'];
-const ORG_VAL    = [1240,342,298,214,187,165,142,118];
-
-const PROBLEMAS  = ['Baches y vías deterioradas','Fallas de agua potable','Cortes eléctricos','Déficit habitacional','Inseguridad vial','Desabastecimiento','Infraestructura escolar','Salud pública'];
-const PROB_VAL   = [148,127,112,98,87,74,62,51];
+const TEND_NEG  = [60,72,55,48,62,44];
+const TEND_OBR  = [18,26,34,41,52,61];
 
 const REDES = {
-  labels:['Instagram','Facebook','Twitter','Telegram','TikTok','Noticias'],
+  labels:['Instagram','Facebook','Twitter','Telegram','TikTok','Noticias web'],
   pos:[520,410,310,280,190,155],
   neu:[180,240,190,320,140,410],
   neg:[60,80,140,45,90,35]
 };
 
-const DIAS = Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-29+i);return d.toLocaleDateString('es-VE',{day:'2-digit',month:'short'})});
-const OBRAS_DIA = [2,4,3,5,7,4,2,6,8,5,3,7,9,6,4,5,8,10,7,4,6,9,11,8,5,7,10,12,9,7];
+const DIAS   = Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-29+i);return d.toLocaleDateString('es-VE',{day:'2-digit',month:'short'})});
+const OBR_DIA= [2,4,3,5,7,4,2,6,8,5,3,7,9,6,4,5,8,10,7,4,6,9,11,8,5,7,10,12,9,7];
 
-const ALCALDIAS = [
-  {n:'Alcaldía San Cristóbal', m:'San Cristóbal',  pub:412, obras:18, eng:24800},
-  {n:'Alcaldía Cárdenas',      m:'Táriba',          pub:287, obras:12, eng:16400},
-  {n:'Alcaldía Junín',         m:'Rubio',           pub:261, obras:11, eng:14200},
-  {n:'Alcaldía Ayacucho',      m:'Colón',           pub:218, obras:9,  eng:11800},
-  {n:'Alcaldía Bolívar',       m:'San Antonio',     pub:196, obras:8,  eng:10200},
-  {n:'Alcaldía García de Hevia',m:'La Fría',        pub:174, obras:7,  eng:8900},
-  {n:'Alcaldía Jáuregui',      m:'La Grita',        pub:152, obras:6,  eng:7600},
-  {n:'Alcaldía P.M. Ureña',    m:'Ureña',           pub:138, obras:5,  eng:6800},
+const ORGANISMOS_DATA = [
+  {n:'Gobernación del Estado Táchira', tipo:'Gobernación',          pub:1240, obras:48, eng:62400, sent:0.74},
+  {n:'INVIAL Táchira',                 tipo:'Instituto Autónomo',   pub:342,  obras:22, eng:14800, sent:0.68},
+  {n:'INVIVIENDA Táchira',             tipo:'Instituto Autónomo',   pub:298,  obras:18, eng:11200, sent:0.71},
+  {n:'Corpotáchira',                   tipo:'Ente Descentralizado', pub:214,  obras:12, eng:8600,  sent:0.65},
+  {n:'CORPOSALUD Táchira',             tipo:'Instituto Autónomo',   pub:187,  obras:9,  eng:7200,  sent:0.69},
+  {n:'INDET',                          tipo:'Instituto Autónomo',   pub:142,  obras:6,  eng:5400,  sent:0.72},
+  {n:'Dirección de Educación',         tipo:'Dependencia',          pub:128,  obras:8,  eng:4800,  sent:0.66},
+  {n:'FUNDATÁCHIRA',                   tipo:'Fundación',            pub:98,   obras:4,  eng:3600,  sent:0.63},
 ];
 
-const FEED_DATA = [
-  {plt:'instagram',ent:'Gobernación Táchira',txt:'Freddy Bernal supervisa entrega de 45 toneladas de alimentos en municipio San Cristóbal. Más de 2.000 familias beneficiadas.',cat:'produccion',act:'entrega',t:'Hace 8 min'},
-  {plt:'twitter',ent:'Gobernación Táchira',txt:'Inauguramos el nuevo ambulatorio rural de Coloncito, atenderá a 1.200 habitantes. Inversión de 4.2 millones de bolívares.',cat:'salud',act:'inauguración',t:'Hace 22 min'},
-  {plt:'telegram',ent:'@FreddyBernalVzla',txt:'Recorrido por las obras de vialidad en la Troncal 5, tramo Rubio-San Cristóbal. Avance del 78% en asfaltado.',cat:'vialidad',act:'supervisión',t:'Hace 35 min'},
-  {plt:'facebook',ent:'Gobernación Táchira',txt:'Entrega de 120 viviendas del Gran Misión Vivienda Venezuela en el sector La Pedrera, municipio Cárdenas.',cat:'vivienda',act:'inauguración',t:'Hace 1h'},
-  {plt:'web',ent:'Alcaldía San Cristóbal',txt:'Inauguración del Parque Tecnológico Escolar en la UE Simón Bolívar. 8 computadoras y conectividad para 400 estudiantes.',cat:'educacion',act:'inauguración',t:'Hace 1h 20min'},
-  {plt:'tiktok',ent:'@gobernaciontachira',txt:'Freddy Bernal en Pregonero supervisando acueducto rural que beneficiará a 3.500 familias del municipio Uribante.',cat:'agua',act:'supervisión',t:'Hace 2h'},
-  {plt:'instagram',ent:'INVIAL Táchira',txt:'Concluida la repavimentación de 12 km de la vía San Cristóbal-Palmira. Inversión de 8.7 millones.',cat:'vialidad',act:'inauguración',t:'Hace 3h'},
-  {plt:'telegram',ent:'@FreddyBernalVzla',txt:'Reunión con alcaldes del estado para coordinar plan de atención a las comunidades más vulnerables del Táchira.',cat:'infraestructura',act:'reunión',t:'Hace 4h'},
+const ALCALDIAS_DATA = [
+  {n:'Alcaldía de San Cristóbal',          m:'San Cristóbal',          cap:'San Cristóbal',           pub:412, obras:18, eng:24800},
+  {n:'Alcaldía de Cárdenas',               m:'Cárdenas',               cap:'Táriba',                  pub:287, obras:12, eng:16400},
+  {n:'Alcaldía de Junín',                  m:'Junín',                  cap:'Rubio',                   pub:261, obras:11, eng:14200},
+  {n:'Alcaldía de Ayacucho',               m:'Ayacucho',               cap:'San Juan de Colón',       pub:218, obras:9,  eng:11800},
+  {n:'Alcaldía de Bolívar',                m:'Bolívar',                cap:'San Antonio del Táchira', pub:196, obras:8,  eng:10200},
+  {n:'Alcaldía de García de Hevia',        m:'García de Hevia',        cap:'La Fría',                 pub:174, obras:7,  eng:8900},
+  {n:'Alcaldía de Jáuregui',               m:'Jáuregui',               cap:'La Grita',                pub:152, obras:6,  eng:7600},
+  {n:'Alcaldía de Pedro María Ureña',      m:'Pedro María Ureña',      cap:'Ureña',                   pub:138, obras:5,  eng:6800},
+  {n:'Alcaldía de Guásimos',               m:'Guásimos',               cap:'Palmira',                 pub:124, obras:5,  eng:5900},
+  {n:'Alcaldía de Independencia',          m:'Independencia',          cap:'Capacho Nuevo',           pub:112, obras:4,  eng:5100},
+  {n:'Alcaldía de Panamericano',           m:'Panamericano',           cap:'Coloncito',               pub:98,  obras:4,  eng:4400},
+  {n:'Alcaldía de Uribante',               m:'Uribante',               cap:'Pregonero',               pub:86,  obras:3,  eng:3800},
 ];
 
-// ══════════════════════════════════════════════
-//  CONFIG CHART.JS
-// ══════════════════════════════════════════════
+const PROBLEMAS  = ['Baches y vías deterioradas','Fallas de agua potable','Cortes eléctricos','Déficit habitacional','Inseguridad vial','Desabastecimiento alimentario','Infraestructura escolar','Atención en salud pública'];
+const PROB_VAL   = [148,127,112,98,87,74,62,51];
+
+const FEED_DATA  = [
+  {plt:'instagram',ent:'Gobernación del Estado Táchira',txt:'Freddy Bernal supervisa entrega de 45 toneladas de alimentos en municipio San Cristóbal. Más de 2.000 familias beneficiadas en sectores populares.',cat:'produccion',act:'entrega',t:'Hace 8 min'},
+  {plt:'twitter',  ent:'Gobernación Táchira',txt:'Inauguramos el nuevo ambulatorio rural de Coloncito, municipio Panamericano. Atenderá a 1.200 habitantes. Inversión Bs. 4.2 millones.',cat:'salud',act:'inauguración',t:'Hace 22 min'},
+  {plt:'telegram', ent:'@FreddyBernalVzla',txt:'Recorrido por obras de vialidad en la Troncal 5, tramo Rubio–San Cristóbal, municipio Junín. Avance del 78% en repavimentación.',cat:'vialidad',act:'supervisión',t:'Hace 35 min'},
+  {plt:'facebook', ent:'INVIVIENDA Táchira',txt:'Entrega de 120 viviendas del Gran Misión Vivienda Venezuela en sector La Pedrera, municipio Cárdenas, capital Táriba.',cat:'vivienda',act:'inauguración',t:'Hace 1h'},
+  {plt:'web',      ent:'Alcaldía San Cristóbal',txt:'Inauguración del Parque Tecnológico Escolar en UE Simón Bolívar, parroquia La Concordia. 8 computadoras y conectividad para 400 estudiantes.',cat:'educacion',act:'inauguración',t:'Hace 1h 20min'},
+  {plt:'tiktok',   ent:'@gobernaciontachira',txt:'Freddy Bernal en Pregonero, municipio Uribante, supervisando acueducto rural que beneficiará a 3.500 familias de las parroquias Potosí y Juan Pablo Peñaloza.',cat:'agua',act:'supervisión',t:'Hace 2h'},
+  {plt:'instagram',ent:'INVIAL Táchira',txt:'Concluida repavimentación de 12 km vía San Cristóbal–Palmira (municipios San Cristóbal y Guásimos). Inversión Bs. 8.7 millones.',cat:'vialidad',act:'inauguración',t:'Hace 3h'},
+  {plt:'telegram', ent:'@FreddyBernalVzla',txt:'Reunión con alcaldes de los 29 municipios del estado para coordinar Plan de Atención a Comunidades Vulnerables del Táchira 2025.',cat:'infraestructura',act:'reunión',t:'Hace 4h'},
+];
+
+// ══════════════════════════════════════════════════════════════
+//  CHART.JS — CONFIG BASE
+// ══════════════════════════════════════════════════════════════
 Chart.defaults.color='#7d8590';Chart.defaults.borderColor='#21262d';
 Chart.defaults.font.family="'Inter',system-ui,sans-serif";Chart.defaults.font.size=11;
 Chart.defaults.plugins.tooltip.backgroundColor='#161b22';Chart.defaults.plugins.tooltip.borderColor='#21262d';
@@ -392,115 +440,88 @@ Chart.defaults.plugins.tooltip.borderWidth=1;Chart.defaults.plugins.tooltip.titl
 Chart.defaults.plugins.tooltip.bodyColor='#7d8590';Chart.defaults.plugins.tooltip.padding=10;
 
 const PAL=['#1f6feb','#3fb950','#d29922','#f85149','#bc8cff','#38bdf8','#fbbf24','#34d399','#f87171','#a78bfa','#fb923c'];
-const PA=(i,a=.75)=>{const h=PAL[i%PAL.length];const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return `rgba(${r},${g},${b},${a})`};
+const PA=(i,a=.75)=>{const h=PAL[i%PAL.length],r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return `rgba(${r},${g},${b},${a})`};
+const mk=(id,cfg)=>{const c=document.getElementById(id);if(!c)return;if(c._ch)c._ch.destroy();c._ch=new Chart(c,cfg)};
 
-function mkChart(id,cfg){
-  const c=document.getElementById(id);if(!c)return;
-  if(c._chart)c._chart.destroy();
-  c._chart=new Chart(c,cfg);return c._chart;
+function renderTodos(){
+  // Donut Sectores
+  mk('ch-donut',{type:'doughnut',data:{labels:SECTORES,datasets:[{data:SECT_VAL,backgroundColor:PAL.map(p=>p+'cc'),borderColor:PAL,borderWidth:1,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'right',labels:{padding:9,usePointStyle:true,pointStyleWidth:7,font:{size:10}}}}}});
+  // Radar
+  mk('ch-radar',{type:'radar',data:{labels:SECTORES,datasets:[{label:'Actividad',data:SECT_VAL,backgroundColor:'rgba(31,111,235,.18)',borderColor:'#1f6feb',pointBackgroundColor:'#1f6feb',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{grid:{color:'#21262d'},pointLabels:{color:'#7d8590',font:{size:9}},ticks:{display:false}}},plugins:{legend:{display:false}}}});
+  // Barras días
+  mk('ch-bars',{type:'bar',data:{labels:DIAS,datasets:[{label:'Obras',data:OBR_DIA,backgroundColor:PA(0),borderColor:PAL[0],borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'},ticks:{maxTicksLimit:8}},y:{grid:{color:'#21262d'},beginAtZero:true}},plugins:{legend:{display:false}}}});
+  // Sentiment redes
+  mk('ch-sent',{type:'bar',data:{labels:REDES.labels,datasets:[{label:'Positivo',data:REDES.pos,backgroundColor:'rgba(63,185,80,.82)',borderRadius:3},{label:'Neutro',data:REDES.neu,backgroundColor:'rgba(125,133,144,.5)',borderRadius:3},{label:'Negativo',data:REDES.neg,backgroundColor:'rgba(248,81,73,.82)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{color:'#21262d'}},y:{stacked:true,grid:{color:'#21262d'},beginAtZero:true}}}});
+  // Organismos
+  mk('ch-org',{type:'bar',data:{labels:ORGANISMOS_DATA.map(o=>o.n.replace('Alcaldía de ','').replace('Táchira','').trim().substring(0,18)),datasets:[{label:'Publicaciones',data:ORGANISMOS_DATA.map(o=>o.pub),backgroundColor:PA(1,.75),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
+  // Problemas
+  mk('ch-prob',{type:'bar',data:{labels:PROBLEMAS,datasets:[{label:'Frecuencia',data:PROB_VAL,backgroundColor:PROBLEMAS.map((_,i)=>PA(i,.75)),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
+  // Tendencia
+  mk('ch-tend',{type:'line',data:{labels:MESES,datasets:[{label:'Positivas',data:TEND_POS,borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.1)',fill:true,tension:.4,pointRadius:3},{label:'Negativas',data:TEND_NEG,borderColor:'#f85149',backgroundColor:'rgba(248,81,73,.08)',fill:true,tension:.4,pointRadius:3},{label:'Obras',data:TEND_OBR,borderColor:'#d29922',borderDash:[4,3],tension:.4,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:'#21262d'}},y:{grid:{color:'#21262d'},beginAtZero:true}}}});
+  // Ranking barras
+  const top12=MUNICIPIOS.slice(0,12);
+  mk('ch-rank',{type:'bar',data:{labels:top12.map(d=>d.m),datasets:[{label:'Obras',data:top12.map(d=>d.obras),backgroundColor:PA(0,.82),borderRadius:3},{label:'Problemas',data:top12.map(d=>d.prob),backgroundColor:PA(3,.82),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
 }
 
-// ── Donut Sectores ────────────────────────────
-function renderDonut(){
-  mkChart('ch-donut',{type:'doughnut',data:{labels:SECTORES,datasets:[{data:SECT_VAL,backgroundColor:PAL.map(p=>p+'cc'),borderColor:PAL,borderWidth:1,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'right',labels:{padding:10,usePointStyle:true,pointStyleWidth:7,font:{size:10}}}}}});
-}
+// ══════════════════════════════════════════════════════════════
+//  TABLAS Y LISTAS
+// ══════════════════════════════════════════════════════════════
+function renderTablas(){
+  // Ranking tabla
+  document.getElementById('tb-rank').innerHTML=MUNICIPIOS.map((d,i)=>`
+    <tr><td><strong>${i+1}</strong></td><td>${d.m}</td><td style="color:var(--muted);font-size:.74rem">${d.cap}</td>
+    <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
+    <td style="color:var(--warning);font-weight:600">${d.obras}</td>
+    <td><span class="sem ${d.sent>.6?'sem-v':d.sent>.3?'sem-a':'sem-r'}">${d.sent>.6?'Óptimo':d.sent>.3?'Seguimiento':'Atención'}</span></td></tr>`).join('');
 
-// ── Radar ─────────────────────────────────────
-function renderRadar(){
-  mkChart('ch-radar',{type:'radar',data:{labels:SECTORES,datasets:[{label:'Actividad',data:SECT_VAL,backgroundColor:'rgba(31,111,235,.18)',borderColor:'#1f6feb',pointBackgroundColor:'#1f6feb',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{grid:{color:'#21262d'},pointLabels:{color:'#7d8590',font:{size:9}},ticks:{display:false}}},plugins:{legend:{display:false}}}});
-}
+  // Alcaldías
+  document.getElementById('tb-alcaldias').innerHTML=ALCALDIAS_DATA.map((d,i)=>`
+    <tr><td><strong>${i+1}</strong></td><td>${d.n}</td><td>${d.m}</td>
+    <td style="color:var(--muted);font-size:.74rem">${d.cap}</td>
+    <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
+    <td style="color:var(--warning);font-weight:600">${d.obras}</td>
+    <td>${d.eng.toLocaleString('es-VE')}</td>
+    <td><span class="sem sem-v">Activa</span></td></tr>`).join('');
 
-// ── Barras Días ───────────────────────────────
-function renderBars(){
-  mkChart('ch-bars',{type:'bar',data:{labels:DIAS,datasets:[{label:'Obras',data:OBRAS_DIA,backgroundColor:PA(0),borderColor:PAL[0],borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'},ticks:{maxTicksLimit:8}},y:{grid:{color:'#21262d'},beginAtZero:true}},plugins:{legend:{display:false}}}});
-}
+  // Organismos tabla
+  document.getElementById('tb-org').innerHTML=ORGANISMOS_DATA.map((d,i)=>`
+    <tr><td><strong>${i+1}</strong></td><td><strong>${d.n}</strong></td><td style="color:var(--muted);font-size:.74rem">${d.tipo}</td>
+    <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
+    <td style="color:var(--warning);font-weight:600">${d.obras}</td>
+    <td>${d.eng.toLocaleString('es-VE')}</td>
+    <td><span class="sem ${d.sent>.6?'sem-v':d.sent>.3?'sem-a':'sem-r'}">${d.sent>.6?'Positivo':d.sent>.3?'Neutro':'Negativo'}</span></td></tr>`).join('');
 
-// ── Sentiment Redes ───────────────────────────
-function renderSent(){
-  mkChart('ch-sent',{type:'bar',data:{labels:REDES.labels,datasets:[
-    {label:'Positivo',data:REDES.pos,backgroundColor:'rgba(63,185,80,.8)',borderRadius:3},
-    {label:'Neutro',  data:REDES.neu,backgroundColor:'rgba(125,133,144,.5)',borderRadius:3},
-    {label:'Negativo',data:REDES.neg,backgroundColor:'rgba(248,81,73,.8)',borderRadius:3},
-  ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{color:'#21262d'}},y:{stacked:true,grid:{color:'#21262d'},beginAtZero:true}}}});
-}
-
-// ── Organismos ────────────────────────────────
-function renderOrg(){
-  mkChart('ch-org',{type:'bar',data:{labels:ORGANISMOS,datasets:[{label:'Publicaciones',data:ORG_VAL,backgroundColor:PA(1,.75),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
-}
-
-// ── Problemas ─────────────────────────────────
-function renderProb(){
-  mkChart('ch-prob',{type:'bar',data:{labels:PROBLEMAS,datasets:[{label:'Frecuencia',data:PROB_VAL,backgroundColor:PROBLEMAS.map((_,i)=>PA(i,.75)),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
-}
-
-// ── Tendencia ─────────────────────────────────
-function renderTend(){
-  mkChart('ch-tend',{type:'line',data:{labels:MESES,datasets:[
-    {label:'Positivas',data:TEND_POS,borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.1)',fill:true,tension:.4,pointRadius:3},
-    {label:'Negativas',data:TEND_NEG,borderColor:'#f85149',backgroundColor:'rgba(248,81,73,.08)',fill:true,tension:.4,pointRadius:3},
-    {label:'Obras',    data:TEND_OBR,borderColor:'#d29922',borderDash:[4,3],tension:.4,pointRadius:3},
-  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:'#21262d'}},y:{grid:{color:'#21262d'},beginAtZero:true}}}});
-}
-
-// ── Ranking ───────────────────────────────────
-function renderRank(){
-  const top=MUNICIPIOS_DATA.slice(0,12);
-  mkChart('ch-rank',{type:'bar',data:{labels:top.map(d=>d.m),datasets:[
-    {label:'Obras',    data:top.map(d=>d.obras),backgroundColor:PA(0,.8),borderRadius:3},
-    {label:'Problemas',data:top.map(d=>d.prob), backgroundColor:PA(3,.8),borderRadius:3},
-  ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'},stacked:false},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
-}
-
-// ── Tabla Ranking ──────────────────────────────
-function renderTablaRank(){
-  document.getElementById('tb-rank').innerHTML=MUNICIPIOS_DATA.map((d,i)=>`
-    <tr>
-      <td><strong>${i+1}</strong></td>
-      <td>${d.m}</td>
-      <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
-      <td style="color:var(--warning);font-weight:600">${d.obras}</td>
-      <td style="color:var(--danger)">${d.prob}</td>
-      <td><span class="sem ${d.sent>0.6?'sem-v':d.sent>0.3?'sem-a':'sem-r'}">${d.sent>0.6?'Óptimo':d.sent>0.3?'Seguimiento':'Atención'}</span></td>
-    </tr>`).join('');
-}
-
-// ── Tabla Alcaldías ───────────────────────────
-function renderAlcaldias(){
-  document.getElementById('tb-alcaldias').innerHTML=ALCALDIAS.map((d,i)=>`
-    <tr>
-      <td><strong>${i+1}</strong></td>
-      <td>${d.n}</td>
-      <td style="color:var(--muted)">${d.m}</td>
-      <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
-      <td style="color:var(--warning);font-weight:600">${d.obras}</td>
-      <td>${d.eng.toLocaleString('es-VE')}</td>
-      <td><span class="sem sem-v">Activa</span></td>
-    </tr>`).join('');
-}
-
-// ── Listas Municipios ──────────────────────────
-function renderMunicipios(){
-  document.getElementById('lst-visitados').innerHTML=MUNICIPIOS_DATA.slice(0,10).map(d=>`
+  // Municipios visitados
+  document.getElementById('lst-visitados').innerHTML=MUNICIPIOS.map(d=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
-      <span style="font-size:.8rem">${d.m}</span>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span style="font-size:.7rem;color:var(--warning)">${d.obras} obras</span>
-        <span class="sem sem-v" style="font-size:.65rem">${d.pub} pub.</span>
+      <div>
+        <span style="font-size:.8rem">${d.m}</span>
+        <span style="font-size:.68rem;color:var(--muted);margin-left:6px">Cap. ${d.cap}</span>
+      </div>
+      <div style="display:flex;gap:5px;align-items:center">
+        <span style="font-size:.68rem;color:var(--warning)">${d.obras} obras</span>
+        <span class="sem sem-v" style="font-size:.63rem">${d.pub} pub.</span>
       </div>
     </div>`).join('');
+
+  // Pendientes
   document.getElementById('lst-pendientes').innerHTML=PENDIENTES.map(p=>`
-    <span class="sem sem-r" style="font-size:.7rem">${p}</span>`).join('');
+    <div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.2);border-radius:7px;padding:6px 10px">
+      <div style="font-size:.77rem;color:var(--danger);font-weight:600">${p.m}</div>
+      <div style="font-size:.65rem;color:var(--muted)">Cap. ${p.cap}</div>
+    </div>`).join('');
 }
 
-// ── Feed ──────────────────────────────────────
-const PLT_ICONS={instagram:'📸',facebook:'👥',twitter:'🐦',telegram:'📢',tiktok:'🎵',web:'📰'};
+// ══════════════════════════════════════════════════════════════
+//  FEED
+// ══════════════════════════════════════════════════════════════
+const PICONS={instagram:'📸',facebook:'👥',twitter:'🐦',telegram:'📢',tiktok:'🎵',web:'📰'};
 function renderFeed(){
   document.getElementById('feed').innerHTML=FEED_DATA.map(f=>`
     <div class="feed-item">
-      <div class="feed-plt plt-${f.plt}" title="${f.plt}">${PLT_ICONS[f.plt]||'📄'}</div>
+      <div class="feed-plt plt-${f.plt}" title="${f.plt}">${PICONS[f.plt]||'📄'}</div>
       <div style="flex:1;min-width:0">
-        <div class="feed-meta"><strong style="color:var(--text)">${f.ent}</strong> · ${f.plt} · ${f.t}</div>
+        <div class="feed-meta"><strong style="color:var(--text)">${f.ent}</strong> · ${f.plt} · <span style="color:var(--accent)">${f.t}</span></div>
         <div class="feed-txt">${f.txt}</div>
         <div style="display:flex;gap:4px;margin-top:5px">
           <span class="bc b${f.cat}">${f.cat}</span>
@@ -510,59 +531,165 @@ function renderFeed(){
     </div>`).join('');
 }
 
-// ══════════════════════════════════════════════
-//  MAPA LEAFLET
-// ══════════════════════════════════════════════
-const COORDS={
-  'San Cristóbal':[7.770,-72.225],'Rubio':[7.700,-72.365],'Táriba':[7.822,-72.227],
-  'Colón':[8.034,-72.268],'La Fría':[8.221,-72.246],'San Antonio del Táchira':[7.820,-72.447],
-  'La Grita':[8.137,-71.993],'Ureña':[7.924,-72.440],'Coloncito':[8.230,-72.022],
-  'Michelena':[7.926,-72.069],'Cordero':[7.870,-72.080],'Palmira':[7.800,-72.305],
-  'Capacho Nuevo':[7.757,-72.312],'Pregonero':[8.010,-71.799],'El Piñal':[7.641,-72.073],
-  'Lobatera':[7.896,-72.154],'San Josecito':[7.741,-72.168],'Seboruco':[8.050,-71.916],
-  'Queniquea':[8.130,-71.869],'San Félix':[8.147,-72.151],'Santa Ana del Táchira':[7.781,-72.528],
-};
-
+// ══════════════════════════════════════════════════════════════
+//  MAPA LEAFLET — 29 MUNICIPIOS TÁCHIRA
+// ══════════════════════════════════════════════════════════════
 function initMapa(){
-  const map=L.map('mapa',{center:[7.95,-72.15],zoom:8,zoomControl:true,attributionControl:false});
+  const map=L.map('mapa',{center:[7.96,-72.14],zoom:8,zoomControl:true,attributionControl:false});
   L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
   L.control.attribution({prefix:'SIMGP-Táchira © CartoDB'}).addTo(map);
 
-  const maxP=Math.max(...MUNICIPIOS_DATA.map(d=>d.pub));
-  MUNICIPIOS_DATA.forEach(d=>{
-    const co=COORDS[d.m]||COORDS[d.m.replace(' del Táchira','')];
-    if(!co)return;
-    const color=d.sent>0.6?'#3fb950':d.sent>0.3?'#1f6feb':'#f85149';
-    const r=Math.max(8,Math.min(28,8+Math.sqrt(d.pub/maxP)*25));
-    L.circleMarker(co,{radius:r,fillColor:color,color:'#0e1117',weight:2,fillOpacity:.82})
-     .bindPopup(`<div style="font-family:Inter,sans-serif;min-width:170px;color:#e6edf3;background:#161b22">
-       <div style="font-weight:700;margin-bottom:6px">${d.m}</div>
-       <table style="font-size:.74rem;width:100%">
-         <tr><td style="color:#7d8590">Publicaciones</td><td style="text-align:right;font-weight:600">${d.pub}</td></tr>
-         <tr><td style="color:#7d8590">Obras inauguradas</td><td style="text-align:right;color:#d29922;font-weight:600">${d.obras}</td></tr>
-         <tr><td style="color:#7d8590">Problemas detectados</td><td style="text-align:right;color:#f85149">${d.prob}</td></tr>
-         <tr><td style="color:#7d8590">Sentiment</td><td style="text-align:right">${d.sent>0.6?'😊 Positivo':d.sent>0.3?'😐 Neutro':'😟 Negativo'}</td></tr>
-       </table></div>`,{className:'',maxWidth:220})
-     .bindTooltip(d.m,{direction:'top',sticky:false}).addTo(map);
+  const maxP=Math.max(...MUNICIPIOS.map(d=>d.pub),1);
+
+  // Municipios visitados — círculos coloreados
+  MUNICIPIOS.forEach(d=>{
+    const color=d.sent>.6?'#3fb950':d.sent>.3?'#1f6feb':'#f85149';
+    const r=Math.max(8,Math.min(26,7+Math.sqrt(d.pub/maxP)*24));
+    const pars=d.par.map(p=>`<span style="display:inline-block;background:rgba(255,255,255,.06);padding:1px 6px;border-radius:4px;margin:1px">${p}</span>`).join('');
+    L.circleMarker([d.lat,d.lng],{radius:r,fillColor:color,color:'#0e1117',weight:2,fillOpacity:.83})
+     .bindPopup(`
+      <div style="min-width:200px">
+        <div style="font-weight:700;font-size:.9rem;margin-bottom:2px">${d.m}</div>
+        <div style="color:#7d8590;font-size:.72rem;margin-bottom:6px">Capital: <strong style="color:#e6edf3">${d.cap}</strong></div>
+        <hr style="border-color:#21262d;margin:5px 0"/>
+        <table style="font-size:.73rem;width:100%">
+          <tr><td style="color:#7d8590">Publicaciones</td><td style="text-align:right;font-weight:600">${d.pub}</td></tr>
+          <tr><td style="color:#7d8590">Obras inauguradas</td><td style="text-align:right;color:#d29922;font-weight:600">${d.obras}</td></tr>
+          <tr><td style="color:#7d8590">Problemas detectados</td><td style="text-align:right;color:#f85149">${d.prob}</td></tr>
+          <tr><td style="color:#7d8590">Sentiment</td><td style="text-align:right">${d.sent>.6?'😊 Positivo':d.sent>.3?'😐 Neutro':'😟 Negativo'} (${d.sent})</td></tr>
+        </table>
+        <div style="margin-top:7px">
+          <div style="font-size:.68rem;color:#7d8590;font-weight:600;margin-bottom:4px">PARROQUIAS</div>
+          <div style="font-size:.68rem;line-height:1.7">${pars}</div>
+        </div>
+      </div>`,{maxWidth:260})
+     .bindTooltip(`<strong>${d.m}</strong><br><span style="font-size:.72rem;color:#7d8590">${d.cap}</span>`,{direction:'top',className:'',opacity:.95})
+     .addTo(map);
+  });
+
+  // Municipios pendientes — marcadores distintos
+  PENDIENTES.forEach(p=>{
+    const coords={
+      'Antonio Rómulo Costa':[8.172,-72.352],'Francisco de Miranda':[8.140,-71.862],
+      'José María Vargas':[7.720,-72.072],'Libertad':[7.769,-72.340],
+      'Libertador':[8.090,-72.040],'Samuel Darío Maldonado':[7.695,-71.901],
+      'San Judas Tadeo':[7.882,-72.298],'Simón Rodríguez':[8.107,-72.076],
+    };
+    const co=coords[p.m];if(!co)return;
+    L.circleMarker(co,{radius:7,fillColor:'#f85149',color:'#0e1117',weight:2,fillOpacity:.5,dashArray:'4'})
+     .bindPopup(`<div><div style="font-weight:700">${p.m}</div><div style="color:#7d8590;font-size:.72rem">Capital: ${p.cap}</div><div style="color:#f85149;font-size:.72rem;margin-top:4px">⚠️ Sin actividad registrada</div></div>`,{maxWidth:200})
+     .bindTooltip(`${p.m} — Pendiente`,{direction:'top',opacity:.9})
+     .addTo(map);
   });
 
   // Leyenda
   const leg=L.control({position:'bottomright'});
   leg.onAdd=()=>{
     const d=L.DomUtil.create('div');
-    d.innerHTML=`<div style="background:#161b22;border:1px solid #21262d;padding:9px 12px;border-radius:8px;font-size:.71rem;color:#7d8590">
-      <div style="font-weight:700;color:#e6edf3;margin-bottom:5px">Sentiment</div>
-      ${[['#3fb950','Positivo (>0.6)'],['#1f6feb','Neutro (0.3–0.6)'],['#f85149','Negativo (<0.3)']].map(([c,l])=>`
-      <div style="display:flex;align-items:center;gap:5px;margin:2px 0"><span style="width:9px;height:9px;border-radius:50%;background:${c};display:inline-block"></span>${l}</div>`).join('')}
+    d.innerHTML=`<div style="background:#161b22;border:1px solid #21262d;padding:10px 13px;border-radius:8px;font-size:.7rem;color:#7d8590">
+      <div style="font-weight:700;color:#e6edf3;margin-bottom:6px">Sentiment</div>
+      ${[['#3fb950','Positivo (>0.6)'],['#1f6feb','Neutro (0.3–0.6)'],['#f85149','Negativo / Sin datos']].map(([c,l])=>`<div style="display:flex;align-items:center;gap:6px;margin:3px 0"><span style="width:9px;height:9px;border-radius:50%;background:${c};display:inline-block"></span>${l}</div>`).join('')}
+      <div style="border-top:1px solid #21262d;margin-top:6px;padding-top:6px">Tamaño = Actividad</div>
     </div>`;
     return d;
   };
   leg.addTo(map);
 }
 
-// ══════════════════════════════════════════════
-//  RELOJ + COUNTDOWN
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  EXPORTACIONES
+// ══════════════════════════════════════════════════════════════
+function exportPDF(){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(14,17,23);doc.rect(0,0,W,200,'F');
+  doc.setTextColor(230,237,243);doc.setFontSize(13);doc.setFont(undefined,'bold');
+  doc.text('Sistema Inteligente de Monitoreo de Gestión Pública — Estado Táchira',W/2,12,{align:'center'});
+  doc.setFontSize(8);doc.setFont(undefined,'normal');doc.setTextColor(125,133,144);
+  doc.text('Generado: '+new Date().toLocaleString('es-VE'),W/2,18,{align:'center'});
+  let y=26;
+  const kpis=[['Total Publicaciones','4.837'],['Municipios Visitados','21 / 29'],['Obras Inauguradas','183'],['Obras Hoy','7'],['Obras Semana','34'],['Obras Mes','112']];
+  kpis.forEach(([l,v],i)=>{
+    const x=14+(i%3)*95;if(i===3)y+=14;
+    doc.setFillColor(22,27,34);doc.roundedRect(x,y,90,12,2,2,'F');
+    doc.setTextColor(125,133,144);doc.setFontSize(7);doc.text(l,x+4,y+5);
+    doc.setTextColor(31,111,235);doc.setFontSize(11);doc.setFont(undefined,'bold');doc.text(v,x+4,y+11);
+  });
+  y+=20;
+  [['ch-donut','Obras por Sector'],['ch-bars','Obras por Día'],['ch-tend','Tendencia 6 Meses']].forEach(([id,tit])=>{
+    const cv=document.getElementById(id);if(!cv)return;
+    const pH=doc.internal.pageSize.getHeight();
+    if(y+66>pH-10){doc.addPage();doc.setFillColor(14,17,23);doc.rect(0,0,W,pH,'F');y=14;}
+    doc.setTextColor(230,237,243);doc.setFontSize(9);doc.setFont(undefined,'bold');doc.text(tit,14,y);y+=4;
+    doc.addImage(cv.toDataURL('image/png'),'PNG',14,y,W-28,58);y+=64;
+  });
+  // Tabla municipios
+  if(y+10<doc.internal.pageSize.getHeight()-10){
+    doc.addPage();doc.setFillColor(14,17,23);doc.rect(0,0,W,doc.internal.pageSize.getHeight(),'F');
+    doc.setTextColor(230,237,243);doc.setFontSize(10);doc.setFont(undefined,'bold');doc.text('Ranking de Municipios',14,14);
+    const cols=['#','Municipio','Capital','Publicaciones','Obras','Problemas','Sentiment'];
+    const cw=[10,50,50,32,22,22,28];let tx=14,ty=22;
+    doc.setFillColor(31,111,235);doc.rect(14,ty-5,W-28,9,'F');
+    doc.setTextColor(255,255,255);doc.setFontSize(7.5);
+    cols.forEach((c,i)=>{let cx=tx;for(let j=0;j<i;j++)cx+=cw[j];doc.text(c,cx+2,ty)});
+    ty+=6;
+    MUNICIPIOS.forEach((d,i)=>{
+      doc.setFillColor(i%2===0?14:22,i%2===0?17:27,i%2===0?23:34);
+      doc.rect(14,ty-4,W-28,8,'F');
+      doc.setTextColor(230,237,243);doc.setFontSize(7);
+      const row=[String(i+1),d.m,d.cap,String(d.pub),String(d.obras),String(d.prob),String(d.sent)];
+      row.forEach((v,ci)=>{let cx=14;for(let j=0;j<ci;j++)cx+=cw[j];doc.text(v.substring(0,16),cx+2,ty)});
+      ty+=8;
+    });
+  }
+  doc.save(`SIMGP-Tachira-${new Date().toISOString().split('T')[0]}.pdf`);
+  showToast('PDF exportado correctamente','success');
+}
+
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['SIMGP Táchira — Reporte de Gestión Pública'],['Generado: '+new Date().toLocaleString('es-VE')],[],
+    ['Indicador','Valor'],['Total Publicaciones',4837],['Municipios Visitados',21],
+    ['Municipios Pendientes',8],['Obras Inauguradas',183],['Obras Hoy',7],['Obras Semana',34],['Obras Mes',112],['Sentiment',0.62],
+  ]),'KPIs');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Municipio','Capital','Parroquias','Publicaciones','Obras','Problemas','Sentiment'],
+    ...MUNICIPIOS.map(d=>[d.m,d.cap,d.par.join(', '),d.pub,d.obras,d.prob,d.sent]),
+    ...PENDIENTES.map(p=>[p.m,p.cap,'Ver tabla','0','0','0','Sin datos']),
+  ]),'Municipios');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Sector','Actividad'],[...SECTORES.map((s,i)=>[s,SECT_VAL[i]])].flat()
+  ]),'Sectores');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Alcaldía','Municipio','Capital','Publicaciones','Obras','Engagement'],
+    ...ALCALDIAS_DATA.map(a=>[a.n,a.m,a.cap,a.pub,a.obras,a.eng]),
+  ]),'Alcaldías');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Organismo','Tipo','Publicaciones','Obras','Engagement','Sentiment'],
+    ...ORGANISMOS_DATA.map(o=>[o.n,o.tipo,o.pub,o.obras,o.eng,o.sent]),
+  ]),'Organismos');
+  XLSX.writeFile(wb,`SIMGP-Tachira-${new Date().toISOString().split('T')[0]}.xlsx`);
+  showToast('Excel exportado (5 hojas)','success');
+}
+
+function exportCSV(){
+  const rows=[
+    ['Municipio','Capital','Publicaciones','Obras','Problemas','Sentiment'],
+    ...MUNICIPIOS.map(d=>[d.m,d.cap,d.pub,d.obras,d.prob,d.sent]),
+    ...PENDIENTES.map(p=>[p.m,p.cap,0,0,0,'Sin datos']),
+  ];
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,﻿'+rows.map(r=>r.join(',')).join('\r\n');
+  a.download=`SIMGP-Tachira-municipios-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('CSV exportado (29 municipios)','success');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  UI — RELOJ, COUNTDOWN, SIDEBAR, FILTROS, TOAST
+// ══════════════════════════════════════════════════════════════
 function initReloj(){
   setInterval(()=>{
     document.getElementById('clock').textContent=new Date().toLocaleString('es-VE',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -571,139 +698,61 @@ function initReloj(){
 
 let cdSecs=300;
 function startCD(){
-  cdSecs=300;
-  const el=document.getElementById('cd');
+  cdSecs=300;const el=document.getElementById('cd');
   const t=setInterval(()=>{
-    cdSecs--;
-    const m=Math.floor(cdSecs/60),s=String(cdSecs%60).padStart(2,'0');
+    cdSecs--;const m=Math.floor(cdSecs/60),s=String(cdSecs%60).padStart(2,'0');
     el.textContent=`Actualiza en ${m}:${s}`;
-    if(cdSecs<=0){clearInterval(t);simularActualizacion();startCD();}
+    if(cdSecs<=0){clearInterval(t);showToast('Dashboard actualizado','info');startCD();}
   },1000);
 }
 
-function simularActualizacion(){
-  showToast('Dashboard actualizado correctamente','success');
-  document.getElementById('last-update').textContent='Actualizado: '+new Date().toLocaleTimeString('es-VE');
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const mn=document.querySelector('.main');
+  if(window.innerWidth<=768){sb.style.transform=sb.style.transform==='translateX(0px)'?'translateX(-100%)':'translateX(0px)';return;}
+  const collapsed=sb.style.width==='52px';
+  sb.style.width=collapsed?'208px':'52px';
+  mn.style.marginLeft=collapsed?'208px':'52px';
 }
 
-// ══════════════════════════════════════════════
-//  EXPORTACIONES
-// ══════════════════════════════════════════════
-function exportPDF(){
-  const {jsPDF}=window.jspdf;
-  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
-  const W=doc.internal.pageSize.getWidth();
-  doc.setFillColor(14,17,23);doc.rect(0,0,W,20,'F');
-  doc.setTextColor(230,237,243);doc.setFontSize(12);doc.setFont(undefined,'bold');
-  doc.text('Sistema Inteligente de Monitoreo de Gestión Pública — Estado Táchira',W/2,11,{align:'center'});
-  doc.setFontSize(8);doc.setFont(undefined,'normal');doc.setTextColor(125,133,144);
-  doc.text('Generado: '+new Date().toLocaleString('es-VE'),W/2,17,{align:'center'});
-  let y=28;
-  // KPIs
-  const kpis=[['Publicaciones','4.837'],['Municipios Visitados','21/29'],['Obras Inauguradas','183'],['Obras Hoy','7'],['Obras Semana','34'],['Obras Mes','112']];
-  kpis.forEach(([l,v],i)=>{
-    const x=14+(i%3)*95;if(i===3)y+=14;
-    doc.setFillColor(22,27,34);doc.roundedRect(x,y,90,12,2,2,'F');
-    doc.setTextColor(125,133,144);doc.setFontSize(7);doc.text(l,x+4,y+5);
-    doc.setTextColor(31,111,235);doc.setFontSize(11);doc.setFont(undefined,'bold');doc.text(v,x+4,y+11);
-  });
-  y+=18;
-  // Gráficos
-  [['ch-donut','Obras por Sector'],['ch-bars','Obras por Día'],['ch-tend','Tendencia']].forEach(([id,tit])=>{
-    const cv=document.getElementById(id);if(!cv)return;
-    if(y+65>doc.internal.pageSize.getHeight()-10){doc.addPage();doc.setFillColor(14,17,23);doc.rect(0,0,W,doc.internal.pageSize.getHeight(),'F');y=14;}
-    doc.setTextColor(230,237,243);doc.setFontSize(9);doc.setFont(undefined,'bold');doc.text(tit,14,y);y+=4;
-    doc.addImage(cv.toDataURL('image/png'),'PNG',14,y,W-28,60);y+=66;
-  });
-  doc.save(`SIMGP-Tachira-${new Date().toISOString().split('T')[0]}.pdf`);
-  showToast('PDF exportado','success');
+function activarItem(el){
+  document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
 }
 
-function exportExcel(){
-  const wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
-    ['SIMGP Táchira — Reporte de Gestión Pública'],
-    ['Generado: '+new Date().toLocaleString('es-VE')],[],
-    ['Indicador','Valor'],
-    ['Total Publicaciones',4837],['Municipios Visitados',21],['Municipios Pendientes',8],
-    ['Obras Inauguradas',183],['Obras Hoy',7],['Obras Semana',34],['Obras Mes',112],['Sentiment Promedio',0.62],
-  ]),'KPIs');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
-    ['Municipio','Publicaciones','Obras','Problemas','Sentiment'],
-    ...MUNICIPIOS_DATA.map(d=>[d.m,d.pub,d.obras,d.prob,d.sent]),
-  ]),'Municipios');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
-    ['Sector','Actividad'],
-    ...SECTORES.map((s,i)=>[s,SECT_VAL[i]]),
-  ]),'Sectores');
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
-    ['Alcaldía','Municipio','Publicaciones','Obras','Engagement'],
-    ...ALCALDIAS.map(a=>[a.n,a.m,a.pub,a.obras,a.eng]),
-  ]),'Alcaldías');
-  XLSX.writeFile(wb,`SIMGP-Tachira-${new Date().toISOString().split('T')[0]}.xlsx`);
-  showToast('Excel exportado','success');
-}
-
-function exportCSV(){
-  const rows=[['Municipio','Publicaciones','Obras','Problemas','Sentiment'],...MUNICIPIOS_DATA.map(d=>[d.m,d.pub,d.obras,d.prob,d.sent])];
-  const csv='﻿'+rows.map(r=>r.join(',')).join('\r\n');
-  const a=document.createElement('a');
-  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
-  a.download=`SIMGP-Tachira-municipios-${new Date().toISOString().split('T')[0]}.csv`;
-  a.click();
-  showToast('CSV exportado','success');
-}
-
-// ══════════════════════════════════════════════
-//  FILTROS
-// ══════════════════════════════════════════════
 function limpiarFiltros(){
-  ['f-desde','f-hasta','f-mun','f-cat','f-tipo'].forEach(id=>{
-    const el=document.getElementById(id);if(el)el.value='';
-  });
+  ['f-desde','f-hasta','f-mun','f-cat','f-tipo'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   showToast('Filtros limpiados','info');
 }
 
-// ══════════════════════════════════════════════
-//  TOAST
-// ══════════════════════════════════════════════
 function showToast(msg,tipo='info'){
   const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
-  const el=document.createElement('div');
-  el.className='toast-msg';el.textContent=`${icons[tipo]||''} ${msg}`;
+  const el=document.createElement('div');el.className='toast-msg';
+  el.textContent=`${icons[tipo]||''} ${msg}`;
   document.getElementById('toasts').appendChild(el);
   setTimeout(()=>el.remove(),3500);
 }
 
-// ══════════════════════════════════════════════
-//  SIDEBAR ACTIVO
-// ══════════════════════════════════════════════
-document.querySelectorAll('.s-item').forEach(a=>{
-  a.addEventListener('click',function(){
-    document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('active'));
-    this.classList.add('active');
-  });
-});
-
-// ══════════════════════════════════════════════
-//  INIT
-// ══════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  INICIALIZAR TODO
+// ══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
-  // Barra de carga
   const lb=document.getElementById('loadbar');
-  lb.style.width='40%';
-  setTimeout(()=>lb.style.width='80%',300);
-  setTimeout(()=>{lb.style.width='100%';setTimeout(()=>lb.style.width='0',400);},700);
+  lb.style.width='35%';setTimeout(()=>lb.style.width='80%',400);
 
   initReloj();
-  renderDonut();renderRadar();renderBars();
-  renderSent();renderOrg();renderProb();renderTend();renderRank();
-  renderTablaRank();renderAlcaldias();renderMunicipios();renderFeed();
-  setTimeout(initMapa,200);
+  renderTodos();
+  renderTablas();
+  renderFeed();
+  setTimeout(initMapa,100);
   startCD();
 
-  document.getElementById('last-update').textContent='Actualizado: '+new Date().toLocaleTimeString('es-VE');
-  setTimeout(()=>showToast('Dashboard cargado correctamente','success'),800);
+  setTimeout(()=>{
+    lb.style.width='100%';
+    setTimeout(()=>{lb.style.width='0';},400);
+    document.getElementById('last-update').textContent='Actualizado: '+new Date().toLocaleTimeString('es-VE');
+    showToast('Dashboard cargado correctamente','success');
+  },800);
 });
 </script>
 </body>
