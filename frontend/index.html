@@ -159,6 +159,11 @@ option{background:var(--card)}
   <a class="s-item" href="#sec-organismos" onclick="activarItem(this)"><i class="bi bi-diagram-3"></i>Organismos Activos</a>
   <a class="s-item" href="#sec-alcaldias" onclick="activarItem(this)"><i class="bi bi-bank"></i>Alcaldías</a>
   <a class="s-item" href="#sec-tendencia" onclick="activarItem(this)"><i class="bi bi-graph-up"></i>Tendencia Histórica</a>
+  <div class="s-section">Ecosistema Digital</div>
+  <a class="s-item" href="#sec-bernal" onclick="activarItem(this)"><i class="bi bi-person-badge"></i>Freddy Bernal</a>
+  <a class="s-item" href="#sec-alcaldes" onclick="activarItem(this)"><i class="bi bi-people"></i>Alcaldes</a>
+  <a class="s-item" href="#sec-directores" onclick="activarItem(this)"><i class="bi bi-person-workspace"></i>Directores Gobernación</a>
+  <a class="s-item" href="#sec-institucional" onclick="activarItem(this)"><i class="bi bi-building-gear"></i>Cuentas Institucionales</a>
 </nav>
 
 <!-- ══ CONTENIDO PRINCIPAL ══ -->
@@ -321,6 +326,59 @@ option{background:var(--card)}
     <table class="tbl"><thead><tr><th>#</th><th>Organismo</th><th>Tipo</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Sentiment</th></tr></thead>
     <tbody id="tb-org"></tbody></table>
   </div>
+</div>
+
+
+<!-- ══ FREDDY BERNAL ═══════════════════════════════════════ -->
+<div class="card mb-3" id="sec-bernal">
+  <div class="card-hdr">
+    <div>
+      <div class="card-title"><i class="bi bi-person-badge" style="color:var(--accent)"></i> Freddy Bernal — Gobernador del Estado Táchira</div>
+      <div class="card-sub">Ecosistema digital personal · Alcance total estimado: <strong style="color:var(--accent)">~1.170.000 seguidores</strong></div>
+    </div>
+    <span class="sem sem-v">Activo</span>
+  </div>
+  <div id="grid-bernal" class="row g-3 mb-3"></div>
+  <div style="background:rgba(31,111,235,.06);border:1px solid rgba(31,111,235,.2);border-radius:8px;padding:11px 14px">
+    <span style="font-size:.72rem;font-weight:700;color:var(--accent)">🌐 HUB EDITORIAL</span>
+    <span style="font-size:.78rem;color:var(--muted);margin-left:10px">
+      <a href="https://freddybernaloficial.com" target="_blank" style="color:var(--info)">freddybernaloficial.com</a>
+      — Repositorio oficial: discursos, noticias, multimedia y documentos. Base para SEO y posicionamiento digital.
+    </span>
+  </div>
+</div>
+
+<!-- ══ ALCALDES ══════════════════════════════════════════ -->
+<div class="card mb-3" id="sec-alcaldes">
+  <div class="card-hdr">
+    <div>
+      <div class="card-title"><i class="bi bi-people" style="color:var(--warning)"></i> Red de Alcaldes — Amplificadores Territoriales (Anillo 4)</div>
+      <div class="card-sub">Alcance coordinable total: <strong style="color:var(--warning)">~289.000 seguidores</strong> · Sin narrativa ni calendario común aún</div>
+    </div>
+  </div>
+  <div id="grid-alcaldes" class="row g-3"></div>
+</div>
+
+<!-- ══ DIRECTORES GOBERNACIÓN ════════════════════════════ -->
+<div class="card mb-3" id="sec-directores">
+  <div class="card-hdr">
+    <div>
+      <div class="card-title"><i class="bi bi-person-workspace" style="color:#bc8cff"></i> Directores de la Gobernación — Red Institucional Amplificadora</div>
+      <div class="card-sub">Anillo 4 — Directores con cuentas personales e institucionales del ecosistema comunicacional</div>
+    </div>
+  </div>
+  <div id="grid-directores" class="row g-3"></div>
+</div>
+
+<!-- ══ CUENTAS INSTITUCIONALES ═══════════════════════════ -->
+<div class="card mb-3" id="sec-institucional">
+  <div class="card-hdr">
+    <div>
+      <div class="card-title"><i class="bi bi-building-gear" style="color:var(--success)"></i> Cuentas Institucionales — Anillo 2 bajo mando directo</div>
+      <div class="card-sub">Gobernación del Estado y organismos del Táchira · Alcance total: <strong style="color:var(--success)">~847.000 seguidores</strong></div>
+    </div>
+  </div>
+  <div id="grid-institucional" class="row g-3"></div>
 </div>
 
 </main>
@@ -734,6 +792,161 @@ function showToast(msg,tipo='info'){
 }
 
 // ══════════════════════════════════════════════════════════════
+//  DATOS — ECOSISTEMA DIGITAL (PDFs ESQUEMA COMUNICACIONAL)
+// ══════════════════════════════════════════════════════════════
+
+const BERNAL_REDES = [
+  {red:'X / Twitter',  handle:'@freddybernal',      seg:604200, icon:'bi-twitter-x',   color:'#fff',   bg:'#000',    estado:'ACTIVO',   url:'https://twitter.com/freddybernal'},
+  {red:'TikTok',       handle:'Freddybernalr',       seg:309500, icon:'bi-tiktok',      color:'#fff',   bg:'#111',    estado:'ACTIVO',   url:'https://tiktok.com/@freddybernalr'},
+  {red:'Instagram',    handle:'@freddybernalven',    seg:236000, icon:'bi-instagram',   color:'#fff',   bg:'linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366)', estado:'ACTIVO', url:'https://instagram.com/freddybernalven'},
+  {red:'TikTok 2',     handle:'Freddybernalvzla',    seg:18500,  icon:'bi-tiktok',      color:'#fff',   bg:'#222',    estado:'ACTIVO',   url:'https://tiktok.com/@freddybernalvzla'},
+  {red:'Facebook',     handle:'Freddy Bernal Venezuela', seg:19000, icon:'bi-facebook', color:'#fff',   bg:'#1877f2', estado:'SUBEXPLOTADO', url:'https://facebook.com'},
+  {red:'Telegram',     handle:'@ReporteBernalOficial', seg:960,  icon:'bi-telegram',   color:'#fff',   bg:'#0088cc', estado:'INTEGRAR', url:'https://t.me/ReporteBernalOficial'},
+];
+
+const ALCALDES_DATA2 = [
+  {nombre:'Natalia Chacón',    cargo:'Alcaldesa de Lobatera',         handle:'@NATALIACHACONOFICIAL', seg:113000, red:'Instagram', estado:'ACTIVO',  municipio:'Lobatera'},
+  {nombre:'Carlos Pérez',      cargo:'Alcalde de José María Vargas',  handle:'@CARLOSPEREZ_CH',       seg:63000,  red:'Instagram', estado:'ACTIVO',  municipio:'José María Vargas'},
+  {nombre:'Flor Martínez',     cargo:'Alcaldesa de Córdoba',          handle:'@CORDOBA_FLORECE',      seg:41300,  red:'Instagram', estado:'ACTIVO',  municipio:'Córdoba'},
+  {nombre:'Silfredo Zambrano', cargo:'Alcalde de San Cristóbal',      handle:'@SILFREDO_ZAMBRANO',    seg:38600,  red:'Instagram', estado:'ACTIVO',  municipio:'San Cristóbal'},
+  {nombre:'Yoira Vargas',      cargo:'Alcaldesa de Ayacucho',         handle:'@YOIRA_VARGAS',         seg:24400,  red:'Instagram', estado:'ACTIVO',  municipio:'Ayacucho'},
+  {nombre:'Juan Escalante',    cargo:'Alcalde de Jáuregui',           handle:'@JUANCARLOSESCALANTE_', seg:17100,  red:'Instagram', estado:'ACTIVO',  municipio:'Jáuregui'},
+  {nombre:'Gerardo Roa',       cargo:'Alcalde de Uribante',           handle:'@GERARDOROA_CONECTA',   seg:11100,  red:'Instagram', estado:'ACTIVO',  municipio:'Uribante'},
+  {nombre:'Marta Gallo',       cargo:'Alcaldesa de Cárdenas',         handle:'@MARTAGALLOVZLA',       seg:10600,  red:'Instagram', estado:'ACTIVO',  municipio:'Cárdenas'},
+];
+
+const DIRECTORES_GOB = [
+  {nombre:'Rafael Medina',       cargo:'Director — Corposalud',          personal:14000, inst:'Corposalud',    inst_seg:69000,  inst_handle:'@CORPOSALUS_TACIRA', estado:'ACTIVO'},
+  {nombre:'Ángel Márquez',       cargo:'Director — IVT',                 personal:23000, inst:'IVT',           inst_seg:23000,  inst_handle:'@ivt_tachira',       estado:'ACTIVO'},
+  {nombre:'Yesnardo Canal',      cargo:'Director — Protección Civil',    personal:19700, inst:'P. Civil',      inst_seg:86000,  inst_handle:'@pciviltachira',     estado:'ACTIVO'},
+  {nombre:'William Parada',      cargo:'Director de Política',           personal:22700, inst:'Dir. Política', inst_seg:1000,   inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'Leonard Triana',      cargo:'Director de Política',           personal:21000, inst:'Dir. Política', inst_seg:324,    inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'Marcos Albarrán',     cargo:'Director — Lotería del Táchira', personal:1000,  inst:'Lotería',       inst_seg:182000, inst_handle:'@lotdeltachira',     estado:'ACTIVO'},
+  {nombre:'José Gregorio Colmenares', cargo:'Director — Cotatur',        personal:5000,  inst:'Cotatur',       inst_seg:28000,  inst_handle:'@COTATURVE',         estado:'ACTIVO'},
+  {nombre:'Wilman Rivera Torres', cargo:'Director — Politáchira',        personal:3000,  inst:'Politáchira',   inst_seg:26000,  inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'Carlos Trompiz',      cargo:'Director — FUNDESTA',            personal:4000,  inst:'FUNDESTA',      inst_seg:4000,   inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'Maryuri Flores',      cargo:'Directora — INTAVI',             personal:11000, inst:'INTAVI',        inst_seg:7000,   inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'José Bermúdez',       cargo:'Director — SEDEBAT',             personal:2000,  inst:'SEDEBAT',       inst_seg:8000,   inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'José Gregorio Freiter',cargo:'Director — IDT',                personal:1000,  inst:'IDT',           inst_seg:9000,   inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'Yolimar Hernández',   cargo:'Directora — MinMujer Táchira',   personal:0,     inst:'MinMujer',      inst_seg:3069,   inst_handle:'@minmujer_tachira',  estado:'ACTIVO'},
+  {nombre:'Jiuvant Huéfano',     cargo:'Director',                       personal:7771,  inst:'-',             inst_seg:0,      inst_handle:'-',                  estado:'ACTIVO'},
+  {nombre:'Pedro Fressel',       cargo:'Director — Cultura',             personal:287,   inst:'Dir. Cultura',  inst_seg:28000,  inst_handle:'-',                  estado:'ACTIVO'},
+];
+
+const INSTITUCIONAL_DATA = [
+  {nombre:'Gobernación del Estado Táchira', handle:'@GOBERNACIONDELTACHIRA', seg:71700,  red:'Instagram', estado:'ACTIVO',     tipo:'Gobernación'},
+  {nombre:'Amemos al Táchira',              handle:'@AMEMOSALTACHIRA',       seg:159000, red:'Instagram', estado:'ACTIVO',     tipo:'Marca-territorio'},
+  {nombre:'Juntos por Táchira',             handle:'@JUNTOSXTACHIRA1',       seg:73700,  red:'Instagram', estado:'ACTIVO',     tipo:'Marca-territorio'},
+  {nombre:'Lotería del Táchira',            handle:'@LOTDELTACHIRA',         seg:182000, red:'Instagram', estado:'ACTIVO',     tipo:'Institución'},
+  {nombre:'Protección Civil Táchira',       handle:'@PCIVILTACHIRA',         seg:86000,  red:'Instagram', estado:'ACTIVO',     tipo:'Seguridad'},
+  {nombre:'Karem Durán de Bernal',          handle:'@KAREMDEBERNAL',         seg:65800,  red:'Instagram', estado:'ACTIVO',     tipo:'Primera Dama'},
+  {nombre:'Delegación Estadal (CICPC)',     handle:'@DELEGACIONTACHIRA',     seg:57000,  red:'Instagram', estado:'ACTIVO',     tipo:'Seguridad'},
+  {nombre:'Corposalud Táchira',             handle:'@CORPOSALUS_TACIRA',     seg:28300,  red:'Instagram', estado:'ACTIVO',     tipo:'Salud'},
+  {nombre:'Cotatur (Turismo)',              handle:'@COTATURVE',             seg:28300,  red:'Instagram', estado:'ACTIVO',     tipo:'Turismo'},
+  {nombre:'PSUV Táchira',                   handle:'@PSUVTACHIRAOFICIAL',    seg:19500,  red:'Instagram', estado:'ACTIVO',     tipo:'Político-partidario'},
+  {nombre:'Fundación Familia Tachirense',   handle:'@FAMILIATACHIRENSE',     seg:27800,  red:'Instagram', estado:'ACTIVO',     tipo:'Social'},
+];
+
+function fmtSeg(n){if(!n||n===0)return'—';if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'k';return String(n)}
+
+function estadoBadge(e){
+  const m={ACTIVO:'sem-v',SUBEXPLOTADO:'sem-a',INTEGRAR:'sem-a',INUTILIZADO:'sem-r','SIN VERIFICAR':'sem-r'};
+  return `<span class="sem ${m[e]||'sem-a'}" style="font-size:.62rem">${e}</span>`;
+}
+
+function renderBernal(){
+  document.getElementById('grid-bernal').innerHTML=BERNAL_REDES.map(r=>`
+    <div class="col-md-4 col-lg-2">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px;height:100%">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <div style="width:34px;height:34px;border-radius:8px;background:${r.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <i class="bi ${r.icon}" style="color:${r.color};font-size:1rem"></i>
+          </div>
+          <div>
+            <div style="font-size:.78rem;font-weight:700">${r.red}</div>
+            <div style="font-size:.67rem;color:var(--muted)">${r.handle}</div>
+          </div>
+        </div>
+        <div style="font-size:1.6rem;font-weight:700;color:var(--accent);line-height:1">${fmtSeg(r.seg)}</div>
+        <div style="font-size:.67rem;color:var(--muted);margin-top:3px">seguidores</div>
+        <div style="margin-top:8px">${estadoBadge(r.estado)}</div>
+        ${r.url?`<a href="${r.url}" target="_blank" style="font-size:.65rem;color:var(--info);text-decoration:none;display:block;margin-top:5px">Ver perfil →</a>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderAlcaldes(){
+  document.getElementById('grid-alcaldes').innerHTML=ALCALDES_DATA2.map(a=>`
+    <div class="col-md-6 col-lg-3">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-size:.85rem;font-weight:700">${a.nombre}</div>
+            <div style="font-size:.7rem;color:var(--warning);margin-top:1px">${a.cargo}</div>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:1px">Municipio ${a.municipio}</div>
+          </div>
+          ${estadoBadge(a.estado)}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border-radius:7px;padding:8px">
+          <i class="bi bi-instagram" style="font-size:1.1rem;background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>
+          <div>
+            <div style="font-size:.78rem;font-weight:700;color:var(--info)">${a.handle}</div>
+            <div style="font-size:.72rem;color:var(--success);font-weight:600">${fmtSeg(a.seg)} seguidores</div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderDirectores(){
+  document.getElementById('grid-directores').innerHTML=DIRECTORES_GOB.map(d=>`
+    <div class="col-md-6 col-lg-4">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+          <div>
+            <div style="font-size:.84rem;font-weight:700">${d.nombre}</div>
+            <div style="font-size:.69rem;color:#bc8cff;margin-top:1px">${d.cargo}</div>
+          </div>
+          ${estadoBadge(d.estado)}
+        </div>
+        <div style="display:flex;gap:8px">
+          <div style="flex:1;background:rgba(31,111,235,.07);border-radius:6px;padding:7px;text-align:center">
+            <div style="font-size:.63rem;color:var(--muted);margin-bottom:2px">Personal</div>
+            <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">${fmtSeg(d.personal)}</div>
+          </div>
+          <div style="flex:1;background:rgba(63,185,80,.07);border-radius:6px;padding:7px;text-align:center">
+            <div style="font-size:.63rem;color:var(--muted);margin-bottom:2px">${d.inst}</div>
+            <div style="font-size:1.05rem;font-weight:700;color:var(--success)">${fmtSeg(d.inst_seg)}</div>
+          </div>
+        </div>
+        ${d.inst_handle&&d.inst_handle!=='-'?`<div style="font-size:.65rem;color:var(--info);margin-top:6px">${d.inst_handle}</div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function renderInstitucional(){
+  const sorted=[...INSTITUCIONAL_DATA].sort((a,b)=>b.seg-a.seg);
+  document.getElementById('grid-institucional').innerHTML=sorted.map(c=>`
+    <div class="col-md-6 col-lg-3">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
+          <div>
+            <div style="font-size:.82rem;font-weight:700">${c.nombre}</div>
+            <div style="font-size:.66rem;color:var(--muted);margin-top:1px">${c.tipo}</div>
+          </div>
+          ${estadoBadge(c.estado)}
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:8px">
+          <i class="bi bi-instagram" style="font-size:1rem;background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>
+          <span style="font-size:.74rem;color:var(--info)">${c.handle}</span>
+        </div>
+        <div style="font-size:1.5rem;font-weight:700;color:var(--success);margin-top:6px">${fmtSeg(c.seg)}</div>
+        <div style="font-size:.65rem;color:var(--muted)">seguidores · ${c.red}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════════════════════
 //  INICIALIZAR TODO
 // ══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
@@ -744,6 +957,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   renderTodos();
   renderTablas();
   renderFeed();
+  renderBernal();
+  renderAlcaldes();
+  renderDirectores();
+  renderInstitucional();
   setTimeout(initMapa,100);
   startCD();
 
