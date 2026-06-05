@@ -778,8 +778,194 @@ function activarItem(el){
   el.classList.add('active');
 }
 
+// ══════════════════════════════════════════════════════════════
+//  SISTEMA DE FILTROS REACTIVO
+// ══════════════════════════════════════════════════════════════
+
+// Obtener valores actuales de filtros
+function getFiltros(){
+  return {
+    desde: document.getElementById('f-desde')?.value || '',
+    hasta: document.getElementById('f-hasta')?.value || '',
+    mun:   document.getElementById('f-mun')?.value   || '',
+    cat:   document.getElementById('f-cat')?.value   || '',
+    tipo:  document.getElementById('f-tipo')?.value  || '',
+  };
+}
+
+// Evaluar si un item pasa los filtros
+function pasaFiltros(item, f){
+  if(f.desde && item.fecha && item.fecha < f.desde) return false;
+  if(f.hasta && item.fecha && item.fecha > f.hasta) return false;
+  if(f.mun   && item.municipio && !item.municipio.toLowerCase().includes(f.mun.toLowerCase())) return false;
+  if(f.cat   && item.cat       && item.cat.toLowerCase() !== f.cat.toLowerCase()) return false;
+  if(f.tipo  && item.act       && item.act.toLowerCase() !== f.tipo.toLowerCase()) return false;
+  return true;
+}
+
+// Indicador visual de filtros activos
+function actualizarIndicadorFiltros(){
+  const f = getFiltros();
+  const activos = Object.values(f).filter(v => v !== '').length;
+  const btn = document.querySelector('button[onclick="limpiarFiltros()"]');
+  if(!btn) return;
+  if(activos > 0){
+    btn.style.borderColor = '#1f6feb';
+    btn.style.color       = '#1f6feb';
+    btn.innerHTML         = `<i class="bi bi-funnel-fill"></i> Limpiar (${activos})`;
+  } else {
+    btn.style.borderColor = '';
+    btn.style.color       = '';
+    btn.innerHTML         = 'Limpiar';
+  }
+}
+
+// ── Re-renderizar FEED con filtros ────────────────────────────
+function renderFeedFiltrado(){
+  const f = getFiltros();
+  const datos = FEED_DATA.filter(item => {
+    if(f.mun  && item.txt && !item.txt.toLowerCase().includes(f.mun.toLowerCase()) &&
+       !(item.mun||'').toLowerCase().includes(f.mun.toLowerCase())) return false;
+    if(f.cat  && item.cat !== f.cat.toLowerCase()) return false;
+    if(f.tipo && item.act !== f.tipo.toLowerCase()) return false;
+    return true;
+  });
+  const cont = document.getElementById('feed');
+  if(!cont) return;
+  if(datos.length === 0){
+    cont.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">
+      <i class="bi bi-funnel" style="font-size:1.5rem"></i>
+      <div style="margin-top:8px">Sin publicaciones para los filtros seleccionados</div>
+    </div>`;
+    return;
+  }
+  cont.innerHTML = datos.map(f=>`
+    <div class="feed-item">
+      <div class="feed-plt plt-${f.plt}">${PICONS[f.plt]||'📄'}</div>
+      <div style="flex:1;min-width:0">
+        <div class="feed-meta"><strong style="color:var(--text)">${f.ent}</strong> · ${f.plt} · <span style="color:var(--accent)">${f.t}</span></div>
+        <div class="feed-txt">${f.txt}</div>
+        <div style="display:flex;gap:4px;margin-top:5px">
+          <span class="bc b${f.cat}">${f.cat}</span>
+          <span class="bc" style="background:rgba(125,133,144,.13);color:var(--muted)">${f.act}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Re-renderizar MUNICIPIOS con filtro ───────────────────────
+function renderMunicipiosFiltrado(){
+  const f = getFiltros();
+  let visitados = MUNICIPIOS;
+  let pendientes = PENDIENTES;
+
+  if(f.mun){
+    const q = f.mun.toLowerCase();
+    visitados  = MUNICIPIOS.filter(d => d.m.toLowerCase().includes(q) || d.cap.toLowerCase().includes(q));
+    pendientes = PENDIENTES.filter(d => d.m.toLowerCase().includes(q) || d.cap.toLowerCase().includes(q));
+  }
+
+  document.getElementById('lst-visitados').innerHTML = visitados.length
+    ? visitados.map(d=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+          <div>
+            <span style="font-size:.8rem">${d.m}</span>
+            <span style="font-size:.68rem;color:var(--muted);margin-left:6px">Cap. ${d.cap}</span>
+          </div>
+          <div style="display:flex;gap:5px;align-items:center">
+            <span style="font-size:.68rem;color:var(--warning)">${d.obras} obras</span>
+            <span class="sem sem-v" style="font-size:.63rem">${d.pub} pub.</span>
+          </div>
+        </div>`).join('')
+    : `<div style="padding:16px;color:var(--muted);font-size:.8rem;text-align:center">Sin resultados</div>`;
+
+  document.getElementById('lst-pendientes').innerHTML = pendientes.length
+    ? pendientes.map(p=>`
+        <div style="background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.2);border-radius:7px;padding:6px 10px">
+          <div style="font-size:.77rem;color:var(--danger);font-weight:600">${p.m}</div>
+          <div style="font-size:.65rem;color:var(--muted)">Cap. ${p.cap}</div>
+        </div>`).join('')
+    : `<div style="padding:16px;color:var(--muted);font-size:.8rem">Sin municipios pendientes que coincidan</div>`;
+}
+
+// ── Re-renderizar RANKING con filtro ──────────────────────────
+function renderRankingFiltrado(){
+  const f = getFiltros();
+  let datos = MUNICIPIOS;
+  if(f.mun) datos = datos.filter(d => d.m.toLowerCase().includes(f.mun.toLowerCase()));
+
+  document.getElementById('tb-rank').innerHTML = datos.length
+    ? datos.map((d,i)=>`
+        <tr>
+          <td><strong>${i+1}</strong></td>
+          <td>${d.m}</td>
+          <td style="color:var(--muted);font-size:.74rem">${d.cap}</td>
+          <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
+          <td style="color:var(--warning);font-weight:600">${d.obras}</td>
+          <td><span class="sem ${d.sent>.6?'sem-v':d.sent>.3?'sem-a':'sem-r'}">${d.sent>.6?'Óptimo':d.sent>.3?'Seguimiento':'Atención'}</span></td>
+        </tr>`).join('')
+    : `<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px">Sin resultados para el filtro</td></tr>`;
+
+  // Actualizar gráfico ranking
+  const top = datos.slice(0,12);
+  if(top.length){
+    mk('ch-rank',{type:'bar',data:{labels:top.map(d=>d.m),datasets:[
+      {label:'Obras',    data:top.map(d=>d.obras),backgroundColor:PA(0,.82),borderRadius:3},
+      {label:'Problemas',data:top.map(d=>d.prob), backgroundColor:PA(3,.82),borderRadius:3},
+    ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
+  }
+}
+
+// ── Actualizar KPIs con filtros ───────────────────────────────
+function actualizarKPIs(){
+  const f = getFiltros();
+  let datos = MUNICIPIOS;
+  if(f.mun) datos = datos.filter(d => d.m.toLowerCase().includes(f.mun.toLowerCase()));
+
+  const totalPub  = datos.reduce((s,d)=>s+d.pub, 0);
+  const totalObras= datos.reduce((s,d)=>s+d.obras, 0);
+  const visitados = f.mun ? datos.length : MUNICIPIOS.length;
+  const pendientes= 29 - visitados;
+
+  if(f.mun || f.cat || f.tipo){
+    document.getElementById('kpi-publicaciones-val')?.setAttribute && null; // por compatibilidad
+    // Actualizar subtítulos de filtro activo
+    const sub = [];
+    if(f.mun)  sub.push(`Municipio: ${f.mun}`);
+    if(f.cat)  sub.push(`Categoría: ${f.cat}`);
+    if(f.tipo) sub.push(`Tipo: ${f.tipo}`);
+    if(f.desde) sub.push(`Desde: ${f.desde}`);
+    if(f.hasta) sub.push(`Hasta: ${f.hasta}`);
+
+    const tag = sub.length ? `<span style="font-size:.67rem;background:rgba(31,111,235,.15);color:#58a6ff;padding:2px 8px;border-radius:10px;margin-left:6px">${sub.join(' · ')}</span>` : '';
+    const titulo = document.querySelector('#sec-kpi')?.previousElementSibling;
+  }
+}
+
+// ── Función principal de actualización por filtros ────────────
+let filtroTimer = null;
+function aplicarFiltros(){
+  clearTimeout(filtroTimer);
+  // Animación visual en las tarjetas
+  document.querySelectorAll('.kpi').forEach(k=>{
+    k.style.opacity='.5';k.style.transition='opacity .15s';
+  });
+  filtroTimer = setTimeout(()=>{
+    document.querySelectorAll('.kpi').forEach(k=>k.style.opacity='1');
+    renderFeedFiltrado();
+    renderMunicipiosFiltrado();
+    renderRankingFiltrado();
+    actualizarKPIs();
+    actualizarIndicadorFiltros();
+    const f = getFiltros();
+    const activos = Object.values(f).filter(v=>v!=='').length;
+    if(activos>0) showToast(`Filtros aplicados (${activos} activo${activos>1?'s':''})`, 'info');
+  }, 350); // debounce 350ms
+}
+
 function limpiarFiltros(){
   ['f-desde','f-hasta','f-mun','f-cat','f-tipo'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  aplicarFiltros();
   showToast('Filtros limpiados','info');
 }
 
@@ -1065,6 +1251,15 @@ function renderInstitucional(){
 document.addEventListener('DOMContentLoaded',()=>{
   const lb=document.getElementById('loadbar');
   lb.style.width='35%';setTimeout(()=>lb.style.width='80%',400);
+
+  // ── Conectar filtros reactivos ──────────────────────────
+  ['f-desde','f-hasta'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('change', aplicarFiltros);
+  });
+  ['f-mun','f-cat','f-tipo'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('change', aplicarFiltros);
+    document.getElementById(id)?.addEventListener('input',  aplicarFiltros);
+  });
 
   initReloj();
   renderTodos();
