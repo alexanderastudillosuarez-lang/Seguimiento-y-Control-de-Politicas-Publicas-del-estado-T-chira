@@ -334,7 +334,7 @@ option{background:var(--card)}
   <div class="card-hdr">
     <div>
       <div class="card-title"><i class="bi bi-person-badge" style="color:var(--accent)"></i> Freddy Bernal — Gobernador del Estado Táchira</div>
-      <div class="card-sub">Ecosistema digital personal · Alcance total estimado: <strong style="color:var(--accent)">~1.170.000 seguidores</strong></div>
+      <div class="card-sub">Ecosistema digital personal · Alcance total estimado: <strong style="color:var(--accent)" id="bernal-total">~1.170.000 seguidores</strong></div>
     </div>
     <span class="sem sem-v">Activo</span>
   </div>
@@ -847,103 +847,216 @@ const INSTITUCIONAL_DATA = [
   {nombre:'Fundación Familia Tachirense',   handle:'@FAMILIATACHIRENSE',     seg:27800,  red:'Instagram', estado:'ACTIVO',     tipo:'Social'},
 ];
 
+// ── Helpers ──────────────────────────────────────────────────
 function fmtSeg(n){if(!n||n===0)return'—';if(n>=1000000)return(n/1000000).toFixed(1)+'M';if(n>=1000)return(n/1000).toFixed(1)+'k';return String(n)}
-
+function pct(val,total){return total>0?((val/total)*100).toFixed(1)+'%':'—'}
+function progBar(val,max,color='#1f6feb'){
+  const w=max>0?Math.max(2,Math.round((val/max)*100)):0;
+  return `<div style="height:4px;border-radius:3px;background:#21262d;margin-top:5px">
+    <div style="width:${w}%;height:100%;border-radius:3px;background:${color};transition:width .5s"></div></div>`;
+}
 function estadoBadge(e){
-  const m={ACTIVO:'sem-v',SUBEXPLOTADO:'sem-a',INTEGRAR:'sem-a',INUTILIZADO:'sem-r','SIN VERIFICAR':'sem-r'};
-  return `<span class="sem ${m[e]||'sem-a'}" style="font-size:.62rem">${e}</span>`;
+  const m={ACTIVO:'sem-v',SUBEXPLOTADO:'sem-a',INTEGRAR:'sem-a',EMERGENTE:'sem-a',INUTILIZADO:'sem-r','SIN VERIFICAR':'sem-r'};
+  return `<span class="sem ${m[e]||'sem-a'}" style="font-size:.61rem">${e}</span>`;
+}
+function urlRed(red,handle){
+  const h=(handle||'').replace('@','');
+  const map={
+    'Instagram':`https://instagram.com/${h}`,
+    'X / Twitter':`https://twitter.com/${h}`,
+    'Twitter':`https://twitter.com/${h}`,
+    'TikTok':`https://tiktok.com/@${h}`,
+    'TikTok 2':`https://tiktok.com/@${h}`,
+    'Facebook':`https://facebook.com/${h}`,
+    'Telegram':`https://t.me/${h}`,
+    'Telegram 2':`https://t.me/${h}`,
+  };
+  return map[red]||'#';
 }
 
+// ── Freddy Bernal ─────────────────────────────────────────────
 function renderBernal(){
-  document.getElementById('grid-bernal').innerHTML=BERNAL_REDES.map(r=>`
-    <div class="col-md-4 col-lg-2">
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px;height:100%">
+  const total=BERNAL_REDES.reduce((s,r)=>s+r.seg,0);
+  const max=Math.max(...BERNAL_REDES.map(r=>r.seg));
+  const colores={'X / Twitter':'#e6edf3','TikTok':'#fe2c55','Instagram':'#e1306c',
+                 'TikTok 2':'#fe2c55','Facebook':'#1877f2','Telegram':'#0088cc'};
+  document.getElementById('grid-bernal').innerHTML=BERNAL_REDES.map(r=>{
+    const color=colores[r.red]||'#1f6feb';
+    const link=urlRed(r.red,r.handle);
+    return `<div class="col-md-4 col-lg-2">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px;height:100%;display:flex;flex-direction:column">
         <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
           <div style="width:34px;height:34px;border-radius:8px;background:${r.bg};display:flex;align-items:center;justify-content:center;flex-shrink:0">
             <i class="bi ${r.icon}" style="color:${r.color};font-size:1rem"></i>
           </div>
-          <div>
-            <div style="font-size:.78rem;font-weight:700">${r.red}</div>
-            <div style="font-size:.67rem;color:var(--muted)">${r.handle}</div>
+          <div style="min-width:0">
+            <div style="font-size:.77rem;font-weight:700">${r.red}</div>
+            <div style="font-size:.66rem;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.handle}</div>
           </div>
         </div>
-        <div style="font-size:1.6rem;font-weight:700;color:var(--accent);line-height:1">${fmtSeg(r.seg)}</div>
-        <div style="font-size:.67rem;color:var(--muted);margin-top:3px">seguidores</div>
-        <div style="margin-top:8px">${estadoBadge(r.estado)}</div>
-        ${r.url?`<a href="${r.url}" target="_blank" style="font-size:.65rem;color:var(--info);text-decoration:none;display:block;margin-top:5px">Ver perfil →</a>`:''}
+        <div style="font-size:1.55rem;font-weight:700;color:${color};line-height:1">${fmtSeg(r.seg)}</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+          <span style="font-size:.67rem;color:var(--muted)">seguidores</span>
+          <span style="font-size:.72rem;font-weight:700;color:${color}">${pct(r.seg,total)}</span>
+        </div>
+        ${progBar(r.seg,max,color)}
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+          ${estadoBadge(r.estado)}
+          <a href="${link}" target="_blank" rel="noopener" style="font-size:.65rem;color:var(--info);text-decoration:none;display:flex;align-items:center;gap:3px">
+            <i class="bi bi-box-arrow-up-right" style="font-size:.6rem"></i> Ver fuente
+          </a>
+        </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
+  // KPI total
+  const kpiEl=document.getElementById('bernal-total');
+  if(kpiEl) kpiEl.textContent=fmtSeg(total)+' total';
 }
 
+// ── Alcaldes ──────────────────────────────────────────────────
 function renderAlcaldes(){
-  document.getElementById('grid-alcaldes').innerHTML=ALCALDES_DATA2.map(a=>`
-    <div class="col-md-6 col-lg-3">
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:14px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-          <div>
-            <div style="font-size:.85rem;font-weight:700">${a.nombre}</div>
-            <div style="font-size:.7rem;color:var(--warning);margin-top:1px">${a.cargo}</div>
-            <div style="font-size:.68rem;color:var(--muted);margin-top:1px">Municipio ${a.municipio}</div>
+  const total=ALCALDES_DATA2.reduce((s,a)=>s+a.seg,0);
+  const max=Math.max(...ALCALDES_DATA2.map(a=>a.seg));
+  document.getElementById('grid-alcaldes').innerHTML=ALCALDES_DATA2
+    .sort((a,b)=>b.seg-a.seg)
+    .map((a,i)=>{
+      const link=urlRed(a.red,a.handle);
+      const colors=['#1f6feb','#3fb950','#d29922','#bc8cff','#38bdf8','#fbbf24','#34d399','#f87171'];
+      const c=colors[i%colors.length];
+      return `<div class="col-md-6 col-lg-3">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div style="min-width:0;flex:1;margin-right:8px">
+              <div style="font-size:.84rem;font-weight:700">${a.nombre}</div>
+              <div style="font-size:.68rem;color:var(--warning);margin-top:1px">${a.cargo}</div>
+              <div style="font-size:.66rem;color:var(--muted);margin-top:1px">Municipio ${a.municipio}</div>
+            </div>
+            ${estadoBadge(a.estado)}
           </div>
-          ${estadoBadge(a.estado)}
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.03);border-radius:7px;padding:8px">
-          <i class="bi bi-instagram" style="font-size:1.1rem;background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>
-          <div>
-            <div style="font-size:.78rem;font-weight:700;color:var(--info)">${a.handle}</div>
-            <div style="font-size:.72rem;color:var(--success);font-weight:600">${fmtSeg(a.seg)} seguidores</div>
+          <div style="background:rgba(255,255,255,.03);border-radius:7px;padding:9px">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+              <i class="bi bi-instagram" style="font-size:1rem;background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent;flex-shrink:0"></i>
+              <div style="font-size:.75rem;font-weight:700;color:var(--info)">${a.handle}</div>
+            </div>
+            <div style="display:flex;align-items:flex-end;justify-content:space-between">
+              <div>
+                <div style="font-size:1.4rem;font-weight:700;color:${c};line-height:1">${fmtSeg(a.seg)}</div>
+                <div style="font-size:.65rem;color:var(--muted)">seguidores</div>
+              </div>
+              <div style="text-align:right">
+                <div style="font-size:1rem;font-weight:700;color:${c}">${pct(a.seg,total)}</div>
+                <div style="font-size:.63rem;color:var(--muted)">del total red</div>
+              </div>
+            </div>
+            ${progBar(a.seg,max,c)}
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:8px">
+            <span style="font-size:.63rem;color:var(--muted)">${a.red}</span>
+            <a href="${link}" target="_blank" rel="noopener" style="font-size:.65rem;color:var(--info);text-decoration:none;display:flex;align-items:center;gap:3px">
+              <i class="bi bi-box-arrow-up-right" style="font-size:.6rem"></i> Ver fuente
+            </a>
           </div>
         </div>
-      </div>
-    </div>`).join('');
+      </div>`;
+    }).join('');
 }
 
+// ── Directores ────────────────────────────────────────────────
 function renderDirectores(){
-  document.getElementById('grid-directores').innerHTML=DIRECTORES_GOB.map(d=>`
-    <div class="col-md-6 col-lg-4">
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-          <div>
-            <div style="font-size:.84rem;font-weight:700">${d.nombre}</div>
-            <div style="font-size:.69rem;color:#bc8cff;margin-top:1px">${d.cargo}</div>
+  const totalPersonal=DIRECTORES_GOB.reduce((s,d)=>s+(d.personal||0),0);
+  const totalInst=DIRECTORES_GOB.reduce((s,d)=>s+(d.inst_seg||0),0);
+  const maxTotal=Math.max(...DIRECTORES_GOB.map(d=>(d.personal||0)+(d.inst_seg||0)));
+
+  document.getElementById('grid-directores').innerHTML=DIRECTORES_GOB
+    .sort((a,b)=>((b.personal||0)+(b.inst_seg||0))-((a.personal||0)+(a.inst_seg||0)))
+    .map(d=>{
+      const suma=(d.personal||0)+(d.inst_seg||0);
+      const pctTotal=pct(suma,totalPersonal+totalInst);
+      const instLink=d.inst_handle&&d.inst_handle!=='-' ? urlRed('Instagram',d.inst_handle) : '#';
+      return `<div class="col-md-6 col-lg-4">
+        <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:12px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div style="min-width:0;flex:1;margin-right:8px">
+              <div style="font-size:.83rem;font-weight:700">${d.nombre}</div>
+              <div style="font-size:.68rem;color:#bc8cff;margin-top:1px">${d.cargo}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px">
+              ${estadoBadge(d.estado)}
+              <span style="font-size:.7rem;font-weight:700;color:var(--accent)">${pctTotal}</span>
+            </div>
           </div>
-          ${estadoBadge(d.estado)}
+          <div style="display:flex;gap:7px;margin-bottom:6px">
+            <div style="flex:1;background:rgba(31,111,235,.07);border-radius:6px;padding:7px">
+              <div style="font-size:.61rem;color:var(--muted)">Cuenta personal</div>
+              <div style="font-size:1rem;font-weight:700;color:var(--accent);margin-top:1px">${fmtSeg(d.personal)}</div>
+              <div style="font-size:.63rem;color:var(--muted)">${pct(d.personal||0,totalPersonal)} de directores</div>
+            </div>
+            <div style="flex:1;background:rgba(63,185,80,.07);border-radius:6px;padding:7px">
+              <div style="font-size:.61rem;color:var(--muted)">${d.inst}</div>
+              <div style="font-size:1rem;font-weight:700;color:var(--success);margin-top:1px">${fmtSeg(d.inst_seg)}</div>
+              <div style="font-size:.63rem;color:var(--muted)">${pct(d.inst_seg||0,totalInst)} institucional</div>
+            </div>
+          </div>
+          ${progBar(suma,maxTotal,'#bc8cff')}
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-top:7px">
+            <span style="font-size:.63rem;color:var(--muted)">
+              ${d.inst_handle&&d.inst_handle!=='-'?`<span style="color:var(--info)">${d.inst_handle}</span>`:'Sin handle institucional'}
+            </span>
+            ${d.inst_handle&&d.inst_handle!=='-'
+              ?`<a href="${instLink}" target="_blank" rel="noopener" style="font-size:.65rem;color:var(--info);text-decoration:none;display:flex;align-items:center;gap:3px"><i class="bi bi-box-arrow-up-right" style="font-size:.6rem"></i> Ver fuente</a>`
+              :'<span style="font-size:.63rem;color:var(--dim)">Sin perfil público</span>'}
+          </div>
         </div>
-        <div style="display:flex;gap:8px">
-          <div style="flex:1;background:rgba(31,111,235,.07);border-radius:6px;padding:7px;text-align:center">
-            <div style="font-size:.63rem;color:var(--muted);margin-bottom:2px">Personal</div>
-            <div style="font-size:1.05rem;font-weight:700;color:var(--accent)">${fmtSeg(d.personal)}</div>
-          </div>
-          <div style="flex:1;background:rgba(63,185,80,.07);border-radius:6px;padding:7px;text-align:center">
-            <div style="font-size:.63rem;color:var(--muted);margin-bottom:2px">${d.inst}</div>
-            <div style="font-size:1.05rem;font-weight:700;color:var(--success)">${fmtSeg(d.inst_seg)}</div>
-          </div>
-        </div>
-        ${d.inst_handle&&d.inst_handle!=='-'?`<div style="font-size:.65rem;color:var(--info);margin-top:6px">${d.inst_handle}</div>`:''}
-      </div>
-    </div>`).join('');
+      </div>`;
+    }).join('');
 }
 
+// ── Institucional ─────────────────────────────────────────────
 function renderInstitucional(){
   const sorted=[...INSTITUCIONAL_DATA].sort((a,b)=>b.seg-a.seg);
-  document.getElementById('grid-institucional').innerHTML=sorted.map(c=>`
-    <div class="col-md-6 col-lg-3">
-      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px">
+  const total=sorted.reduce((s,c)=>s+c.seg,0);
+  const max=sorted[0].seg;
+  const tipoColor={
+    'Gobernación':'#1f6feb','Marca-territorio':'#d29922','Institución':'#3fb950',
+    'Seguridad':'#f85149','Primera Dama':'#bc8cff','Salud':'#f87171',
+    'Turismo':'#38bdf8','Político-partidario':'#fb923c','Social':'#34d399',
+  };
+  document.getElementById('grid-institucional').innerHTML=sorted.map(c=>{
+    const color=tipoColor[c.tipo]||'#7d8590';
+    const link=urlRed(c.red,c.handle);
+    return `<div class="col-md-6 col-lg-3">
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:13px;border-top:3px solid ${color}">
         <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px">
-          <div>
-            <div style="font-size:.82rem;font-weight:700">${c.nombre}</div>
-            <div style="font-size:.66rem;color:var(--muted);margin-top:1px">${c.tipo}</div>
+          <div style="min-width:0;flex:1;margin-right:8px">
+            <div style="font-size:.81rem;font-weight:700">${c.nombre}</div>
+            <div style="font-size:.65rem;padding:1px 6px;border-radius:10px;display:inline-block;margin-top:3px;background:${color}22;color:${color}">${c.tipo}</div>
           </div>
           ${estadoBadge(c.estado)}
         </div>
-        <div style="display:flex;align-items:center;gap:6px;margin-top:8px">
-          <i class="bi bi-instagram" style="font-size:1rem;background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>
-          <span style="font-size:.74rem;color:var(--info)">${c.handle}</span>
+        <div style="display:flex;align-items:center;gap:5px;margin:8px 0 4px">
+          <i class="bi bi-instagram" style="font-size:.9rem;background:linear-gradient(45deg,#f09433,#dc2743);-webkit-background-clip:text;-webkit-text-fill-color:transparent"></i>
+          <span style="font-size:.72rem;color:var(--info);font-weight:600">${c.handle}</span>
         </div>
-        <div style="font-size:1.5rem;font-weight:700;color:var(--success);margin-top:6px">${fmtSeg(c.seg)}</div>
-        <div style="font-size:.65rem;color:var(--muted)">seguidores · ${c.red}</div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div>
+            <div style="font-size:1.5rem;font-weight:700;color:${color};line-height:1">${fmtSeg(c.seg)}</div>
+            <div style="font-size:.63rem;color:var(--muted)">seguidores · ${c.red}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:1rem;font-weight:700;color:${color}">${pct(c.seg,total)}</div>
+            <div style="font-size:.62rem;color:var(--muted)">del ecosistema</div>
+          </div>
+        </div>
+        ${progBar(c.seg,max,color)}
+        <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:8px">
+          <a href="${link}" target="_blank" rel="noopener" style="font-size:.65rem;color:var(--info);text-decoration:none;display:flex;align-items:center;gap:3px">
+            <i class="bi bi-box-arrow-up-right" style="font-size:.6rem"></i> Ver fuente
+          </a>
+        </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 // ══════════════════════════════════════════════════════════════
