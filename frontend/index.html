@@ -94,6 +94,7 @@ option{background:var(--card)}
 .bseguridad{background:rgba(248,113,113,.13);color:#f87171}
 .bdeporte{background:rgba(167,139,250,.13);color:#a78bfa}
 .bcultura{background:rgba(251,146,60,.13);color:#fb923c}
+.bdenuncia{background:rgba(248,81,73,.18);color:#f85149;border:1px solid rgba(248,81,73,.3)}
 
 /* MAPA */
 #mapa{height:430px;border-radius:8px;z-index:1}
@@ -242,6 +243,7 @@ option{background:var(--card)}
       <option value="">Todos</option>
       <option>Inauguración</option><option>Supervisión</option><option>Reunión</option>
       <option>Entrega</option><option>Recorrido</option><option>Anuncio</option>
+      <option>Denuncia</option>
     </select>
   </div>
 </div>
@@ -583,6 +585,8 @@ const FEED_DATA  = [
   {plt:'tiktok',   ent:'@gobernaciontachira',txt:'Freddy Bernal en Pregonero, municipio Uribante, supervisando acueducto rural que beneficiará a 3.500 familias de las parroquias Potosí y Juan Pablo Peñaloza.',cat:'agua',act:'supervisión',t:'Hace 2h'},
   {plt:'instagram',ent:'INVIAL Táchira',txt:'Concluida repavimentación de 12 km vía San Cristóbal–Palmira (municipios San Cristóbal y Guásimos). Inversión Bs. 8.7 millones.',cat:'vialidad',act:'inauguración',t:'Hace 3h'},
   {plt:'telegram', ent:'@FreddyBernalVzla',txt:'Reunión con alcaldes de los 29 municipios del estado para coordinar Plan de Atención a Comunidades Vulnerables del Táchira 2025.',cat:'infraestructura',act:'reunión',t:'Hace 4h'},
+  {plt:'twitter',  ent:'Ciudadano Táchira', txt:'Denuncia: fallas de agua potable llevan 12 días en el sector La Concordia, San Cristóbal. Solicitamos respuesta urgente a @GobernacionTachira.',cat:'agua',act:'denuncia',t:'Hace 5h'},
+  {plt:'instagram',ent:'@tachiranos_unidos',txt:'Denuncia vecinal: baches en la vía Rubio–San Cristóbal representan peligro para el tránsito. Municipio Junín sin respuesta desde hace 3 semanas.',cat:'vialidad',act:'denuncia',t:'Hace 6h'},
 ];
 
 // ══════════════════════════════════════════════════════════════
