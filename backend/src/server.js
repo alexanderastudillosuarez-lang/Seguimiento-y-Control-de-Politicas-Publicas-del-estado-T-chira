@@ -51,6 +51,7 @@ app.use('/api/v1/auth',      require('./api/routes/auth-routes'));
 app.use('/api/v1/etl',       require('./api/routes/etl-routes'));
 app.use('/api/v1/dashboard', require('./api/routes/dashboard-routes'));
 app.use('/api/v1/admin',     require('./api/routes/admin-routes'));
+app.use('/api/v1/reportes',  require('./api/routes/reports-routes'));
 
 // ── Frontend estático ──────────────────────────────────────
 app.use(express.static(path.join(__dirname, '../../frontend')));
@@ -79,6 +80,12 @@ server.listen(PORT, async () => {
     if (process.env.ETL_ENABLED !== 'false') {
         require('./etl/schedulers/etl-scheduler');
         logger.info('   Scheduler ETL activado (cada 15 min)');
+    }
+
+    // Scheduler de reportes automáticos
+    if (process.env.REPORTS_ENABLED !== 'false') {
+        const { initReportScheduler } = require('./services/reports/report-scheduler');
+        initReportScheduler();
     }
 
     // Pipeline inicial

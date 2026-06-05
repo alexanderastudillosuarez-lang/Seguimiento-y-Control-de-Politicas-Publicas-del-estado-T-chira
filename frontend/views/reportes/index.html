@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMGP Táchira — Centro de Reportes</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="../../assets/css/dashboard.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    .page-header { background:#161b22;border-bottom:1px solid #21262d;padding:14px 24px;position:fixed;top:0;left:0;right:0;z-index:999;display:flex;align-items:center;gap:12px; }
+    .report-card { background:#161b22;border:1px solid #21262d;border-radius:10px;padding:20px;transition:all 0.2s;cursor:pointer; }
+    .report-card:hover { border-color:#1f6feb;transform:translateY(-2px);box-shadow:0 4px 24px rgba(0,0,0,0.4); }
+    .report-card .rc-icon { font-size:2rem;margin-bottom:10px; }
+    .report-card .rc-title { font-weight:700;font-size:0.95rem;margin-bottom:4px; }
+    .report-card .rc-desc  { font-size:0.78rem;color:#7d8590; }
+    .comparativa-card { background:#161b22;border:1px solid #21262d;border-radius:10px;padding:20px; }
+    .kpi-comp { text-align:center; }
+    .kpi-comp .val { font-size:1.8rem;font-weight:700;line-height:1; }
+    .kpi-comp .lbl { font-size:0.68rem;color:#7d8590;text-transform:uppercase;margin-top:4px; }
+    .kpi-comp .var { font-size:0.75rem;font-weight:700;margin-top:4px; }
+    .var-up   { color:#3fb950; }
+    .var-down { color:#f85149; }
+    .var-eq   { color:#7d8590; }
+    .hist-row { display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid #21262d; }
+    .hist-row:last-child { border-bottom:none; }
+    .badge-tipo { font-size:0.63rem;padding:2px 8px;border-radius:10px;font-weight:600; }
+    .tipo-semanal  { background:rgba(31,111,235,0.15);color:#1f6feb; }
+    .tipo-mensual  { background:rgba(210,153,34,0.15);color:#d29922; }
+    .tipo-manual   { background:rgba(63,185,80,0.15);color:#3fb950; }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <a href="/" style="color:#7d8590;text-decoration:none"><i class="bi bi-arrow-left"></i></a>
+  <div style="width:10px;height:10px;border-radius:50%;background:#1f6feb;box-shadow:0 0 8px rgba(31,111,235,0.4)"></div>
+  <span style="font-weight:700;font-size:0.9rem">Centro de Reportes — SIMGP Táchira</span>
+  <div class="ms-auto">
+    <span id="rpt-user" style="font-size:0.78rem;color:#7d8590"></span>
+  </div>
+</div>
+
+<div style="padding:74px 24px 40px">
+
+  <!-- ══ Generación rápida ════════════════════════════ -->
+  <h6 style="color:#7d8590;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Exportación Rápida</h6>
+  <div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+      <div class="report-card" onclick="exportarPDF()">
+        <div class="rc-icon">📄</div>
+        <div class="rc-title">PDF Ejecutivo</div>
+        <div class="rc-desc">Reporte completo con KPIs, gráficos de barras y tablas de municipios y obras.</div>
+        <div style="margin-top:12px">
+          <span class="semaforo verde" style="font-size:0.7rem">Disponible ahora</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="report-card" onclick="exportarExcel()">
+        <div class="rc-icon">📊</div>
+        <div class="rc-title">Excel Completo</div>
+        <div class="rc-desc">6 hojas: portada, resumen, sectores, municipios, obras y problemas sociales.</div>
+        <div style="margin-top:12px">
+          <span class="semaforo verde" style="font-size:0.7rem">Disponible ahora</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="report-card" onclick="generarReporte('semanal')">
+        <div class="rc-icon">📅</div>
+        <div class="rc-title">Reporte Semanal</div>
+        <div class="rc-desc">Últimos 7 días. Se genera automáticamente cada lunes a las 7:00 AM.</div>
+        <div style="margin-top:12px">
+          <span class="badge-tipo tipo-semanal">Auto · Lunes 7am</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="report-card" onclick="generarReporte('mensual')">
+        <div class="rc-icon">🗓</div>
+        <div class="rc-title">Reporte Mensual</div>
+        <div class="rc-desc">Mes en curso. Se genera automáticamente el día 1 de cada mes.</div>
+        <div style="margin-top:12px">
+          <span class="badge-tipo tipo-mensual">Auto · Día 1, 8am</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══ Filtros de período ════════════════════════════ -->
+  <div class="comparativa-card mb-4">
+    <h6 style="color:#e6edf3;margin-bottom:14px"><i class="bi bi-funnel" style="color:#1f6feb"></i> Período de exportación</h6>
+    <div class="row g-3 align-items-end">
+      <div class="col-auto">
+        <label style="font-size:0.72rem;color:#7d8590;display:block;margin-bottom:4px">DESDE</label>
+        <input type="date" id="exp-desde" style="background:#0e1117;border:1px solid #21262d;color:#e6edf3;border-radius:6px;padding:7px 10px;font-size:0.83rem" />
+      </div>
+      <div class="col-auto">
+        <label style="font-size:0.72rem;color:#7d8590;display:block;margin-bottom:4px">HASTA</label>
+        <input type="date" id="exp-hasta" style="background:#0e1117;border:1px solid #21262d;color:#e6edf3;border-radius:6px;padding:7px 10px;font-size:0.83rem" />
+      </div>
+      <div class="col-auto">
+        <button class="export-btn" onclick="setRangoRapido(7)">7 días</button>
+        <button class="export-btn" onclick="setRangoRapido(30)">30 días</button>
+        <button class="export-btn" onclick="setRangoRapido(90)">90 días</button>
+        <button class="export-btn" onclick="setRangoRapido(0)">Todo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Comparativa de períodos ═══════════════════════ -->
+  <h6 style="color:#7d8590;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Análisis Comparativo</h6>
+  <div class="comparativa-card mb-4">
+    <div class="row g-3 align-items-end mb-3">
+      <div class="col-md-5">
+        <label style="font-size:0.72rem;color:#1f6feb;font-weight:700;display:block;margin-bottom:6px">● PERÍODO 1</label>
+        <div class="d-flex gap-2">
+          <input type="date" id="p1-desde" style="background:#0e1117;border:1px solid #1f6feb;color:#e6edf3;border-radius:6px;padding:7px 10px;font-size:0.82rem;flex:1" />
+          <input type="date" id="p1-hasta" style="background:#0e1117;border:1px solid #1f6feb;color:#e6edf3;border-radius:6px;padding:7px 10px;font-size:0.82rem;flex:1" />
+        </div>
+      </div>
+      <div class="col-md-5">
+        <label style="font-size:0.72rem;color:#d29922;font-weight:700;display:block;margin-bottom:6px">● PERÍODO 2</label>
+        <div class="d-flex gap-2">
+          <input type="date" id="p2-desde" style="background:#0e1117;border:1px solid #d29922;color:#e6edf3;border-radius:6px;padding:7px 10px;font-size:0.82rem;flex:1" />
+          <input type="date" id="p2-hasta" style="background:#0e1117;border:1px solid #d29922;color:#e6edf3;border-radius:6px;padding:7px 10px;font-size:0.82rem;flex:1" />
+        </div>
+      </div>
+      <div class="col-md-2">
+        <button onclick="cargarComparativa()" class="export-btn" style="width:100%;justify-content:center;border-color:#1f6feb;color:#1f6feb">
+          <i class="bi bi-arrow-left-right"></i> Comparar
+        </button>
+      </div>
+    </div>
+
+    <div id="comp-results" style="display:none">
+      <div class="row g-3 mt-1" id="comp-kpis"></div>
+      <div style="margin-top:20px">
+        <canvas id="chart-comparativa" style="max-height:260px"></canvas>
+      </div>
+    </div>
+    <div id="comp-empty" style="color:#484f58;font-size:0.82rem;text-align:center;padding:30px">
+      Selecciona dos períodos y pulsa Comparar
+    </div>
+  </div>
+
+  <!-- ══ Tendencia histórica detallada ═════════════════ -->
+  <h6 style="color:#7d8590;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Tendencia Histórica Detallada</h6>
+  <div class="comparativa-card mb-4">
+    <div class="d-flex gap-3 align-items-center mb-3 flex-wrap">
+      <div class="d-flex gap-2">
+        <button class="export-btn" id="btn-agr-day"   onclick="setAgrupacion('day')"   style="border-color:#1f6feb;color:#1f6feb">Diario</button>
+        <button class="export-btn" id="btn-agr-week"  onclick="setAgrupacion('week')">Semanal</button>
+        <button class="export-btn" id="btn-agr-month" onclick="setAgrupacion('month')">Mensual</button>
+      </div>
+      <select id="tend-metrica" onchange="renderTendencia()" style="background:#0e1117;border:1px solid #21262d;color:#e6edf3;border-radius:6px;padding:6px 10px;font-size:0.82rem">
+        <option value="publicaciones">Publicaciones</option>
+        <option value="obras">Obras inauguradas</option>
+        <option value="municipios_activos">Municipios activos</option>
+        <option value="sentiment">Sentiment promedio</option>
+        <option value="engagement">Engagement total</option>
+      </select>
+    </div>
+    <canvas id="chart-tendencia-detalle" style="max-height:300px"></canvas>
+  </div>
+
+  <!-- ══ Historial de reportes ═════════════════════════ -->
+  <h6 style="color:#7d8590;font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px">Historial de Reportes Generados</h6>
+  <div class="comparativa-card">
+    <div id="historial-container">
+      <div style="color:#484f58;text-align:center;padding:20px">Cargando historial...</div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast-container"></div>
+
+<script>
+const API_BASE = window.API_BASE || 'http://localhost:3000/api/v1';
+const TOKEN    = localStorage.getItem('simgp_token');
+const USER     = JSON.parse(localStorage.getItem('simgp_user') || '{}');
+
+if (!TOKEN) window.location.href = '/login?next=/reportes';
+document.getElementById('rpt-user').textContent = USER.nombre || '';
+
+const headers = { Authorization: `Bearer ${TOKEN}` };
+
+function showToast(msg, tipo='info') {
+  const icons = {success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const el = document.createElement('div');
+  el.className = 'toast-custom';
+  el.textContent = `${icons[tipo]||''} ${msg}`;
+  document.querySelector('.toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function fmt(n) { return n != null ? Number(n).toLocaleString('es-VE') : '—'; }
+
+function setRangoRapido(dias) {
+  const hoy   = new Date();
+  const desde = dias > 0 ? new Date(hoy - dias * 86400000) : null;
+  document.getElementById('exp-hasta').value = hoy.toISOString().split('T')[0];
+  document.getElementById('exp-desde').value = desde ? desde.toISOString().split('T')[0] : '';
+}
+
+function buildQS() {
+  const desde = document.getElementById('exp-desde').value;
+  const hasta = document.getElementById('exp-hasta').value;
+  const p = new URLSearchParams();
+  if (desde) p.set('desde', desde);
+  if (hasta) p.set('hasta', hasta);
+  return p.toString() ? '?' + p : '';
+}
+
+function exportarPDF() {
+  showToast('Generando PDF...', 'info');
+  window.open(`${API_BASE}/reportes/exportar/pdf${buildQS()}`, '_blank');
+}
+
+function exportarExcel() {
+  showToast('Generando Excel...', 'info');
+  window.open(`${API_BASE}/reportes/exportar/excel${buildQS()}`, '_blank');
+}
+
+async function generarReporte(tipo) {
+  const res  = await fetch(`${API_BASE}/reportes/generar`, {
+    method: 'POST', headers: { ...headers, 'Content-Type':'application/json' },
+    body: JSON.stringify({ tipo }),
+  });
+  if (res.ok) { showToast(`Reporte ${tipo} iniciado. Estará disponible en breve.`, 'success'); setTimeout(cargarHistorial, 4000); }
+  else        { const e = await res.json(); showToast(e.error || 'Error', 'error'); }
+}
+
+// ── Comparativa ─────────────────────────────────────────
+let chartComp = null;
+async function cargarComparativa() {
+  const p1d = document.getElementById('p1-desde').value;
+  const p1h = document.getElementById('p1-hasta').value;
+  const p2d = document.getElementById('p2-desde').value;
+  const p2h = document.getElementById('p2-hasta').value;
+  if (!p1d||!p1h||!p2d||!p2h) return showToast('Completa los 4 campos de período','warning');
+
+  const res  = await fetch(`${API_BASE}/reportes/comparativa?p1desde=${p1d}&p1hasta=${p1h}&p2desde=${p2d}&p2hasta=${p2h}`, { headers });
+  const json = await res.json();
+  if (!json.ok) return showToast(json.error,'error');
+
+  const { periodo1: p1, periodo2: p2, variacion: v } = json.data;
+  document.getElementById('comp-empty').style.display   = 'none';
+  document.getElementById('comp-results').style.display = 'block';
+
+  const metricas = [
+    { lbl:'Publicaciones', v1: p1.publicaciones, v2: p2.publicaciones, var: v.publicaciones },
+    { lbl:'Obras',         v1: p1.obras,         v2: p2.obras,         var: v.obras         },
+    { lbl:'Municipios',    v1: p1.municipios,     v2: p2.municipios,    var: v.municipios    },
+    { lbl:'Engagement',    v1: p1.engagement,     v2: p2.engagement,    var: v.engagement    },
+    { lbl:'Sentiment',     v1: p1.sentiment,      v2: p2.sentiment,     var: v.sentiment     },
+  ];
+
+  document.getElementById('comp-kpis').innerHTML = metricas.map(m => {
+    const varClass = m.var > 0 ? 'var-up' : m.var < 0 ? 'var-down' : 'var-eq';
+    const varIcon  = m.var > 0 ? '↑' : m.var < 0 ? '↓' : '→';
+    return `
+      <div class="col">
+        <div class="kpi-comp" style="background:#0e1117;border-radius:8px;padding:12px">
+          <div class="lbl">${m.lbl}</div>
+          <div style="display:flex;gap:12px;justify-content:center;margin-top:6px">
+            <div><div class="val" style="color:#1f6feb;font-size:1.4rem">${fmt(m.v1)}</div><div style="font-size:0.65rem;color:#1f6feb">P1</div></div>
+            <div style="color:#484f58;font-size:1.2rem;align-self:center">→</div>
+            <div><div class="val" style="color:#d29922;font-size:1.4rem">${fmt(m.v2)}</div><div style="font-size:0.65rem;color:#d29922">P2</div></div>
+          </div>
+          <div class="var ${varClass}">${m.var != null ? varIcon+' '+Math.abs(m.var)+'%' : '—'}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  if (chartComp) chartComp.destroy();
+  const ctx = document.getElementById('chart-comparativa');
+  chartComp = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels:   metricas.map(m => m.lbl),
+      datasets: [
+        { label:`Período 1 (${p1d} — ${p1h})`, data: metricas.map(m => m.v1), backgroundColor:'rgba(31,111,235,0.7)', borderRadius:4 },
+        { label:`Período 2 (${p2d} — ${p2h})`, data: metricas.map(m => m.v2), backgroundColor:'rgba(210,153,34,0.7)',  borderRadius:4 },
+      ],
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ labels:{ color:'#7d8590' } } },
+      scales: {
+        x:{ grid:{ color:'#21262d' }, ticks:{ color:'#7d8590' } },
+        y:{ grid:{ color:'#21262d' }, ticks:{ color:'#7d8590' }, beginAtZero:true },
+      },
+    },
+  });
+}
+
+// ── Tendencia histórica ──────────────────────────────────
+let chartTend = null;
+let tendData  = [];
+let agrupacion = 'day';
+
+function setAgrupacion(a) {
+  agrupacion = a;
+  ['day','week','month'].forEach(v => {
+    document.getElementById(`btn-agr-${v}`).style.borderColor = v===a?'#1f6feb':'#21262d';
+    document.getElementById(`btn-agr-${v}`).style.color       = v===a?'#1f6feb':'#7d8590';
+  });
+  cargarTendencia();
+}
+
+async function cargarTendencia() {
+  const desde = document.getElementById('exp-desde').value;
+  const hasta = document.getElementById('exp-hasta').value;
+  const qs    = new URLSearchParams({ agrupacion, ...(desde?{desde}:{}), ...(hasta?{hasta}:{}) });
+  const res   = await fetch(`${API_BASE}/reportes/serie-temporal?${qs}`, { headers });
+  const json  = await res.json();
+  if (!json.ok) return;
+  tendData = json.data;
+  renderTendencia();
+}
+
+function renderTendencia() {
+  const metrica = document.getElementById('tend-metrica').value;
+  const labels  = tendData.map(d => new Date(d.periodo).toLocaleDateString('es-VE',{day:'2-digit',month:'short'}));
+  const valores  = tendData.map(d => parseFloat(d[metrica]) || 0);
+
+  if (chartTend) chartTend.destroy();
+  const ctx = document.getElementById('chart-tendencia-detalle');
+  chartTend = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets:[{
+        label:           metrica.replace(/_/g,' '),
+        data:            valores,
+        borderColor:     '#1f6feb',
+        backgroundColor: 'rgba(31,111,235,0.1)',
+        fill:            true,
+        tension:         0.4,
+        pointRadius:     agrupacion==='day' ? 2 : 4,
+        pointHoverRadius:6,
+      }],
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      scales:{
+        x:{ grid:{ color:'#21262d' }, ticks:{ color:'#7d8590', maxTicksLimit:12 } },
+        y:{ grid:{ color:'#21262d' }, ticks:{ color:'#7d8590' }, beginAtZero:true },
+      },
+      plugins:{ legend:{ labels:{ color:'#7d8590' } } },
+    },
+  });
+}
+
+// ── Historial ────────────────────────────────────────────
+async function cargarHistorial() {
+  const res  = await fetch(`${API_BASE}/reportes/historial`, { headers });
+  const json = await res.json();
+  const cont = document.getElementById('historial-container');
+
+  if (!json.ok || !json.data?.length) {
+    cont.innerHTML = '<div style="color:#484f58;text-align:center;padding:20px">No hay reportes generados aún</div>';
+    return;
+  }
+
+  cont.innerHTML = json.data.map(r => `
+    <div class="hist-row">
+      <div>
+        <div style="font-size:0.84rem;font-weight:600">${r.titulo}</div>
+        <div style="font-size:0.72rem;color:#7d8590;margin-top:2px">
+          Generado: ${new Date(r.generado_en).toLocaleString('es-VE')}
+          ${r.generado_por_nombre ? ' · por ' + r.generado_por_nombre : ''}
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-3">
+        <span class="badge-tipo tipo-${r.tipo === 'resumen_ejecutivo' ? 'semanal' : r.tipo === 'comparativo' ? 'mensual' : 'manual'}">${r.tipo}</span>
+        <span class="semaforo ${r.estado==='completado'?'verde':'amarillo'}">${r.estado}</span>
+        ${r.archivo_url ? `<a href="${API_BASE}/reportes/descargar/${r.archivo_url.split('/').pop()}" class="export-btn" style="text-decoration:none">
+          <i class="bi bi-download"></i> Descargar</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── Init ─────────────────────────────────────────────────
+setRangoRapido(30);
+cargarHistorial();
+cargarTendencia();
+
+// Preseleccionar períodos de comparativa: mes actual vs mes anterior
+const h = new Date();
+const m1d = new Date(h.getFullYear(), h.getMonth()-1, 1);
+const m1h = new Date(h.getFullYear(), h.getMonth(),   0);
+const m2d = new Date(h.getFullYear(), h.getMonth(),   1);
+document.getElementById('p1-desde').value = m1d.toISOString().split('T')[0];
+document.getElementById('p1-hasta').value = m1h.toISOString().split('T')[0];
+document.getElementById('p2-desde').value = m2d.toISOString().split('T')[0];
+document.getElementById('p2-hasta').value = h.toISOString().split('T')[0];
+</script>
+</body>
+</html>
