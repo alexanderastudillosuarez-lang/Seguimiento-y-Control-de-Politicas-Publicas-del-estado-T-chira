@@ -1,457 +1,710 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="dark">
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIMGP Táchira — Monitor de Gestión Pública</title>
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <!-- Bootstrap Icons -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-  <!-- Leaflet -->
-  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
-  <!-- DataTables -->
-  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-  <!-- Google Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Dashboard CSS -->
-  <link href="assets/css/dashboard.css" rel="stylesheet" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>SIMGP Táchira — Monitor de Gestión Pública</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+<link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#0e1117;--card:#161b22;--border:#21262d;--accent:#1f6feb;--success:#3fb950;--warning:#d29922;--danger:#f85149;--info:#58a6ff;--text:#e6edf3;--muted:#7d8590;--dim:#484f58}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+/* TOPBAR */
+.topbar{position:fixed;top:0;left:0;right:0;height:56px;background:#0d1117;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:1000}
+.brand-dot{width:9px;height:9px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px rgba(31,111,235,.4);animation:pulse 2s infinite}
+.brand-text{font-size:.9rem;font-weight:700;white-space:nowrap}
+.live-badge{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--success)}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+/* SIDEBAR */
+.sidebar{position:fixed;top:56px;left:0;bottom:0;width:210px;background:#0d1117;border-right:1px solid var(--border);overflow-y:auto;z-index:900;padding:12px 0}
+.s-section{padding:5px 14px 2px;font-size:.63rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--dim);margin-top:6px}
+.s-item{display:flex;align-items:center;gap:9px;padding:8px 16px;font-size:.8rem;color:var(--muted);cursor:pointer;text-decoration:none;transition:all .15s;white-space:nowrap}
+.s-item:hover{background:var(--card);color:var(--text)}
+.s-item.active{background:rgba(31,111,235,.12);color:var(--accent);border-left:3px solid var(--accent)}
+.s-item i{font-size:.95rem;min-width:18px;text-align:center}
+/* MAIN */
+.main{margin-left:210px;margin-top:56px;padding:18px}
+/* FILTROS */
+.filter-bar{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin-bottom:16px;display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.fg{display:flex;flex-direction:column;gap:3px;flex:1;min-width:130px}
+.fg label{font-size:.68rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.fg select,.fg input{background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 9px;font-size:.8rem;outline:none}
+.fg select:focus,.fg input:focus{border-color:var(--accent)}
+/* KPI GRID */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:12px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:14px;position:relative;overflow:hidden;transition:transform .15s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kc,var(--accent))}
+.kpi-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.kpi-val{font-size:1.9rem;font-weight:700;line-height:1;color:var(--kc,var(--text))}
+.kpi-sub{font-size:.68rem;color:var(--muted);margin-top:3px}
+.kpi-ico{position:absolute;top:12px;right:12px;font-size:1.5rem;opacity:.12}
+.kpi-prog{height:5px;border-radius:3px;background:var(--border);margin-top:6px}
+.kpi-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--accent),var(--info))}
+/* GRID CARTAS */
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:16px}
+.c12{grid-column:span 12}.c8{grid-column:span 8}.c6{grid-column:span 6}.c4{grid-column:span 4}.c3{grid-column:span 3}
+@media(max-width:1100px){.c8{grid-column:span 12}.c4{grid-column:span 6}}
+@media(max-width:768px){.c6,.c4,.c3{grid-column:span 12}.sidebar{display:none}.main{margin-left:0}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px;height:100%;display:flex;flex-direction:column}
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0}
+.card-title{font-size:.82rem;font-weight:600}
+.card-sub{font-size:.68rem;color:var(--muted);margin-top:2px}
+.chart-wrap{flex:1;position:relative;min-height:0}
+/* SEMÁFOROS */
+.sem{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:.68rem;font-weight:700}
+.sem::before{content:'●';font-size:.55rem}
+.sem-v{background:rgba(63,185,80,.13);color:var(--success)}
+.sem-a{background:rgba(210,153,34,.13);color:var(--warning)}
+.sem-r{background:rgba(248,81,73,.13);color:var(--danger)}
+/* FEED */
+.feed-item{border-bottom:1px solid var(--border);padding:10px 0;display:flex;gap:9px}
+.feed-item:last-child{border-bottom:none}
+.feed-plt{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.plt-instagram{background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366)}
+.plt-facebook{background:#1877f2}
+.plt-twitter{background:#000}
+.plt-telegram{background:#0088cc}
+.plt-tiktok{background:#111}
+.plt-web{background:#2d333b}
+.feed-meta{font-size:.67rem;color:var(--muted);margin-bottom:3px}
+.feed-txt{font-size:.77rem;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+/* BADGES */
+.bc{font-size:.62rem;padding:2px 7px;border-radius:10px;font-weight:600;white-space:nowrap}
+.bsalud{background:rgba(248,81,73,.13);color:#f85149}
+.beducacion{background:rgba(88,166,255,.13);color:#58a6ff}
+.bvivienda{background:rgba(63,185,80,.13);color:#3fb950}
+.binfraestructura{background:rgba(210,153,34,.13);color:#d29922}
+.bvialidad{background:rgba(188,140,255,.13);color:#bc8cff}
+.bagua{background:rgba(56,189,248,.13);color:#38bdf8}
+.belectricidad{background:rgba(251,191,36,.13);color:#fbbf24}
+.bproduccion{background:rgba(52,211,153,.13);color:#34d399}
+.bseguridad{background:rgba(248,113,113,.13);color:#f87171}
+.bdeporte{background:rgba(167,139,250,.13);color:#a78bfa}
+.bcultura{background:rgba(251,146,60,.13);color:#fb923c}
+/* MAPA */
+#mapa{height:420px;border-radius:8px}
+.leaflet-container{background:#0e1117!important}
+/* TABLA */
+.tbl{width:100%;border-collapse:collapse;font-size:.78rem}
+.tbl th{background:var(--bg);color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.4px;padding:9px 10px;border-bottom:1px solid var(--border);text-align:left}
+.tbl td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+.tbl tr:hover td{background:rgba(255,255,255,.02)}
+/* EXPORT */
+.exp-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;font-size:.73rem;font-weight:600;border:1px solid var(--border);border-radius:6px;background:var(--card);color:var(--muted);cursor:pointer;transition:all .15s;text-decoration:none}
+.exp-btn:hover{border-color:var(--accent);color:var(--accent)}
+/* TOAST */
+.toasts{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+.toast-msg{background:var(--card);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:10px 15px;font-size:.78rem;box-shadow:0 4px 20px rgba(0,0,0,.5);animation:slideUp .25s ease}
+@keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+/* BARRA CARGA */
+#loadbar{position:fixed;top:0;left:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--info));z-index:9999;transition:width .4s;width:0}
+</style>
 </head>
 <body>
 
-<!-- ── Barra de carga ─────────────────────────────────── -->
-<div id="loading-bar" style="position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#1f6feb,#58a6ff);z-index:9999;width:0%;transition:width 0.4s ease;pointer-events:none"></div>
+<div id="loadbar"></div>
 
-<!-- ── Topbar ─────────────────────────────────────────── -->
+<!-- TOPBAR -->
 <header class="topbar">
-  <button id="btn-toggle-sidebar" style="background:none;border:none;color:#7d8590;cursor:pointer;padding:4px 8px;border-radius:4px" title="Menú">
-    <i class="bi bi-list" style="font-size:1.2rem"></i>
-  </button>
-
-  <div class="topbar-brand">
-    <div class="brand-dot"></div>
-    <span>Sistema de Monitoreo — Estado Táchira</span>
+  <button onclick="document.querySelector('.sidebar').classList.toggle('d-none')" style="background:none;border:none;color:var(--muted);cursor:pointer;padding:4px 6px"><i class="bi bi-list" style="font-size:1.2rem"></i></button>
+  <div class="brand-dot"></div>
+  <span class="brand-text d-none d-md-block">Sistema Inteligente de Monitoreo — Estado Táchira</span>
+  <span class="brand-text d-md-none">SIMGP Táchira</span>
+  <div class="d-flex gap-2 ms-3">
+    <button class="exp-btn" onclick="exportPDF()"><i class="bi bi-file-pdf"></i> PDF</button>
+    <button class="exp-btn" onclick="exportExcel()"><i class="bi bi-file-excel"></i> Excel</button>
+    <button class="exp-btn" onclick="exportCSV()"><i class="bi bi-filetype-csv"></i> CSV</button>
   </div>
-
-  <!-- Panel de exportación -->
-  <div class="d-flex gap-2 ms-4">
-    <button id="btn-export-pdf"   class="export-btn"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
-    <button id="btn-export-excel" class="export-btn"><i class="bi bi-file-earmark-excel"></i> Excel</button>
-    <button id="btn-export-csv"   class="export-btn"><i class="bi bi-filetype-csv"></i> CSV</button>
-  </div>
-
-  <div class="ms-auto d-flex align-items-center gap-16" style="gap:16px">
-    <!-- Badge alertas -->
-    <div style="position:relative;cursor:pointer" onclick="document.getElementById('sec-ranking').scrollIntoView({behavior:'smooth'})">
-      <i class="bi bi-bell" style="color:#7d8590;font-size:1rem"></i>
-      <span id="badge-alertas" style="display:none;position:absolute;top:-4px;right:-4px;background:#f85149;color:#fff;font-size:0.55rem;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center"></span>
-    </div>
-    <!-- Usuario -->
-    <div id="topbar-user" class="d-flex align-items-center gap-2"></div>
-    <div class="topbar-refresh">
-      <div class="dot-live"></div>
-      <span id="countdown">En vivo</span>
-    </div>
-    <div class="topbar-time" id="topbar-clock"></div>
+  <div class="ms-auto d-flex align-items-center gap-3">
+    <div class="live-badge"><div class="live-dot"></div><span id="cd">En vivo</span></div>
+    <span style="font-size:.72rem;color:var(--muted)" id="clock"></span>
   </div>
 </header>
 
-<!-- ── Sidebar ────────────────────────────────────────── -->
+<!-- SIDEBAR -->
 <nav class="sidebar">
-  <div class="sidebar-section">Principal</div>
-  <a class="sidebar-item active" data-section="sec-kpis">
-    <i class="bi bi-speedometer2"></i><span>KPIs Ejecutivos</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-mapa">
-    <i class="bi bi-map"></i><span>Mapa Táchira</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-feed">
-    <i class="bi bi-activity"></i><span>Feed en Tiempo Real</span>
-  </a>
-
-  <div class="sidebar-section" style="margin-top:8px">Análisis</div>
-  <a class="sidebar-item" data-section="sec-obras">
-    <i class="bi bi-building"></i><span>Obras e Inauguraciones</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-municipios">
-    <i class="bi bi-pin-map"></i><span>Municipios Visitados</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-social">
-    <i class="bi bi-emoji-smile"></i><span>Sentiment Ciudadano</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-problemas">
-    <i class="bi bi-exclamation-triangle"></i><span>Problemas Sociales</span>
-  </a>
-
-  <div class="sidebar-section" style="margin-top:8px">Entidades</div>
-  <a class="sidebar-item" data-section="sec-ranking">
-    <i class="bi bi-trophy"></i><span>Ranking Municipios</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-organismos">
-    <i class="bi bi-diagram-3"></i><span>Organismos Activos</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-alcaldias">
-    <i class="bi bi-bank"></i><span>Alcaldías</span>
-  </a>
-  <a class="sidebar-item" data-section="sec-tendencia">
-    <i class="bi bi-graph-up"></i><span>Tendencia Histórica</span>
-  </a>
+  <div class="s-section">Principal</div>
+  <a class="s-item active" href="#sec-kpi"><i class="bi bi-speedometer2"></i>KPIs Ejecutivos</a>
+  <a class="s-item" href="#sec-mapa"><i class="bi bi-map"></i>Mapa Táchira</a>
+  <a class="s-item" href="#sec-feed"><i class="bi bi-activity"></i>Feed en Tiempo Real</a>
+  <div class="s-section">Análisis</div>
+  <a class="s-item" href="#sec-obras"><i class="bi bi-building"></i>Obras e Inauguraciones</a>
+  <a class="s-item" href="#sec-municipios"><i class="bi bi-pin-map"></i>Municipios Visitados</a>
+  <a class="s-item" href="#sec-social"><i class="bi bi-emoji-smile"></i>Sentiment Ciudadano</a>
+  <a class="s-item" href="#sec-problemas"><i class="bi bi-exclamation-triangle"></i>Problemas Sociales</a>
+  <div class="s-section">Entidades</div>
+  <a class="s-item" href="#sec-ranking"><i class="bi bi-trophy"></i>Ranking Municipios</a>
+  <a class="s-item" href="#sec-organismos"><i class="bi bi-diagram-3"></i>Organismos Activos</a>
+  <a class="s-item" href="#sec-alcaldias"><i class="bi bi-bank"></i>Alcaldías</a>
+  <a class="s-item" href="#sec-tendencia"><i class="bi bi-graph-up"></i>Tendencia Histórica</a>
 </nav>
 
-<!-- ══════════ CONTENIDO PRINCIPAL ══════════ -->
-<main class="main-content">
+<main class="main">
 
-  <!-- ── Panel de filtros ──────────────────────────────── -->
-  <div class="filters-panel fade-in">
-    <div class="filter-group" style="min-width:80px;max-width:100px;flex:none">
-      <label><i class="bi bi-funnel"></i> Filtros</label>
-      <button id="btn-limpiar-filtros" class="export-btn" style="width:100%;justify-content:center">Limpiar</button>
-    </div>
-    <div class="filter-group">
-      <label>Desde</label>
-      <input type="date" id="filtro-desde" />
-    </div>
-    <div class="filter-group">
-      <label>Hasta</label>
-      <input type="date" id="filtro-hasta" />
-    </div>
-    <div class="filter-group">
-      <label>Municipio</label>
-      <select id="filtro-municipio">
-        <option value="">Todos</option>
-        <option>San Cristóbal</option><option>Rubio</option><option>Táriba</option>
-        <option>Colón</option><option>La Fría</option><option>San Antonio del Táchira</option>
-        <option>Ureña</option><option>La Grita</option><option>El Piñal</option>
-        <option>Cordero</option><option>Coloncito</option><option>Palmira</option>
-        <option>Michelena</option><option>Lobatera</option><option>Seboruco</option>
-        <option>Pregonero</option><option>Queniquea</option><option>San Josecito</option>
-        <option>Capacho Nuevo</option><option>Abejales</option><option>El Cobre</option>
-        <option>San Félix</option><option>Santa Ana del Táchira</option>
-        <option>San Rafael del Piñal</option><option>San José de Bolívar</option>
-        <option>Delicias</option><option>Upata</option><option>San Simón</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Organismo</label>
-      <input type="text" id="filtro-organismo" placeholder="Buscar..." />
-    </div>
-    <div class="filter-group">
-      <label>Categoría</label>
-      <select id="filtro-categoria">
-        <option value="">Todas</option>
-        <option value="salud">Salud</option>
-        <option value="educacion">Educación</option>
-        <option value="vivienda">Vivienda</option>
-        <option value="infraestructura">Infraestructura</option>
-        <option value="vialidad">Vialidad</option>
-        <option value="agua">Agua</option>
-        <option value="electricidad">Electricidad</option>
-        <option value="produccion">Producción</option>
-        <option value="seguridad">Seguridad</option>
-        <option value="deporte">Deporte</option>
-        <option value="cultura">Cultura</option>
-      </select>
-    </div>
-    <div class="filter-group">
-      <label>Tipo de Actividad</label>
-      <select id="filtro-tipo">
-        <option value="">Todos</option>
-        <option value="inauguración">Inauguración</option>
-        <option value="supervisión">Supervisión</option>
-        <option value="reunión">Reunión</option>
-        <option value="entrega">Entrega</option>
-        <option value="recorrido">Recorrido</option>
-        <option value="anuncio">Anuncio</option>
-      </select>
+<!-- FILTROS -->
+<div class="filter-bar">
+  <div class="fg" style="max-width:80px;flex:none">
+    <label><i class="bi bi-funnel"></i> Filtros</label>
+    <button class="exp-btn" style="justify-content:center" onclick="limpiarFiltros()">Limpiar</button>
+  </div>
+  <div class="fg"><label>Desde</label><input type="date" id="f-desde"/></div>
+  <div class="fg"><label>Hasta</label><input type="date" id="f-hasta"/></div>
+  <div class="fg">
+    <label>Municipio</label>
+    <select id="f-mun">
+      <option value="">Todos</option>
+      <option>San Cristóbal</option><option>Rubio</option><option>Táriba</option>
+      <option>Colón</option><option>La Fría</option><option>San Antonio del Táchira</option>
+      <option>Ureña</option><option>La Grita</option><option>El Piñal</option>
+      <option>Cordero</option><option>Coloncito</option><option>Palmira</option>
+      <option>Michelena</option><option>Lobatera</option><option>Seboruco</option>
+      <option>Pregonero</option><option>Queniquea</option><option>San Josecito</option>
+      <option>Capacho Nuevo</option><option>Abejales</option><option>El Cobre</option>
+      <option>San Félix</option><option>Santa Ana del Táchira</option>
+      <option>San Rafael del Piñal</option><option>San José de Bolívar</option>
+      <option>Delicias</option><option>Upata</option><option>San Simón</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Categoría</label>
+    <select id="f-cat">
+      <option value="">Todas</option>
+      <option>Salud</option><option>Educación</option><option>Vivienda</option>
+      <option>Infraestructura</option><option>Vialidad</option><option>Agua</option>
+      <option>Electricidad</option><option>Producción</option><option>Seguridad</option>
+      <option>Deporte</option><option>Cultura</option>
+    </select>
+  </div>
+  <div class="fg">
+    <label>Tipo Actividad</label>
+    <select id="f-tipo">
+      <option value="">Todos</option>
+      <option>Inauguración</option><option>Supervisión</option><option>Reunión</option>
+      <option>Entrega</option><option>Recorrido</option><option>Anuncio</option>
+    </select>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" id="sec-kpi">
+  <div class="kpi" style="--kc:#1f6feb"><div class="kpi-ico"><i class="bi bi-newspaper"></i></div><div class="kpi-lbl">Total Publicaciones</div><div class="kpi-val">4,837</div><div class="kpi-sub">Todas las fuentes</div></div>
+  <div class="kpi" style="--kc:#3fb950"><div class="kpi-ico"><i class="bi bi-geo-alt"></i></div><div class="kpi-lbl">Municipios Visitados</div><div class="kpi-val">21</div><div class="kpi-sub">de 29 municipios</div><div class="kpi-prog"><div class="kpi-prog-fill" style="width:72%"></div></div></div>
+  <div class="kpi" style="--kc:#f85149"><div class="kpi-ico"><i class="bi bi-geo"></i></div><div class="kpi-lbl">Municipios Pendientes</div><div class="kpi-val">8</div><div class="kpi-sub">sin actividad registrada</div></div>
+  <div class="kpi" style="--kc:#d29922"><div class="kpi-ico"><i class="bi bi-building-check"></i></div><div class="kpi-lbl">Obras Inauguradas</div><div class="kpi-val">183</div><div class="kpi-sub">en el período</div></div>
+  <div class="kpi" style="--kc:#fbbf24"><div class="kpi-ico"><i class="bi bi-calendar-day"></i></div><div class="kpi-lbl">Obras Hoy</div><div class="kpi-val">7</div><div class="kpi-sub">últimas 24 horas</div></div>
+  <div class="kpi" style="--kc:#bc8cff"><div class="kpi-ico"><i class="bi bi-calendar-week"></i></div><div class="kpi-lbl">Obras esta Semana</div><div class="kpi-val">34</div><div class="kpi-sub">últimos 7 días</div></div>
+  <div class="kpi" style="--kc:#38bdf8"><div class="kpi-ico"><i class="bi bi-calendar-month"></i></div><div class="kpi-lbl">Obras este Mes</div><div class="kpi-val">112</div><div class="kpi-sub">últimos 30 días</div></div>
+  <div class="kpi" style="--kc:#34d399"><div class="kpi-ico"><i class="bi bi-emoji-smile"></i></div><div class="kpi-lbl">Sentiment Ciudadano</div><div class="kpi-val">+0.62</div><div class="kpi-sub" style="color:#3fb950">😊 Positivo</div></div>
+  <div class="kpi" style="--kc:#7d8590"><div class="kpi-ico"><i class="bi bi-clock"></i></div><div class="kpi-lbl">Última Actividad</div><div class="kpi-val" style="font-size:1.1rem">Hace 8 min</div><div class="kpi-sub" id="last-update">Actualizado ahora</div></div>
+</div>
+
+<!-- MAPA -->
+<div class="card mb-3" id="sec-mapa">
+  <div class="card-hdr">
+    <div><div class="card-title"><i class="bi bi-map" style="color:var(--accent)"></i> Mapa de Actividad — Estado Táchira</div><div class="card-sub">Actividad por municipio · tamaño = publicaciones · color = intensidad</div></div>
+  </div>
+  <div id="mapa"></div>
+</div>
+
+<!-- OBRAS POR SECTOR + RADAR + BARRAS DÍAS -->
+<div class="grid" id="sec-obras">
+  <div class="c4 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-pie-chart" style="color:var(--warning)"></i> Obras por Sector</div><div class="card-sub">Distribución de publicaciones</div></div></div>
+    <div class="chart-wrap" style="height:240px"><canvas id="ch-donut"></canvas></div>
+  </div>
+  <div class="c4 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-diagram-3" style="color:#bc8cff"></i> Radar de Sectores</div><div class="card-sub">Cobertura por área temática</div></div></div>
+    <div class="chart-wrap" style="height:240px"><canvas id="ch-radar"></canvas></div>
+  </div>
+  <div class="c4 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bar-chart" style="color:var(--accent)"></i> Obras por Día</div><div class="card-sub">Últimos 30 días</div></div></div>
+    <div class="chart-wrap" style="height:240px"><canvas id="ch-bars"></canvas></div>
+  </div>
+</div>
+
+<!-- MUNICIPIOS VISITADOS / PENDIENTES -->
+<div class="grid" id="sec-municipios">
+  <div class="c6 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-check2-circle" style="color:var(--success)"></i> Municipios Visitados</div><div class="card-sub">21 de 29 municipios con actividad</div></div></div>
+    <div id="lst-visitados" style="max-height:280px;overflow-y:auto"></div>
+  </div>
+  <div class="c6 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-exclamation-circle" style="color:var(--danger)"></i> Municipios Pendientes por Visitar</div><div class="card-sub">8 municipios sin actividad registrada</div></div></div>
+    <div id="lst-pendientes" style="display:flex;flex-wrap:wrap;gap:5px;padding:6px 0"></div>
+  </div>
+</div>
+
+<!-- SENTIMENT + ORGANISMOS -->
+<div class="grid" id="sec-social">
+  <div class="c8 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bar-chart-steps" style="color:var(--info)"></i> Sentiment Ciudadano por Red Social</div><div class="card-sub">Análisis de sentimiento en publicaciones</div></div></div>
+    <div class="chart-wrap" style="height:260px"><canvas id="ch-sent"></canvas></div>
+  </div>
+  <div class="c4 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bar-chart-line" style="color:var(--success)"></i> Organismos más Activos</div></div></div>
+    <div class="chart-wrap" style="height:260px"><canvas id="ch-org"></canvas></div>
+  </div>
+</div>
+
+<!-- PROBLEMAS + TENDENCIA -->
+<div class="grid" id="sec-problemas">
+  <div class="c8 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-exclamation-triangle" style="color:var(--danger)"></i> Problemas Sociales más Recurrentes</div><div class="card-sub">Detectados automáticamente por IA</div></div></div>
+    <div class="chart-wrap" style="height:280px"><canvas id="ch-prob"></canvas></div>
+  </div>
+  <div class="c4 card" id="sec-tendencia">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-graph-up-arrow" style="color:var(--success)"></i> Tendencia 6 Meses</div><div class="card-sub">Publicaciones y sentiment semanal</div></div></div>
+    <div class="chart-wrap" style="height:280px"><canvas id="ch-tend"></canvas></div>
+  </div>
+</div>
+
+<!-- RANKING MUNICIPIOS -->
+<div class="grid" id="sec-ranking">
+  <div class="c6 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-trophy" style="color:var(--warning)"></i> Ranking — Obras vs Problemas</div></div></div>
+    <div class="chart-wrap" style="height:360px"><canvas id="ch-rank"></canvas></div>
+  </div>
+  <div class="c6 card">
+    <div class="card-hdr"><div><div class="card-title"><i class="bi bi-table" style="color:var(--accent)"></i> Tabla de Ranking por Municipio</div></div></div>
+    <div style="overflow-x:auto;max-height:360px;overflow-y:auto">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Municipio</th><th>Publ.</th><th>Obras</th><th>Problemas</th><th>Estado</th></tr></thead>
+        <tbody id="tb-rank"></tbody>
+      </table>
     </div>
   </div>
+</div>
 
-  <!-- ══ SECCIÓN KPIs ══════════════════════════════════ -->
-  <div id="sec-kpis">
-    <div class="kpi-grid fade-in">
-
-      <div class="kpi-card" style="--kpi-color:#1f6feb">
-        <div class="kpi-icon"><i class="bi bi-newspaper"></i></div>
-        <div class="kpi-label">Total Publicaciones</div>
-        <div class="kpi-value" id="kpi-publicaciones">—</div>
-        <div class="kpi-sub">Todas las fuentes</div>
-        <div class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> Actualizado</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#3fb950">
-        <div class="kpi-icon"><i class="bi bi-geo-alt"></i></div>
-        <div class="kpi-label">Municipios Visitados</div>
-        <div class="kpi-value" id="kpi-municipios-v">—</div>
-        <div class="kpi-sub">de 29 municipios</div>
-        <div class="progress-bar-custom" style="margin-top:6px">
-          <div class="progress-bar-fill" id="prog-municipios" style="width:0%"></div>
-        </div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#f85149">
-        <div class="kpi-icon"><i class="bi bi-geo"></i></div>
-        <div class="kpi-label">Municipios Pendientes</div>
-        <div class="kpi-value" id="kpi-municipios-p">—</div>
-        <div class="kpi-sub">sin actividad registrada</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#d29922">
-        <div class="kpi-icon"><i class="bi bi-building-check"></i></div>
-        <div class="kpi-label">Obras Inauguradas</div>
-        <div class="kpi-value" id="kpi-obras-total">—</div>
-        <div class="kpi-sub">en el período</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#fbbf24">
-        <div class="kpi-icon"><i class="bi bi-calendar-day"></i></div>
-        <div class="kpi-label">Obras Hoy</div>
-        <div class="kpi-value" id="kpi-obras-hoy">—</div>
-        <div class="kpi-sub">últimas 24 horas</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#bc8cff">
-        <div class="kpi-icon"><i class="bi bi-calendar-week"></i></div>
-        <div class="kpi-label">Obras esta Semana</div>
-        <div class="kpi-value" id="kpi-obras-semana">—</div>
-        <div class="kpi-sub">últimos 7 días</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#38bdf8">
-        <div class="kpi-icon"><i class="bi bi-calendar-month"></i></div>
-        <div class="kpi-label">Obras este Mes</div>
-        <div class="kpi-value" id="kpi-obras-mes">—</div>
-        <div class="kpi-sub">últimos 30 días</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#34d399">
-        <div class="kpi-icon"><i class="bi bi-emoji-smile"></i></div>
-        <div class="kpi-label">Sentiment Ciudadano</div>
-        <div class="kpi-value" id="kpi-sentiment">—</div>
-        <div class="kpi-sub" id="kpi-sentiment-label">Analizando...</div>
-      </div>
-
-      <div class="kpi-card" style="--kpi-color:#7d8590">
-        <div class="kpi-icon"><i class="bi bi-clock"></i></div>
-        <div class="kpi-label">Última Actividad</div>
-        <div class="kpi-value" id="kpi-ultima" style="font-size:1.2rem">—</div>
-        <div class="kpi-sub" id="last-update">Cargando...</div>
-      </div>
-
-    </div>
+<!-- ALCALDÍAS -->
+<div class="card mb-3" id="sec-alcaldias">
+  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-bank" style="color:#bc8cff"></i> Alcaldías del Estado Táchira — Actividad</div><div class="card-sub">Ranking por publicaciones y obras</div></div></div>
+  <div style="overflow-x:auto">
+    <table class="tbl">
+      <thead><tr><th>#</th><th>Alcaldía</th><th>Municipio</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Estado</th></tr></thead>
+      <tbody id="tb-alcaldias"></tbody>
+    </table>
   </div>
+</div>
 
-  <!-- ══ SECCIÓN MAPA ════════════════════════════════════ -->
-  <div id="sec-mapa" style="margin-bottom:18px">
-    <div class="chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-map" style="color:#1f6feb"></i> Mapa de Actividad — Estado Táchira</div>
-          <div class="chart-subtitle">Actividad por municipio · tamaño = publicaciones · color = intensidad</div>
-        </div>
-      </div>
-      <div id="mapa-tachira"></div>
-    </div>
-  </div>
-
-  <!-- ══ FILA: Obras por Sector + Radar ════════════════ -->
-  <div id="sec-obras" class="charts-grid" style="margin-bottom:18px">
-    <div class="col-4 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-pie-chart" style="color:#d29922"></i> Obras por Sector</div>
-          <div class="chart-subtitle">Distribución de publicaciones por categoría</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:260px"><canvas id="chart-donut-sector"></canvas></div>
-    </div>
-
-    <div class="col-4 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-diagram-3" style="color:#bc8cff"></i> Radar de Sectores</div>
-          <div class="chart-subtitle">Cobertura por área temática</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:260px"><canvas id="chart-radar"></canvas></div>
-    </div>
-
-    <div class="col-4 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-bar-chart" style="color:#1f6feb"></i> Obras Inauguradas por Día</div>
-          <div class="chart-subtitle">Últimos 30 días</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:260px"><canvas id="chart-bar-obras"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ══ FILA: Municipios Visitados / Pendientes ════════ -->
-  <div id="sec-municipios" class="charts-grid" style="margin-bottom:18px">
-    <div class="col-6 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-check2-circle" style="color:#3fb950"></i> Municipios Visitados</div>
-          <div class="chart-subtitle">Con actividad registrada en el período</div>
-        </div>
-      </div>
-      <div id="lista-visitados" style="max-height:300px;overflow-y:auto"></div>
-    </div>
-
-    <div class="col-6 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-exclamation-circle" style="color:#f85149"></i> Municipios Pendientes por Visitar</div>
-          <div class="chart-subtitle">Sin actividad registrada</div>
-        </div>
-      </div>
-      <div id="lista-pendientes" style="padding:8px 0;display:flex;flex-wrap:wrap;gap:4px;max-height:300px;overflow-y:auto;align-content:flex-start"></div>
-    </div>
-  </div>
-
-  <!-- ══ SECCIÓN SENTIMENT REDES ═══════════════════════ -->
-  <div id="sec-social" class="charts-grid" style="margin-bottom:18px">
-    <div class="col-8 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-bar-chart-steps" style="color:#38bdf8"></i> Sentiment Ciudadano por Red Social</div>
-          <div class="chart-subtitle">Análisis de sentimiento en publicaciones</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:280px"><canvas id="chart-sentiment-redes"></canvas></div>
-    </div>
-
-    <div class="col-4 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-bar-chart-line" style="color:#34d399"></i> Organismos más Activos</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:280px"><canvas id="chart-organismos"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ══ SECCIÓN PROBLEMAS SOCIALES ════════════════════ -->
-  <div id="sec-problemas" class="charts-grid" style="margin-bottom:18px">
-    <div class="col-8 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-exclamation-triangle" style="color:#f85149"></i> Problemas Sociales más Recurrentes</div>
-          <div class="chart-subtitle">Detectados automáticamente por IA</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:300px"><canvas id="chart-problemas"></canvas></div>
-    </div>
-
-    <div class="col-4 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-graph-up-arrow" style="color:#3fb950"></i> Tendencia 6 Meses</div>
-          <div class="chart-subtitle">Publicaciones y sentiment por semana</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:300px"><canvas id="chart-line-tendencia"></canvas></div>
-    </div>
-  </div>
-
-  <!-- ══ SECCIÓN RANKING MUNICIPIOS ════════════════════ -->
-  <div id="sec-ranking" class="charts-grid" style="margin-bottom:18px">
-    <div class="col-6 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-trophy" style="color:#d29922"></i> Ranking Municipios — Obras vs Problemas</div>
-        </div>
-      </div>
-      <div class="chart-body" style="height:380px"><canvas id="chart-ranking"></canvas></div>
-    </div>
-
-    <div class="col-6 chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-table" style="color:#1f6feb"></i> Tabla de Ranking por Municipio</div>
-        </div>
-      </div>
-      <div style="overflow-x:auto">
-        <table id="tabla-ranking" class="table table-sm w-100" style="color:#e6edf3">
-          <thead>
-            <tr>
-              <th>#</th><th>Municipio</th><th>Publicaciones</th>
-              <th>Obras</th><th>Problemas</th><th>Neg.</th>
-              <th>Estado</th><th>Última Act.</th>
-            </tr>
-          </thead>
-          <tbody id="tbody-ranking"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ SECCIÓN ALCALDÍAS ══════════════════════════════ -->
-  <div id="sec-alcaldias" style="margin-bottom:18px">
-    <div class="chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-bank" style="color:#bc8cff"></i> Alcaldías del Estado Táchira — Actividad</div>
-          <div class="chart-subtitle">Ranking de alcaldías por publicaciones y obras</div>
-        </div>
-      </div>
-      <div style="overflow-x:auto">
-        <table id="tabla-alcaldias" class="table table-sm w-100" style="color:#e6edf3">
-          <thead>
-            <tr><th>#</th><th>Alcaldía</th><th>Municipio</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Estado</th></tr>
-          </thead>
-          <tbody id="tbody-alcaldias"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ SECCIÓN FEED ════════════════════════════════════ -->
-  <div id="sec-feed" style="margin-bottom:18px">
-    <div class="chart-card fade-in">
-      <div class="chart-card-header">
-        <div>
-          <div class="chart-title"><i class="bi bi-activity" style="color:#1f6feb"></i> Feed en Tiempo Real</div>
-          <div class="chart-subtitle">Últimas publicaciones de todas las fuentes</div>
-        </div>
-      </div>
-      <div id="feed-container" style="max-height:600px;overflow-y:auto"></div>
-    </div>
-  </div>
+<!-- FEED -->
+<div class="card" id="sec-feed">
+  <div class="card-hdr"><div><div class="card-title"><i class="bi bi-activity" style="color:var(--accent)"></i> Feed en Tiempo Real</div><div class="card-sub">Últimas publicaciones de todas las fuentes</div></div></div>
+  <div id="feed" style="max-height:560px;overflow-y:auto"></div>
+</div>
 
 </main>
 
-<!-- ── Toast container ───────────────────────────────── -->
-<div class="toast-container"></div>
+<div class="toasts" id="toasts"></div>
 
-<!-- ═══════════ SCRIPTS ════════════════════════════════ -->
-<!-- jQuery (requerido por DataTables) -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<!-- Bootstrap 5 -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Chart.js -->
+<!-- SCRIPTS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<!-- Leaflet -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<!-- DataTables -->
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<!-- SheetJS (Excel) -->
 <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-<!-- jsPDF (PDF) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+// ══════════════════════════════════════════════
+//  DATOS DE DEMOSTRACIÓN — TÁCHIRA
+// ══════════════════════════════════════════════
+const SECTORES = ['Vialidad','Salud','Educación','Vivienda','Agua','Electricidad','Producción','Seguridad','Deporte','Infraestructura','Cultura'];
+const SECT_VAL  = [42,38,29,25,21,18,14,12,10,9,7];
+const MESES     = ['Ene','Feb','Mar','Abr','May','Jun'];
+const TEND_PUB  = [320,480,610,720,850,940];
+const TEND_OBR  = [18,26,34,41,52,61];
+const TEND_NEG  = [60,72,55,48,62,44];
+const TEND_POS  = [200,310,410,510,620,710];
 
-<!-- Configurar URL del API -->
-<script>window.API_BASE = 'http://localhost:3000/api/v1'; window.REQUIRE_AUTH = false;</script>
+const MUNICIPIOS_DATA = [
+  {m:'San Cristóbal',   pub:842, obras:38, prob:12, sent:0.71},
+  {m:'Rubio',           pub:421, obras:19, prob:7,  sent:0.65},
+  {m:'Táriba',          pub:380, obras:16, prob:5,  sent:0.68},
+  {m:'Colón',           pub:312, obras:14, prob:8,  sent:0.52},
+  {m:'La Fría',         pub:287, obras:11, prob:6,  sent:0.60},
+  {m:'San Antonio',     pub:263, obras:10, prob:9,  sent:0.47},
+  {m:'La Grita',        pub:241, obras:9,  prob:4,  sent:0.73},
+  {m:'Ureña',           pub:218, obras:8,  prob:11, sent:0.38},
+  {m:'Coloncito',       pub:195, obras:7,  prob:3,  sent:0.69},
+  {m:'Michelena',       pub:178, obras:6,  prob:2,  sent:0.75},
+  {m:'Cordero',         pub:164, obras:6,  prob:5,  sent:0.55},
+  {m:'Palmira',         pub:152, obras:5,  prob:4,  sent:0.61},
+  {m:'Capacho Nuevo',   pub:141, obras:5,  prob:3,  sent:0.64},
+  {m:'Pregonero',       pub:135, obras:4,  prob:2,  sent:0.70},
+  {m:'El Piñal',        pub:128, obras:4,  prob:6,  sent:0.45},
+  {m:'Lobatera',        pub:119, obras:3,  prob:2,  sent:0.72},
+  {m:'San Josecito',    pub:112, obras:3,  prob:1,  sent:0.77},
+  {m:'Seboruco',        pub:98,  obras:3,  prob:1,  sent:0.74},
+  {m:'Queniquea',       pub:87,  obras:2,  prob:2,  sent:0.66},
+  {m:'San Félix',       pub:74,  obras:2,  prob:1,  sent:0.71},
+  {m:'Santa Ana',       pub:63,  obras:2,  prob:3,  sent:0.58},
+];
+const PENDIENTES = ['Abejales','El Cobre','San Rafael del Piñal','San José de Bolívar','Delicias','Upata','San Simón','Junín'];
 
-<!-- Módulos del dashboard -->
-<script src="assets/js/auth.js"></script>
-<script src="assets/js/api.js"></script>
-<script src="assets/js/charts.js"></script>
-<script src="assets/js/maps.js"></script>
-<script src="assets/js/exports.js"></script>
-<script src="assets/js/dashboard.js"></script>
+const ORGANISMOS = ['Gobernación Táchira','INVIAL','INVIVIENDA','Corpotáchira','Alcaldía San Cristóbal','Alcaldía Cárdenas','INDET','CORPOSALUD'];
+const ORG_VAL    = [1240,342,298,214,187,165,142,118];
 
+const PROBLEMAS  = ['Baches y vías deterioradas','Fallas de agua potable','Cortes eléctricos','Déficit habitacional','Inseguridad vial','Desabastecimiento','Infraestructura escolar','Salud pública'];
+const PROB_VAL   = [148,127,112,98,87,74,62,51];
+
+const REDES = {
+  labels:['Instagram','Facebook','Twitter','Telegram','TikTok','Noticias'],
+  pos:[520,410,310,280,190,155],
+  neu:[180,240,190,320,140,410],
+  neg:[60,80,140,45,90,35]
+};
+
+const DIAS = Array.from({length:30},(_,i)=>{const d=new Date();d.setDate(d.getDate()-29+i);return d.toLocaleDateString('es-VE',{day:'2-digit',month:'short'})});
+const OBRAS_DIA = [2,4,3,5,7,4,2,6,8,5,3,7,9,6,4,5,8,10,7,4,6,9,11,8,5,7,10,12,9,7];
+
+const ALCALDIAS = [
+  {n:'Alcaldía San Cristóbal', m:'San Cristóbal',  pub:412, obras:18, eng:24800},
+  {n:'Alcaldía Cárdenas',      m:'Táriba',          pub:287, obras:12, eng:16400},
+  {n:'Alcaldía Junín',         m:'Rubio',           pub:261, obras:11, eng:14200},
+  {n:'Alcaldía Ayacucho',      m:'Colón',           pub:218, obras:9,  eng:11800},
+  {n:'Alcaldía Bolívar',       m:'San Antonio',     pub:196, obras:8,  eng:10200},
+  {n:'Alcaldía García de Hevia',m:'La Fría',        pub:174, obras:7,  eng:8900},
+  {n:'Alcaldía Jáuregui',      m:'La Grita',        pub:152, obras:6,  eng:7600},
+  {n:'Alcaldía P.M. Ureña',    m:'Ureña',           pub:138, obras:5,  eng:6800},
+];
+
+const FEED_DATA = [
+  {plt:'instagram',ent:'Gobernación Táchira',txt:'Freddy Bernal supervisa entrega de 45 toneladas de alimentos en municipio San Cristóbal. Más de 2.000 familias beneficiadas.',cat:'produccion',act:'entrega',t:'Hace 8 min'},
+  {plt:'twitter',ent:'Gobernación Táchira',txt:'Inauguramos el nuevo ambulatorio rural de Coloncito, atenderá a 1.200 habitantes. Inversión de 4.2 millones de bolívares.',cat:'salud',act:'inauguración',t:'Hace 22 min'},
+  {plt:'telegram',ent:'@FreddyBernalVzla',txt:'Recorrido por las obras de vialidad en la Troncal 5, tramo Rubio-San Cristóbal. Avance del 78% en asfaltado.',cat:'vialidad',act:'supervisión',t:'Hace 35 min'},
+  {plt:'facebook',ent:'Gobernación Táchira',txt:'Entrega de 120 viviendas del Gran Misión Vivienda Venezuela en el sector La Pedrera, municipio Cárdenas.',cat:'vivienda',act:'inauguración',t:'Hace 1h'},
+  {plt:'web',ent:'Alcaldía San Cristóbal',txt:'Inauguración del Parque Tecnológico Escolar en la UE Simón Bolívar. 8 computadoras y conectividad para 400 estudiantes.',cat:'educacion',act:'inauguración',t:'Hace 1h 20min'},
+  {plt:'tiktok',ent:'@gobernaciontachira',txt:'Freddy Bernal en Pregonero supervisando acueducto rural que beneficiará a 3.500 familias del municipio Uribante.',cat:'agua',act:'supervisión',t:'Hace 2h'},
+  {plt:'instagram',ent:'INVIAL Táchira',txt:'Concluida la repavimentación de 12 km de la vía San Cristóbal-Palmira. Inversión de 8.7 millones.',cat:'vialidad',act:'inauguración',t:'Hace 3h'},
+  {plt:'telegram',ent:'@FreddyBernalVzla',txt:'Reunión con alcaldes del estado para coordinar plan de atención a las comunidades más vulnerables del Táchira.',cat:'infraestructura',act:'reunión',t:'Hace 4h'},
+];
+
+// ══════════════════════════════════════════════
+//  CONFIG CHART.JS
+// ══════════════════════════════════════════════
+Chart.defaults.color='#7d8590';Chart.defaults.borderColor='#21262d';
+Chart.defaults.font.family="'Inter',system-ui,sans-serif";Chart.defaults.font.size=11;
+Chart.defaults.plugins.tooltip.backgroundColor='#161b22';Chart.defaults.plugins.tooltip.borderColor='#21262d';
+Chart.defaults.plugins.tooltip.borderWidth=1;Chart.defaults.plugins.tooltip.titleColor='#e6edf3';
+Chart.defaults.plugins.tooltip.bodyColor='#7d8590';Chart.defaults.plugins.tooltip.padding=10;
+
+const PAL=['#1f6feb','#3fb950','#d29922','#f85149','#bc8cff','#38bdf8','#fbbf24','#34d399','#f87171','#a78bfa','#fb923c'];
+const PA=(i,a=.75)=>{const h=PAL[i%PAL.length];const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return `rgba(${r},${g},${b},${a})`};
+
+function mkChart(id,cfg){
+  const c=document.getElementById(id);if(!c)return;
+  if(c._chart)c._chart.destroy();
+  c._chart=new Chart(c,cfg);return c._chart;
+}
+
+// ── Donut Sectores ────────────────────────────
+function renderDonut(){
+  mkChart('ch-donut',{type:'doughnut',data:{labels:SECTORES,datasets:[{data:SECT_VAL,backgroundColor:PAL.map(p=>p+'cc'),borderColor:PAL,borderWidth:1,hoverOffset:6}]},options:{responsive:true,maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'right',labels:{padding:10,usePointStyle:true,pointStyleWidth:7,font:{size:10}}}}}});
+}
+
+// ── Radar ─────────────────────────────────────
+function renderRadar(){
+  mkChart('ch-radar',{type:'radar',data:{labels:SECTORES,datasets:[{label:'Actividad',data:SECT_VAL,backgroundColor:'rgba(31,111,235,.18)',borderColor:'#1f6feb',pointBackgroundColor:'#1f6feb',pointRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{r:{grid:{color:'#21262d'},pointLabels:{color:'#7d8590',font:{size:9}},ticks:{display:false}}},plugins:{legend:{display:false}}}});
+}
+
+// ── Barras Días ───────────────────────────────
+function renderBars(){
+  mkChart('ch-bars',{type:'bar',data:{labels:DIAS,datasets:[{label:'Obras',data:OBRAS_DIA,backgroundColor:PA(0),borderColor:PAL[0],borderWidth:1,borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'},ticks:{maxTicksLimit:8}},y:{grid:{color:'#21262d'},beginAtZero:true}},plugins:{legend:{display:false}}}});
+}
+
+// ── Sentiment Redes ───────────────────────────
+function renderSent(){
+  mkChart('ch-sent',{type:'bar',data:{labels:REDES.labels,datasets:[
+    {label:'Positivo',data:REDES.pos,backgroundColor:'rgba(63,185,80,.8)',borderRadius:3},
+    {label:'Neutro',  data:REDES.neu,backgroundColor:'rgba(125,133,144,.5)',borderRadius:3},
+    {label:'Negativo',data:REDES.neg,backgroundColor:'rgba(248,81,73,.8)',borderRadius:3},
+  ]},options:{responsive:true,maintainAspectRatio:false,scales:{x:{stacked:true,grid:{color:'#21262d'}},y:{stacked:true,grid:{color:'#21262d'},beginAtZero:true}}}});
+}
+
+// ── Organismos ────────────────────────────────
+function renderOrg(){
+  mkChart('ch-org',{type:'bar',data:{labels:ORGANISMOS,datasets:[{label:'Publicaciones',data:ORG_VAL,backgroundColor:PA(1,.75),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
+}
+
+// ── Problemas ─────────────────────────────────
+function renderProb(){
+  mkChart('ch-prob',{type:'bar',data:{labels:PROBLEMAS,datasets:[{label:'Frecuencia',data:PROB_VAL,backgroundColor:PROBLEMAS.map((_,i)=>PA(i,.75)),borderRadius:3}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'}},y:{grid:{display:false},ticks:{font:{size:9}}}},plugins:{legend:{display:false}}}});
+}
+
+// ── Tendencia ─────────────────────────────────
+function renderTend(){
+  mkChart('ch-tend',{type:'line',data:{labels:MESES,datasets:[
+    {label:'Positivas',data:TEND_POS,borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.1)',fill:true,tension:.4,pointRadius:3},
+    {label:'Negativas',data:TEND_NEG,borderColor:'#f85149',backgroundColor:'rgba(248,81,73,.08)',fill:true,tension:.4,pointRadius:3},
+    {label:'Obras',    data:TEND_OBR,borderColor:'#d29922',borderDash:[4,3],tension:.4,pointRadius:3},
+  ]},options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},scales:{x:{grid:{color:'#21262d'}},y:{grid:{color:'#21262d'},beginAtZero:true}}}});
+}
+
+// ── Ranking ───────────────────────────────────
+function renderRank(){
+  const top=MUNICIPIOS_DATA.slice(0,12);
+  mkChart('ch-rank',{type:'bar',data:{labels:top.map(d=>d.m),datasets:[
+    {label:'Obras',    data:top.map(d=>d.obras),backgroundColor:PA(0,.8),borderRadius:3},
+    {label:'Problemas',data:top.map(d=>d.prob), backgroundColor:PA(3,.8),borderRadius:3},
+  ]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,scales:{x:{grid:{color:'#21262d'},stacked:false},y:{grid:{display:false},ticks:{font:{size:9}}}}}});
+}
+
+// ── Tabla Ranking ──────────────────────────────
+function renderTablaRank(){
+  document.getElementById('tb-rank').innerHTML=MUNICIPIOS_DATA.map((d,i)=>`
+    <tr>
+      <td><strong>${i+1}</strong></td>
+      <td>${d.m}</td>
+      <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
+      <td style="color:var(--warning);font-weight:600">${d.obras}</td>
+      <td style="color:var(--danger)">${d.prob}</td>
+      <td><span class="sem ${d.sent>0.6?'sem-v':d.sent>0.3?'sem-a':'sem-r'}">${d.sent>0.6?'Óptimo':d.sent>0.3?'Seguimiento':'Atención'}</span></td>
+    </tr>`).join('');
+}
+
+// ── Tabla Alcaldías ───────────────────────────
+function renderAlcaldias(){
+  document.getElementById('tb-alcaldias').innerHTML=ALCALDIAS.map((d,i)=>`
+    <tr>
+      <td><strong>${i+1}</strong></td>
+      <td>${d.n}</td>
+      <td style="color:var(--muted)">${d.m}</td>
+      <td><strong>${d.pub.toLocaleString('es-VE')}</strong></td>
+      <td style="color:var(--warning);font-weight:600">${d.obras}</td>
+      <td>${d.eng.toLocaleString('es-VE')}</td>
+      <td><span class="sem sem-v">Activa</span></td>
+    </tr>`).join('');
+}
+
+// ── Listas Municipios ──────────────────────────
+function renderMunicipios(){
+  document.getElementById('lst-visitados').innerHTML=MUNICIPIOS_DATA.slice(0,10).map(d=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:.8rem">${d.m}</span>
+      <div style="display:flex;gap:6px;align-items:center">
+        <span style="font-size:.7rem;color:var(--warning)">${d.obras} obras</span>
+        <span class="sem sem-v" style="font-size:.65rem">${d.pub} pub.</span>
+      </div>
+    </div>`).join('');
+  document.getElementById('lst-pendientes').innerHTML=PENDIENTES.map(p=>`
+    <span class="sem sem-r" style="font-size:.7rem">${p}</span>`).join('');
+}
+
+// ── Feed ──────────────────────────────────────
+const PLT_ICONS={instagram:'📸',facebook:'👥',twitter:'🐦',telegram:'📢',tiktok:'🎵',web:'📰'};
+function renderFeed(){
+  document.getElementById('feed').innerHTML=FEED_DATA.map(f=>`
+    <div class="feed-item">
+      <div class="feed-plt plt-${f.plt}" title="${f.plt}">${PLT_ICONS[f.plt]||'📄'}</div>
+      <div style="flex:1;min-width:0">
+        <div class="feed-meta"><strong style="color:var(--text)">${f.ent}</strong> · ${f.plt} · ${f.t}</div>
+        <div class="feed-txt">${f.txt}</div>
+        <div style="display:flex;gap:4px;margin-top:5px">
+          <span class="bc b${f.cat}">${f.cat}</span>
+          <span class="bc" style="background:rgba(125,133,144,.13);color:var(--muted)">${f.act}</span>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════════════════
+//  MAPA LEAFLET
+// ══════════════════════════════════════════════
+const COORDS={
+  'San Cristóbal':[7.770,-72.225],'Rubio':[7.700,-72.365],'Táriba':[7.822,-72.227],
+  'Colón':[8.034,-72.268],'La Fría':[8.221,-72.246],'San Antonio del Táchira':[7.820,-72.447],
+  'La Grita':[8.137,-71.993],'Ureña':[7.924,-72.440],'Coloncito':[8.230,-72.022],
+  'Michelena':[7.926,-72.069],'Cordero':[7.870,-72.080],'Palmira':[7.800,-72.305],
+  'Capacho Nuevo':[7.757,-72.312],'Pregonero':[8.010,-71.799],'El Piñal':[7.641,-72.073],
+  'Lobatera':[7.896,-72.154],'San Josecito':[7.741,-72.168],'Seboruco':[8.050,-71.916],
+  'Queniquea':[8.130,-71.869],'San Félix':[8.147,-72.151],'Santa Ana del Táchira':[7.781,-72.528],
+};
+
+function initMapa(){
+  const map=L.map('mapa',{center:[7.95,-72.15],zoom:8,zoomControl:true,attributionControl:false});
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19,subdomains:'abcd'}).addTo(map);
+  L.control.attribution({prefix:'SIMGP-Táchira © CartoDB'}).addTo(map);
+
+  const maxP=Math.max(...MUNICIPIOS_DATA.map(d=>d.pub));
+  MUNICIPIOS_DATA.forEach(d=>{
+    const co=COORDS[d.m]||COORDS[d.m.replace(' del Táchira','')];
+    if(!co)return;
+    const color=d.sent>0.6?'#3fb950':d.sent>0.3?'#1f6feb':'#f85149';
+    const r=Math.max(8,Math.min(28,8+Math.sqrt(d.pub/maxP)*25));
+    L.circleMarker(co,{radius:r,fillColor:color,color:'#0e1117',weight:2,fillOpacity:.82})
+     .bindPopup(`<div style="font-family:Inter,sans-serif;min-width:170px;color:#e6edf3;background:#161b22">
+       <div style="font-weight:700;margin-bottom:6px">${d.m}</div>
+       <table style="font-size:.74rem;width:100%">
+         <tr><td style="color:#7d8590">Publicaciones</td><td style="text-align:right;font-weight:600">${d.pub}</td></tr>
+         <tr><td style="color:#7d8590">Obras inauguradas</td><td style="text-align:right;color:#d29922;font-weight:600">${d.obras}</td></tr>
+         <tr><td style="color:#7d8590">Problemas detectados</td><td style="text-align:right;color:#f85149">${d.prob}</td></tr>
+         <tr><td style="color:#7d8590">Sentiment</td><td style="text-align:right">${d.sent>0.6?'😊 Positivo':d.sent>0.3?'😐 Neutro':'😟 Negativo'}</td></tr>
+       </table></div>`,{className:'',maxWidth:220})
+     .bindTooltip(d.m,{direction:'top',sticky:false}).addTo(map);
+  });
+
+  // Leyenda
+  const leg=L.control({position:'bottomright'});
+  leg.onAdd=()=>{
+    const d=L.DomUtil.create('div');
+    d.innerHTML=`<div style="background:#161b22;border:1px solid #21262d;padding:9px 12px;border-radius:8px;font-size:.71rem;color:#7d8590">
+      <div style="font-weight:700;color:#e6edf3;margin-bottom:5px">Sentiment</div>
+      ${[['#3fb950','Positivo (>0.6)'],['#1f6feb','Neutro (0.3–0.6)'],['#f85149','Negativo (<0.3)']].map(([c,l])=>`
+      <div style="display:flex;align-items:center;gap:5px;margin:2px 0"><span style="width:9px;height:9px;border-radius:50%;background:${c};display:inline-block"></span>${l}</div>`).join('')}
+    </div>`;
+    return d;
+  };
+  leg.addTo(map);
+}
+
+// ══════════════════════════════════════════════
+//  RELOJ + COUNTDOWN
+// ══════════════════════════════════════════════
+function initReloj(){
+  setInterval(()=>{
+    document.getElementById('clock').textContent=new Date().toLocaleString('es-VE',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  },1000);
+}
+
+let cdSecs=300;
+function startCD(){
+  cdSecs=300;
+  const el=document.getElementById('cd');
+  const t=setInterval(()=>{
+    cdSecs--;
+    const m=Math.floor(cdSecs/60),s=String(cdSecs%60).padStart(2,'0');
+    el.textContent=`Actualiza en ${m}:${s}`;
+    if(cdSecs<=0){clearInterval(t);simularActualizacion();startCD();}
+  },1000);
+}
+
+function simularActualizacion(){
+  showToast('Dashboard actualizado correctamente','success');
+  document.getElementById('last-update').textContent='Actualizado: '+new Date().toLocaleTimeString('es-VE');
+}
+
+// ══════════════════════════════════════════════
+//  EXPORTACIONES
+// ══════════════════════════════════════════════
+function exportPDF(){
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'});
+  const W=doc.internal.pageSize.getWidth();
+  doc.setFillColor(14,17,23);doc.rect(0,0,W,20,'F');
+  doc.setTextColor(230,237,243);doc.setFontSize(12);doc.setFont(undefined,'bold');
+  doc.text('Sistema Inteligente de Monitoreo de Gestión Pública — Estado Táchira',W/2,11,{align:'center'});
+  doc.setFontSize(8);doc.setFont(undefined,'normal');doc.setTextColor(125,133,144);
+  doc.text('Generado: '+new Date().toLocaleString('es-VE'),W/2,17,{align:'center'});
+  let y=28;
+  // KPIs
+  const kpis=[['Publicaciones','4.837'],['Municipios Visitados','21/29'],['Obras Inauguradas','183'],['Obras Hoy','7'],['Obras Semana','34'],['Obras Mes','112']];
+  kpis.forEach(([l,v],i)=>{
+    const x=14+(i%3)*95;if(i===3)y+=14;
+    doc.setFillColor(22,27,34);doc.roundedRect(x,y,90,12,2,2,'F');
+    doc.setTextColor(125,133,144);doc.setFontSize(7);doc.text(l,x+4,y+5);
+    doc.setTextColor(31,111,235);doc.setFontSize(11);doc.setFont(undefined,'bold');doc.text(v,x+4,y+11);
+  });
+  y+=18;
+  // Gráficos
+  [['ch-donut','Obras por Sector'],['ch-bars','Obras por Día'],['ch-tend','Tendencia']].forEach(([id,tit])=>{
+    const cv=document.getElementById(id);if(!cv)return;
+    if(y+65>doc.internal.pageSize.getHeight()-10){doc.addPage();doc.setFillColor(14,17,23);doc.rect(0,0,W,doc.internal.pageSize.getHeight(),'F');y=14;}
+    doc.setTextColor(230,237,243);doc.setFontSize(9);doc.setFont(undefined,'bold');doc.text(tit,14,y);y+=4;
+    doc.addImage(cv.toDataURL('image/png'),'PNG',14,y,W-28,60);y+=66;
+  });
+  doc.save(`SIMGP-Tachira-${new Date().toISOString().split('T')[0]}.pdf`);
+  showToast('PDF exportado','success');
+}
+
+function exportExcel(){
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['SIMGP Táchira — Reporte de Gestión Pública'],
+    ['Generado: '+new Date().toLocaleString('es-VE')],[],
+    ['Indicador','Valor'],
+    ['Total Publicaciones',4837],['Municipios Visitados',21],['Municipios Pendientes',8],
+    ['Obras Inauguradas',183],['Obras Hoy',7],['Obras Semana',34],['Obras Mes',112],['Sentiment Promedio',0.62],
+  ]),'KPIs');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Municipio','Publicaciones','Obras','Problemas','Sentiment'],
+    ...MUNICIPIOS_DATA.map(d=>[d.m,d.pub,d.obras,d.prob,d.sent]),
+  ]),'Municipios');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Sector','Actividad'],
+    ...SECTORES.map((s,i)=>[s,SECT_VAL[i]]),
+  ]),'Sectores');
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([
+    ['Alcaldía','Municipio','Publicaciones','Obras','Engagement'],
+    ...ALCALDIAS.map(a=>[a.n,a.m,a.pub,a.obras,a.eng]),
+  ]),'Alcaldías');
+  XLSX.writeFile(wb,`SIMGP-Tachira-${new Date().toISOString().split('T')[0]}.xlsx`);
+  showToast('Excel exportado','success');
+}
+
+function exportCSV(){
+  const rows=[['Municipio','Publicaciones','Obras','Problemas','Sentiment'],...MUNICIPIOS_DATA.map(d=>[d.m,d.pub,d.obras,d.prob,d.sent])];
+  const csv='﻿'+rows.map(r=>r.join(',')).join('\r\n');
+  const a=document.createElement('a');
+  a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);
+  a.download=`SIMGP-Tachira-municipios-${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('CSV exportado','success');
+}
+
+// ══════════════════════════════════════════════
+//  FILTROS
+// ══════════════════════════════════════════════
+function limpiarFiltros(){
+  ['f-desde','f-hasta','f-mun','f-cat','f-tipo'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  showToast('Filtros limpiados','info');
+}
+
+// ══════════════════════════════════════════════
+//  TOAST
+// ══════════════════════════════════════════════
+function showToast(msg,tipo='info'){
+  const icons={success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const el=document.createElement('div');
+  el.className='toast-msg';el.textContent=`${icons[tipo]||''} ${msg}`;
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(()=>el.remove(),3500);
+}
+
+// ══════════════════════════════════════════════
+//  SIDEBAR ACTIVO
+// ══════════════════════════════════════════════
+document.querySelectorAll('.s-item').forEach(a=>{
+  a.addEventListener('click',function(){
+    document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  // Barra de carga
+  const lb=document.getElementById('loadbar');
+  lb.style.width='40%';
+  setTimeout(()=>lb.style.width='80%',300);
+  setTimeout(()=>{lb.style.width='100%';setTimeout(()=>lb.style.width='0',400);},700);
+
+  initReloj();
+  renderDonut();renderRadar();renderBars();
+  renderSent();renderOrg();renderProb();renderTend();renderRank();
+  renderTablaRank();renderAlcaldias();renderMunicipios();renderFeed();
+  setTimeout(initMapa,200);
+  startCD();
+
+  document.getElementById('last-update').textContent='Actualizado: '+new Date().toLocaleTimeString('es-VE');
+  setTimeout(()=>showToast('Dashboard cargado correctamente','success'),800);
+});
+</script>
 </body>
 </html>
