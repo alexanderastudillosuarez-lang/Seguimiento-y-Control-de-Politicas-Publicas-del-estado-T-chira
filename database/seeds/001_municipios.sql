@@ -1,0 +1,33 @@
+-- ============================================================
+-- SEED 001 — 29 Municipios del Estado Táchira
+-- ============================================================
+INSERT INTO core.municipios (nombre, codigo_ine, capital) VALUES
+('Andrés Bello',        '2001', 'Cordero'),
+('Antonio Rómulo Costa','2002', 'San Félix'),
+('Ayacucho',            '2003', 'Colón'),
+('Bolívar',             '2004', 'San Antonio del Táchira'),
+('Cárdenas',            '2005', 'Táriba'),
+('Córdoba',             '2006', 'Santa Ana del Táchira'),
+('Fernández Feo',       '2007', 'San Rafael del Piñal'),
+('Francisco de Miranda','2008', 'San José de Bolívar'),
+('García de Hevia',     '2009', 'La Fría'),
+('Guásimos',            '2010', 'Palmira'),
+('Independencia',       '2011', 'Capacho Nuevo'),
+('Jáuregui',            '2012', 'La Grita'),
+('José María Vargas',   '2013', 'El Cobre'),
+('Junín',               '2014', 'Rubio'),
+('Libertad',            '2015', 'Upata'),
+('Libertador',          '2016', 'Abejales'),
+('Lobatera',            '2017', 'Lobatera'),
+('Michelena',           '2018', 'Michelena'),
+('Panamericano',        '2019', 'Coloncito'),
+('Pedro María Ureña',   '2020', 'Ureña'),
+('Rafael Urdaneta',     '2021', 'Delicias'),
+('Samuel Darío Maldonado','2022','El Piñal'),
+('San Cristóbal',       '2023', 'San Cristóbal'),
+('Seboruco',            '2024', 'Seboruco'),
+('Simón Rodríguez',     '2025', 'San Simón'),
+('Sucre',               '2026', 'Queniquea'),
+('Torbes',              '2027', 'San Josecito'),
+('Uribante',            '2028', 'Pregonero'),
+('Zonas Especiales',    '2029', 'N/A');
