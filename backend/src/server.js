@@ -39,8 +39,14 @@ app.get('/health', async (_req, res) => {
     }
 });
 
-// ── Rutas API (se agregan en fases siguientes) ──
-app.use('/api/v1/etl', require('./api/routes/etl-routes'));
+// ── Rutas API ──
+app.use('/api/v1/etl',       require('./api/routes/etl-routes'));
+app.use('/api/v1/dashboard', require('./api/routes/dashboard-routes'));
+
+// ── Servir frontend estático ──
+const path = require('path');
+app.use(express.static(path.join(__dirname, '../../frontend')));
+app.get('/', (_req, res) => res.sendFile(path.join(__dirname, '../../frontend/index.html')));
 
 // ── 404 ──
 app.use((_req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));

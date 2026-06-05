@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMGP Táchira — Monitor de Gestión Pública</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Leaflet -->
+  <link href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" rel="stylesheet" />
+  <!-- DataTables -->
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <!-- Dashboard CSS -->
+  <link href="assets/css/dashboard.css" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ── Barra de carga ─────────────────────────────────── -->
+<div id="loading-bar" style="position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#1f6feb,#58a6ff);z-index:9999;width:0%;transition:width 0.4s ease;pointer-events:none"></div>
+
+<!-- ── Topbar ─────────────────────────────────────────── -->
+<header class="topbar">
+  <button id="btn-toggle-sidebar" style="background:none;border:none;color:#7d8590;cursor:pointer;padding:4px 8px;border-radius:4px" title="Menú">
+    <i class="bi bi-list" style="font-size:1.2rem"></i>
+  </button>
+
+  <div class="topbar-brand">
+    <div class="brand-dot"></div>
+    <span>Sistema de Monitoreo — Estado Táchira</span>
+  </div>
+
+  <!-- Panel de exportación -->
+  <div class="d-flex gap-2 ms-4">
+    <button id="btn-export-pdf"   class="export-btn"><i class="bi bi-file-earmark-pdf"></i> PDF</button>
+    <button id="btn-export-excel" class="export-btn"><i class="bi bi-file-earmark-excel"></i> Excel</button>
+    <button id="btn-export-csv"   class="export-btn"><i class="bi bi-filetype-csv"></i> CSV</button>
+  </div>
+
+  <div class="ms-auto d-flex align-items-center gap-16" style="gap:16px">
+    <div class="topbar-refresh">
+      <div class="dot-live"></div>
+      <span id="countdown">En vivo</span>
+    </div>
+    <div class="topbar-time" id="topbar-clock"></div>
+  </div>
+</header>
+
+<!-- ── Sidebar ────────────────────────────────────────── -->
+<nav class="sidebar">
+  <div class="sidebar-section">Principal</div>
+  <a class="sidebar-item active" data-section="sec-kpis">
+    <i class="bi bi-speedometer2"></i><span>KPIs Ejecutivos</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-mapa">
+    <i class="bi bi-map"></i><span>Mapa Táchira</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-feed">
+    <i class="bi bi-activity"></i><span>Feed en Tiempo Real</span>
+  </a>
+
+  <div class="sidebar-section" style="margin-top:8px">Análisis</div>
+  <a class="sidebar-item" data-section="sec-obras">
+    <i class="bi bi-building"></i><span>Obras e Inauguraciones</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-municipios">
+    <i class="bi bi-pin-map"></i><span>Municipios Visitados</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-social">
+    <i class="bi bi-emoji-smile"></i><span>Sentiment Ciudadano</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-problemas">
+    <i class="bi bi-exclamation-triangle"></i><span>Problemas Sociales</span>
+  </a>
+
+  <div class="sidebar-section" style="margin-top:8px">Entidades</div>
+  <a class="sidebar-item" data-section="sec-ranking">
+    <i class="bi bi-trophy"></i><span>Ranking Municipios</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-organismos">
+    <i class="bi bi-diagram-3"></i><span>Organismos Activos</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-alcaldias">
+    <i class="bi bi-bank"></i><span>Alcaldías</span>
+  </a>
+  <a class="sidebar-item" data-section="sec-tendencia">
+    <i class="bi bi-graph-up"></i><span>Tendencia Histórica</span>
+  </a>
+</nav>
+
+<!-- ══════════ CONTENIDO PRINCIPAL ══════════ -->
+<main class="main-content">
+
+  <!-- ── Panel de filtros ──────────────────────────────── -->
+  <div class="filters-panel fade-in">
+    <div class="filter-group" style="min-width:80px;max-width:100px;flex:none">
+      <label><i class="bi bi-funnel"></i> Filtros</label>
+      <button id="btn-limpiar-filtros" class="export-btn" style="width:100%;justify-content:center">Limpiar</button>
+    </div>
+    <div class="filter-group">
+      <label>Desde</label>
+      <input type="date" id="filtro-desde" />
+    </div>
+    <div class="filter-group">
+      <label>Hasta</label>
+      <input type="date" id="filtro-hasta" />
+    </div>
+    <div class="filter-group">
+      <label>Municipio</label>
+      <select id="filtro-municipio">
+        <option value="">Todos</option>
+        <option>San Cristóbal</option><option>Rubio</option><option>Táriba</option>
+        <option>Colón</option><option>La Fría</option><option>San Antonio del Táchira</option>
+        <option>Ureña</option><option>La Grita</option><option>El Piñal</option>
+        <option>Cordero</option><option>Coloncito</option><option>Palmira</option>
+        <option>Michelena</option><option>Lobatera</option><option>Seboruco</option>
+        <option>Pregonero</option><option>Queniquea</option><option>San Josecito</option>
+        <option>Capacho Nuevo</option><option>Abejales</option><option>El Cobre</option>
+        <option>San Félix</option><option>Santa Ana del Táchira</option>
+        <option>San Rafael del Piñal</option><option>San José de Bolívar</option>
+        <option>Delicias</option><option>Upata</option><option>San Simón</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Organismo</label>
+      <input type="text" id="filtro-organismo" placeholder="Buscar..." />
+    </div>
+    <div class="filter-group">
+      <label>Categoría</label>
+      <select id="filtro-categoria">
+        <option value="">Todas</option>
+        <option value="salud">Salud</option>
+        <option value="educacion">Educación</option>
+        <option value="vivienda">Vivienda</option>
+        <option value="infraestructura">Infraestructura</option>
+        <option value="vialidad">Vialidad</option>
+        <option value="agua">Agua</option>
+        <option value="electricidad">Electricidad</option>
+        <option value="produccion">Producción</option>
+        <option value="seguridad">Seguridad</option>
+        <option value="deporte">Deporte</option>
+        <option value="cultura">Cultura</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Tipo de Actividad</label>
+      <select id="filtro-tipo">
+        <option value="">Todos</option>
+        <option value="inauguración">Inauguración</option>
+        <option value="supervisión">Supervisión</option>
+        <option value="reunión">Reunión</option>
+        <option value="entrega">Entrega</option>
+        <option value="recorrido">Recorrido</option>
+        <option value="anuncio">Anuncio</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN KPIs ══════════════════════════════════ -->
+  <div id="sec-kpis">
+    <div class="kpi-grid fade-in">
+
+      <div class="kpi-card" style="--kpi-color:#1f6feb">
+        <div class="kpi-icon"><i class="bi bi-newspaper"></i></div>
+        <div class="kpi-label">Total Publicaciones</div>
+        <div class="kpi-value" id="kpi-publicaciones">—</div>
+        <div class="kpi-sub">Todas las fuentes</div>
+        <div class="kpi-trend up"><i class="bi bi-arrow-up-short"></i> Actualizado</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#3fb950">
+        <div class="kpi-icon"><i class="bi bi-geo-alt"></i></div>
+        <div class="kpi-label">Municipios Visitados</div>
+        <div class="kpi-value" id="kpi-municipios-v">—</div>
+        <div class="kpi-sub">de 29 municipios</div>
+        <div class="progress-bar-custom" style="margin-top:6px">
+          <div class="progress-bar-fill" id="prog-municipios" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#f85149">
+        <div class="kpi-icon"><i class="bi bi-geo"></i></div>
+        <div class="kpi-label">Municipios Pendientes</div>
+        <div class="kpi-value" id="kpi-municipios-p">—</div>
+        <div class="kpi-sub">sin actividad registrada</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#d29922">
+        <div class="kpi-icon"><i class="bi bi-building-check"></i></div>
+        <div class="kpi-label">Obras Inauguradas</div>
+        <div class="kpi-value" id="kpi-obras-total">—</div>
+        <div class="kpi-sub">en el período</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#fbbf24">
+        <div class="kpi-icon"><i class="bi bi-calendar-day"></i></div>
+        <div class="kpi-label">Obras Hoy</div>
+        <div class="kpi-value" id="kpi-obras-hoy">—</div>
+        <div class="kpi-sub">últimas 24 horas</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#bc8cff">
+        <div class="kpi-icon"><i class="bi bi-calendar-week"></i></div>
+        <div class="kpi-label">Obras esta Semana</div>
+        <div class="kpi-value" id="kpi-obras-semana">—</div>
+        <div class="kpi-sub">últimos 7 días</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#38bdf8">
+        <div class="kpi-icon"><i class="bi bi-calendar-month"></i></div>
+        <div class="kpi-label">Obras este Mes</div>
+        <div class="kpi-value" id="kpi-obras-mes">—</div>
+        <div class="kpi-sub">últimos 30 días</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#34d399">
+        <div class="kpi-icon"><i class="bi bi-emoji-smile"></i></div>
+        <div class="kpi-label">Sentiment Ciudadano</div>
+        <div class="kpi-value" id="kpi-sentiment">—</div>
+        <div class="kpi-sub" id="kpi-sentiment-label">Analizando...</div>
+      </div>
+
+      <div class="kpi-card" style="--kpi-color:#7d8590">
+        <div class="kpi-icon"><i class="bi bi-clock"></i></div>
+        <div class="kpi-label">Última Actividad</div>
+        <div class="kpi-value" id="kpi-ultima" style="font-size:1.2rem">—</div>
+        <div class="kpi-sub" id="last-update">Cargando...</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN MAPA ════════════════════════════════════ -->
+  <div id="sec-mapa" style="margin-bottom:18px">
+    <div class="chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-map" style="color:#1f6feb"></i> Mapa de Actividad — Estado Táchira</div>
+          <div class="chart-subtitle">Actividad por municipio · tamaño = publicaciones · color = intensidad</div>
+        </div>
+      </div>
+      <div id="mapa-tachira"></div>
+    </div>
+  </div>
+
+  <!-- ══ FILA: Obras por Sector + Radar ════════════════ -->
+  <div id="sec-obras" class="charts-grid" style="margin-bottom:18px">
+    <div class="col-4 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-pie-chart" style="color:#d29922"></i> Obras por Sector</div>
+          <div class="chart-subtitle">Distribución de publicaciones por categoría</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:260px"><canvas id="chart-donut-sector"></canvas></div>
+    </div>
+
+    <div class="col-4 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-diagram-3" style="color:#bc8cff"></i> Radar de Sectores</div>
+          <div class="chart-subtitle">Cobertura por área temática</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:260px"><canvas id="chart-radar"></canvas></div>
+    </div>
+
+    <div class="col-4 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-bar-chart" style="color:#1f6feb"></i> Obras Inauguradas por Día</div>
+          <div class="chart-subtitle">Últimos 30 días</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:260px"><canvas id="chart-bar-obras"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ══ FILA: Municipios Visitados / Pendientes ════════ -->
+  <div id="sec-municipios" class="charts-grid" style="margin-bottom:18px">
+    <div class="col-6 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-check2-circle" style="color:#3fb950"></i> Municipios Visitados</div>
+          <div class="chart-subtitle">Con actividad registrada en el período</div>
+        </div>
+      </div>
+      <div id="lista-visitados" style="max-height:300px;overflow-y:auto"></div>
+    </div>
+
+    <div class="col-6 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-exclamation-circle" style="color:#f85149"></i> Municipios Pendientes por Visitar</div>
+          <div class="chart-subtitle">Sin actividad registrada</div>
+        </div>
+      </div>
+      <div id="lista-pendientes" style="padding:8px 0;display:flex;flex-wrap:wrap;gap:4px;max-height:300px;overflow-y:auto;align-content:flex-start"></div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN SENTIMENT REDES ═══════════════════════ -->
+  <div id="sec-social" class="charts-grid" style="margin-bottom:18px">
+    <div class="col-8 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-bar-chart-steps" style="color:#38bdf8"></i> Sentiment Ciudadano por Red Social</div>
+          <div class="chart-subtitle">Análisis de sentimiento en publicaciones</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:280px"><canvas id="chart-sentiment-redes"></canvas></div>
+    </div>
+
+    <div class="col-4 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-bar-chart-line" style="color:#34d399"></i> Organismos más Activos</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:280px"><canvas id="chart-organismos"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN PROBLEMAS SOCIALES ════════════════════ -->
+  <div id="sec-problemas" class="charts-grid" style="margin-bottom:18px">
+    <div class="col-8 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-exclamation-triangle" style="color:#f85149"></i> Problemas Sociales más Recurrentes</div>
+          <div class="chart-subtitle">Detectados automáticamente por IA</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:300px"><canvas id="chart-problemas"></canvas></div>
+    </div>
+
+    <div class="col-4 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-graph-up-arrow" style="color:#3fb950"></i> Tendencia 6 Meses</div>
+          <div class="chart-subtitle">Publicaciones y sentiment por semana</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:300px"><canvas id="chart-line-tendencia"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN RANKING MUNICIPIOS ════════════════════ -->
+  <div id="sec-ranking" class="charts-grid" style="margin-bottom:18px">
+    <div class="col-6 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-trophy" style="color:#d29922"></i> Ranking Municipios — Obras vs Problemas</div>
+        </div>
+      </div>
+      <div class="chart-body" style="height:380px"><canvas id="chart-ranking"></canvas></div>
+    </div>
+
+    <div class="col-6 chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-table" style="color:#1f6feb"></i> Tabla de Ranking por Municipio</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="tabla-ranking" class="table table-sm w-100" style="color:#e6edf3">
+          <thead>
+            <tr>
+              <th>#</th><th>Municipio</th><th>Publicaciones</th>
+              <th>Obras</th><th>Problemas</th><th>Neg.</th>
+              <th>Estado</th><th>Última Act.</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-ranking"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN ALCALDÍAS ══════════════════════════════ -->
+  <div id="sec-alcaldias" style="margin-bottom:18px">
+    <div class="chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-bank" style="color:#bc8cff"></i> Alcaldías del Estado Táchira — Actividad</div>
+          <div class="chart-subtitle">Ranking de alcaldías por publicaciones y obras</div>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="tabla-alcaldias" class="table table-sm w-100" style="color:#e6edf3">
+          <thead>
+            <tr><th>#</th><th>Alcaldía</th><th>Municipio</th><th>Publicaciones</th><th>Obras</th><th>Engagement</th><th>Estado</th></tr>
+          </thead>
+          <tbody id="tbody-alcaldias"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ SECCIÓN FEED ════════════════════════════════════ -->
+  <div id="sec-feed" style="margin-bottom:18px">
+    <div class="chart-card fade-in">
+      <div class="chart-card-header">
+        <div>
+          <div class="chart-title"><i class="bi bi-activity" style="color:#1f6feb"></i> Feed en Tiempo Real</div>
+          <div class="chart-subtitle">Últimas publicaciones de todas las fuentes</div>
+        </div>
+      </div>
+      <div id="feed-container" style="max-height:600px;overflow-y:auto"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Toast container ───────────────────────────────── -->
+<div class="toast-container"></div>
+
+<!-- ═══════════ SCRIPTS ════════════════════════════════ -->
+<!-- jQuery (requerido por DataTables) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Bootstrap 5 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<!-- Leaflet -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<!-- DataTables -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<!-- SheetJS (Excel) -->
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<!-- jsPDF (PDF) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- Configurar URL del API -->
+<script>window.API_BASE = 'http://localhost:3000/api/v1';</script>
+
+<!-- Módulos del dashboard -->
+<script src="assets/js/api.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/maps.js"></script>
+<script src="assets/js/exports.js"></script>
+<script src="assets/js/dashboard.js"></script>
+
+</body>
+</html>
