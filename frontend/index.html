@@ -121,6 +121,39 @@ option{background:var(--card)}
 
 /* PARROQUIAS POPUP */
 .par-list{font-size:.71rem;color:#7d8590;margin-top:5px;line-height:1.6}
+
+/* KPI CLICKEABLE */
+.kpi{cursor:pointer}
+.kpi:hover{border-color:var(--kc,var(--accent))!important}
+.kpi.activo{border-color:var(--kc,var(--accent))!important;box-shadow:0 0 0 2px var(--kc,var(--accent))33}
+.kpi-hint{font-size:.6rem;color:var(--dim);margin-top:4px}
+
+/* PANEL DETALLE KPI */
+#kpi-panel{
+  display:none;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:18px 20px;
+  margin-bottom:14px;
+  animation:slideDown .2s ease;
+  position:relative;
+}
+#kpi-panel.visible{display:block}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.kpi-panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.kpi-panel-title{font-size:.92rem;font-weight:700;display:flex;align-items:center;gap:8px}
+.kpi-panel-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:2px 6px;border-radius:4px}
+.kpi-panel-close:hover{background:var(--border);color:var(--text)}
+.det-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.det-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px}
+.det-item-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.det-item-val{font-size:1.3rem;font-weight:700;line-height:1}
+.det-item-sub{font-size:.66rem;color:var(--muted);margin-top:3px}
+.det-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem}
+.det-row:last-child{border-bottom:none}
+.det-bar{height:5px;border-radius:3px;background:var(--border);margin-top:4px}
+.det-bar-fill{height:100%;border-radius:3px;transition:width .4s .1s}
 </style>
 </head>
 <body>
@@ -215,15 +248,79 @@ option{background:var(--card)}
 
 <!-- KPIs -->
 <div class="kpi-grid" id="sec-kpi">
-  <div class="kpi" style="--kc:#1f6feb"><div class="kpi-ico"><i class="bi bi-newspaper"></i></div><div class="kpi-lbl">Total Publicaciones</div><div class="kpi-val">4,837</div><div class="kpi-sub">Todas las fuentes</div></div>
-  <div class="kpi" style="--kc:#3fb950"><div class="kpi-ico"><i class="bi bi-geo-alt"></i></div><div class="kpi-lbl">Municipios Visitados</div><div class="kpi-val">21</div><div class="kpi-sub">de 29 municipios</div><div class="kpi-prog"><div class="kpi-prog-fill" style="width:72%"></div></div></div>
-  <div class="kpi" style="--kc:#f85149"><div class="kpi-ico"><i class="bi bi-geo"></i></div><div class="kpi-lbl">Municipios Pendientes</div><div class="kpi-val">8</div><div class="kpi-sub">sin actividad registrada</div></div>
-  <div class="kpi" style="--kc:#d29922"><div class="kpi-ico"><i class="bi bi-building-check"></i></div><div class="kpi-lbl">Obras Inauguradas</div><div class="kpi-val">183</div><div class="kpi-sub">en el período</div></div>
-  <div class="kpi" style="--kc:#fbbf24"><div class="kpi-ico"><i class="bi bi-calendar-day"></i></div><div class="kpi-lbl">Obras Hoy</div><div class="kpi-val">7</div><div class="kpi-sub">últimas 24 horas</div></div>
-  <div class="kpi" style="--kc:#bc8cff"><div class="kpi-ico"><i class="bi bi-calendar-week"></i></div><div class="kpi-lbl">Obras esta Semana</div><div class="kpi-val">34</div><div class="kpi-sub">últimos 7 días</div></div>
-  <div class="kpi" style="--kc:#38bdf8"><div class="kpi-ico"><i class="bi bi-calendar-month"></i></div><div class="kpi-lbl">Obras este Mes</div><div class="kpi-val">112</div><div class="kpi-sub">últimos 30 días</div></div>
-  <div class="kpi" style="--kc:#34d399"><div class="kpi-ico"><i class="bi bi-emoji-smile"></i></div><div class="kpi-lbl">Sentiment Ciudadano</div><div class="kpi-val">+0.62</div><div class="kpi-sub" style="color:#3fb950">😊 Positivo</div></div>
-  <div class="kpi" style="--kc:#7d8590"><div class="kpi-ico"><i class="bi bi-clock"></i></div><div class="kpi-lbl">Última Actividad</div><div class="kpi-val" style="font-size:1.05rem">Hace 8 min</div><div class="kpi-sub" id="last-update">Cargando...</div></div>
+  <div class="kpi" style="--kc:#1f6feb" onclick="mostrarDetalleKPI('publicaciones',this)">
+    <div class="kpi-ico"><i class="bi bi-newspaper"></i></div>
+    <div class="kpi-lbl">Total Publicaciones</div>
+    <div class="kpi-val">4,837</div>
+    <div class="kpi-sub">Todas las fuentes</div>
+    <div class="kpi-hint">▾ Click para ver desglose</div>
+  </div>
+  <div class="kpi" style="--kc:#3fb950" onclick="mostrarDetalleKPI('municipios_v',this)">
+    <div class="kpi-ico"><i class="bi bi-geo-alt"></i></div>
+    <div class="kpi-lbl">Municipios Visitados</div>
+    <div class="kpi-val">21</div>
+    <div class="kpi-sub">de 29 municipios</div>
+    <div class="kpi-prog"><div class="kpi-prog-fill" style="width:72%"></div></div>
+    <div class="kpi-hint">▾ Click para ver lista</div>
+  </div>
+  <div class="kpi" style="--kc:#f85149" onclick="mostrarDetalleKPI('municipios_p',this)">
+    <div class="kpi-ico"><i class="bi bi-geo"></i></div>
+    <div class="kpi-lbl">Municipios Pendientes</div>
+    <div class="kpi-val">8</div>
+    <div class="kpi-sub">sin actividad registrada</div>
+    <div class="kpi-hint">▾ Click para ver cuáles</div>
+  </div>
+  <div class="kpi" style="--kc:#d29922" onclick="mostrarDetalleKPI('obras_total',this)">
+    <div class="kpi-ico"><i class="bi bi-building-check"></i></div>
+    <div class="kpi-lbl">Obras Inauguradas</div>
+    <div class="kpi-val">183</div>
+    <div class="kpi-sub">en el período</div>
+    <div class="kpi-hint">▾ Click para ver por sector</div>
+  </div>
+  <div class="kpi" style="--kc:#fbbf24" onclick="mostrarDetalleKPI('obras_hoy',this)">
+    <div class="kpi-ico"><i class="bi bi-calendar-day"></i></div>
+    <div class="kpi-lbl">Obras Hoy</div>
+    <div class="kpi-val">7</div>
+    <div class="kpi-sub">últimas 24 horas</div>
+    <div class="kpi-hint">▾ Click para ver detalle</div>
+  </div>
+  <div class="kpi" style="--kc:#bc8cff" onclick="mostrarDetalleKPI('obras_semana',this)">
+    <div class="kpi-ico"><i class="bi bi-calendar-week"></i></div>
+    <div class="kpi-lbl">Obras esta Semana</div>
+    <div class="kpi-val">34</div>
+    <div class="kpi-sub">últimos 7 días</div>
+    <div class="kpi-hint">▾ Click para ver detalle</div>
+  </div>
+  <div class="kpi" style="--kc:#38bdf8" onclick="mostrarDetalleKPI('obras_mes',this)">
+    <div class="kpi-ico"><i class="bi bi-calendar-month"></i></div>
+    <div class="kpi-lbl">Obras este Mes</div>
+    <div class="kpi-val">112</div>
+    <div class="kpi-sub">últimos 30 días</div>
+    <div class="kpi-hint">▾ Click para ver por municipio</div>
+  </div>
+  <div class="kpi" style="--kc:#34d399" onclick="mostrarDetalleKPI('sentiment',this)">
+    <div class="kpi-ico"><i class="bi bi-emoji-smile"></i></div>
+    <div class="kpi-lbl">Sentiment Ciudadano</div>
+    <div class="kpi-val">+0.62</div>
+    <div class="kpi-sub" style="color:#3fb950">😊 Positivo</div>
+    <div class="kpi-hint">▾ Click para ver por red social</div>
+  </div>
+  <div class="kpi" style="--kc:#7d8590" onclick="mostrarDetalleKPI('ultima',this)">
+    <div class="kpi-ico"><i class="bi bi-clock"></i></div>
+    <div class="kpi-lbl">Última Actividad</div>
+    <div class="kpi-val" style="font-size:1.05rem">Hace 8 min</div>
+    <div class="kpi-sub" id="last-update">Cargando...</div>
+    <div class="kpi-hint">▾ Click para ver actividad reciente</div>
+  </div>
+</div>
+
+<!-- Panel de detalle KPI -->
+<div id="kpi-panel">
+  <div class="kpi-panel-hdr">
+    <div class="kpi-panel-title" id="kpi-panel-titulo"></div>
+    <button class="kpi-panel-close" onclick="cerrarPanelKPI()"><i class="bi bi-x-lg"></i></button>
+  </div>
+  <div id="kpi-panel-body"></div>
 </div>
 
 <!-- MAPA -->
@@ -776,6 +873,303 @@ function toggleSidebar(){
 function activarItem(el){
   document.querySelectorAll('.s-item').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  PANEL DETALLE KPI — Información interna al hacer click
+// ══════════════════════════════════════════════════════════════
+
+const DETALLE_KPI = {
+
+  publicaciones:{
+    titulo:'📰 Desglose de Publicaciones por Plataforma',
+    color:'#1f6feb',
+    render:()=>{
+      const datos=[
+        {plt:'Instagram',   seg:520+180+60, icon:'bi-instagram',   color:'#e1306c',  pct:16.0},
+        {plt:'Facebook',    seg:410+240+80, icon:'bi-facebook',    color:'#1877f2',  pct:15.1},
+        {plt:'Telegram',    seg:280+320+45, icon:'bi-telegram',    color:'#0088cc',  pct:13.3},
+        {plt:'Noticias Web',seg:155+410+35, icon:'bi-globe',       color:'#34d399',  pct:12.4},
+        {plt:'Twitter/X',   seg:310+190+140,icon:'bi-twitter-x',  color:'#e6edf3',  pct:13.2},
+        {plt:'TikTok',      seg:190+140+90, icon:'bi-tiktok',      color:'#fe2c55',  pct:8.7},
+      ];
+      const total=datos.reduce((s,d)=>s+d.seg,0);
+      const max=Math.max(...datos.map(d=>d.seg));
+      return `<div class="det-grid">
+        ${datos.map(d=>`
+          <div class="det-item">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:6px">
+              <i class="bi ${d.icon}" style="color:${d.color};font-size:1rem"></i>
+              <span style="font-size:.8rem;font-weight:600">${d.plt}</span>
+            </div>
+            <div class="det-item-val" style="color:${d.color}">${d.seg.toLocaleString('es-VE')}</div>
+            <div class="det-item-sub">${((d.seg/total)*100).toFixed(1)}% del total</div>
+            <div class="det-bar"><div class="det-bar-fill" style="width:${Math.round(d.seg/max*100)}%;background:${d.color}"></div></div>
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:8px;font-size:.78rem;color:var(--muted)">
+        📊 Total recolectado: <strong style="color:var(--text)">4.837</strong> publicaciones ·
+        Positivas: <strong style="color:#3fb950">1.865</strong> ·
+        Neutras: <strong style="color:#7d8590">1.530</strong> ·
+        Negativas: <strong style="color:#f85149">442</strong>
+      </div>`;
+    }
+  },
+
+  municipios_v:{
+    titulo:'✅ Municipios Visitados — Detalle completo (21/29)',
+    color:'#3fb950',
+    render:()=>{
+      const max=Math.max(...MUNICIPIOS.map(d=>d.pub));
+      return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px">
+        ${MUNICIPIOS.map((d,i)=>`
+          <div class="det-row" style="background:var(--bg);border-radius:7px;padding:8px 11px;border:1px solid var(--border);display:block">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div>
+                <span style="font-size:.8rem;font-weight:600">${d.m}</span>
+                <span style="font-size:.67rem;color:var(--muted);margin-left:5px">Cap. ${d.cap}</span>
+              </div>
+              <span class="sem ${d.sent>.6?'sem-v':d.sent>.3?'sem-a':'sem-r'}" style="font-size:.6rem">${d.sent>.6?'Óptimo':'Atención'}</span>
+            </div>
+            <div style="display:flex;gap:12px;margin-top:5px">
+              <span style="font-size:.72rem"><strong style="color:#1f6feb">${d.pub}</strong> pub.</span>
+              <span style="font-size:.72rem"><strong style="color:#d29922">${d.obras}</strong> obras</span>
+              <span style="font-size:.72rem"><strong style="color:#f85149">${d.prob}</strong> prob.</span>
+            </div>
+            <div class="det-bar" style="margin-top:5px"><div class="det-bar-fill" style="width:${Math.round(d.pub/max*100)}%;background:#3fb950"></div></div>
+          </div>`).join('')}
+      </div>`;
+    }
+  },
+
+  municipios_p:{
+    titulo:'⚠️ Municipios Pendientes por Visitar (8/29)',
+    color:'#f85149',
+    render:()=>`
+      <div style="margin-bottom:12px;padding:10px 14px;background:rgba(248,81,73,.08);border:1px solid rgba(248,81,73,.2);border-radius:8px;font-size:.8rem;color:#f85149">
+        <i class="bi bi-exclamation-circle"></i> Estos 8 municipios <strong>no tienen actividad registrada</strong> en el período seleccionado. Se recomienda priorizar visitas.
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px">
+        ${PENDIENTES.map(p=>`
+          <div style="background:var(--bg);border:1px solid rgba(248,81,73,.25);border-radius:8px;padding:12px 14px">
+            <div style="font-size:.85rem;font-weight:700;color:var(--text)">${p.m}</div>
+            <div style="font-size:.7rem;color:var(--muted);margin-top:2px"><i class="bi bi-geo-alt"></i> Capital: ${p.cap}</div>
+            <div style="margin-top:8px"><span class="sem sem-r" style="font-size:.63rem">Sin actividad</span></div>
+          </div>`).join('')}
+      </div>`,
+  },
+
+  obras_total:{
+    titulo:'🏗 Obras Inauguradas — Desglose por Sector',
+    color:'#d29922',
+    render:()=>{
+      const max=Math.max(...SECT_VAL);
+      const total=SECT_VAL.reduce((s,v)=>s+v,0);
+      const colors=['#bc8cff','#f85149','#58a6ff','#d29922','#38bdf8','#fbbf24','#34d399','#f87171','#a78bfa','#fb923c','#3fb950'];
+      return `<div class="det-grid">
+        ${SECTORES.map((s,i)=>`
+          <div class="det-item">
+            <div class="det-item-lbl">${s}</div>
+            <div class="det-item-val" style="color:${colors[i]}">${SECT_VAL[i]}</div>
+            <div class="det-item-sub">${((SECT_VAL[i]/total)*100).toFixed(1)}% del total</div>
+            <div class="det-bar"><div class="det-bar-fill" style="width:${Math.round(SECT_VAL[i]/max*100)}%;background:${colors[i]}"></div></div>
+          </div>`).join('')}
+      </div>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--bg);border-radius:8px;font-size:.78rem;color:var(--muted)">
+        Sector con más obras: <strong style="color:#d29922">Vialidad (42)</strong> ·
+        Menor cobertura: <strong style="color:#fb923c">Cultura (7)</strong>
+      </div>`;
+    }
+  },
+
+  obras_hoy:{
+    titulo:'📅 Obras Inauguradas Hoy — Últimas 24 horas',
+    color:'#fbbf24',
+    render:()=>`
+      <div class="det-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:12px">
+        <div class="det-item"><div class="det-item-lbl">Inauguradas hoy</div><div class="det-item-val" style="color:#fbbf24">7</div><div class="det-item-sub">+1 vs. ayer</div></div>
+        <div class="det-item"><div class="det-item-lbl">Municipios</div><div class="det-item-val" style="color:#1f6feb">4</div><div class="det-item-sub">con actividad hoy</div></div>
+        <div class="det-item"><div class="det-item-lbl">Sector líder</div><div class="det-item-val" style="color:#d29922;font-size:1rem">Vialidad</div><div class="det-item-sub">3 obras hoy</div></div>
+      </div>
+      ${[
+        {m:'San Cristóbal', obra:'Repavimentación Av. Principal sector La Ermita', sector:'vialidad', org:'INVIAL'},
+        {m:'Junín (Rubio)', obra:'Entrega de aulas UE Simón Bolívar', sector:'educacion', org:'Dirección Educación'},
+        {m:'Cárdenas (Táriba)', obra:'Ambulatorio La Florida — equipamiento médico', sector:'salud', org:'Corposalud'},
+        {m:'Ayacucho (San Juan de Colón)', obra:'Sistema de agua potable sector Rivas Berti', sector:'agua', org:'Hidrotáchira'},
+        {m:'San Cristóbal', obra:'Cancha deportiva sector La Concordia', sector:'deporte', org:'INDET'},
+        {m:'Bolívar (San Antonio)', obra:'Vía fronteriza — km 4 asfaltado', sector:'vialidad', org:'INVIAL'},
+        {m:'Guásimos (Palmira)', obra:'Viviendas GMVV — 8 unidades', sector:'vivienda', org:'INVIVIENDA'},
+      ].map(o=>`
+        <div class="det-row">
+          <div style="flex:1">
+            <span style="font-size:.8rem;font-weight:600">${o.obra}</span>
+            <div style="font-size:.68rem;color:var(--muted);margin-top:2px">
+              <i class="bi bi-geo-alt" style="color:var(--accent)"></i> ${o.m} ·
+              <span class="bc b${o.sector}" style="font-size:.61rem">${o.sector}</span>
+            </div>
+          </div>
+          <span style="font-size:.7rem;color:var(--muted);white-space:nowrap;margin-left:10px">${o.org}</span>
+        </div>`).join('')}`,
+  },
+
+  obras_semana:{
+    titulo:'📆 Obras esta Semana — Últimos 7 días',
+    color:'#bc8cff',
+    render:()=>{
+      const dias=[
+        {d:'Lunes',    n:5, muns:'San Cristóbal, Junín'},
+        {d:'Martes',   n:4, muns:'Cárdenas, Ayacucho'},
+        {d:'Miércoles',n:6, muns:'García de Hevia, Bolívar, Guásimos'},
+        {d:'Jueves',   n:5, muns:'San Cristóbal, Uribante'},
+        {d:'Viernes',  n:7, muns:'Junín, Cárdenas, Jáuregui'},
+        {d:'Sábado',   n:3, muns:'Michelena, Lobatera'},
+        {d:'Domingo',  n:4, muns:'San Cristóbal, Pedro Mª Ureña'},
+      ];
+      const max=Math.max(...dias.map(d=>d.n));
+      return `<div class="det-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="det-item"><div class="det-item-lbl">Total semana</div><div class="det-item-val" style="color:#bc8cff">34</div><div class="det-item-sub">+8 vs. sem. anterior</div></div>
+        <div class="det-item"><div class="det-item-lbl">Día más activo</div><div class="det-item-val" style="color:#fbbf24;font-size:1rem">Viernes</div><div class="det-item-sub">7 obras en un día</div></div>
+        <div class="det-item"><div class="det-item-lbl">Municipios cubiertos</div><div class="det-item-val" style="color:#3fb950">14</div><div class="det-item-sub">de 29 posibles</div></div>
+      </div>
+      ${dias.map(d=>`
+        <div class="det-row">
+          <div style="width:90px;font-size:.8rem;font-weight:600">${d.d}</div>
+          <div style="flex:1;padding:0 14px">
+            <div class="det-bar"><div class="det-bar-fill" style="width:${Math.round(d.n/max*100)}%;background:#bc8cff"></div></div>
+          </div>
+          <div style="font-size:.82rem;font-weight:700;color:#bc8cff;width:24px;text-align:right">${d.n}</div>
+          <div style="font-size:.67rem;color:var(--muted);margin-left:12px;flex:1;text-align:right">${d.muns}</div>
+        </div>`).join('')}`;
+    }
+  },
+
+  obras_mes:{
+    titulo:'🗓 Obras este Mes — Top municipios (30 días)',
+    color:'#38bdf8',
+    render:()=>{
+      const top=MUNICIPIOS.slice(0,10);
+      const maxO=Math.max(...top.map(d=>d.obras));
+      return `<div class="det-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+        <div class="det-item"><div class="det-item-lbl">Total mes</div><div class="det-item-val" style="color:#38bdf8">112</div><div class="det-item-sub">+23 vs. mes anterior</div></div>
+        <div class="det-item"><div class="det-item-lbl">Municipio líder</div><div class="det-item-val" style="color:#1f6feb;font-size:1rem">Sn. Cristóbal</div><div class="det-item-sub">38 obras</div></div>
+        <div class="det-item"><div class="det-item-lbl">Promedio diario</div><div class="det-item-val" style="color:#34d399">3.7</div><div class="det-item-sub">obras por día</div></div>
+        <div class="det-item"><div class="det-item-lbl">Sector 1</div><div class="det-item-val" style="color:#d29922;font-size:1rem">Vialidad</div><div class="det-item-sub">42 obras</div></div>
+      </div>
+      ${top.map((d,i)=>`
+        <div class="det-row">
+          <div style="width:22px;font-size:.75rem;color:var(--muted)">${i+1}</div>
+          <div style="flex:1.2;font-size:.8rem;font-weight:600">${d.m}</div>
+          <div style="flex:1;padding:0 12px">
+            <div class="det-bar"><div class="det-bar-fill" style="width:${Math.round(d.obras/maxO*100)}%;background:#38bdf8"></div></div>
+          </div>
+          <div style="font-size:.82rem;font-weight:700;color:#38bdf8;width:28px;text-align:right">${d.obras}</div>
+          <div style="font-size:.67rem;color:var(--muted);margin-left:12px;width:60px;text-align:right">${((d.obras/112)*100).toFixed(1)}%</div>
+        </div>`).join('')}`;
+    }
+  },
+
+  sentiment:{
+    titulo:'😊 Sentiment Ciudadano — Análisis por Red Social',
+    color:'#34d399',
+    render:()=>{
+      const datos=REDES.labels.map((l,i)=>({
+        red:l, pos:REDES.pos[i], neu:REDES.neu[i], neg:REDES.neg[i],
+        total:REDES.pos[i]+REDES.neu[i]+REDES.neg[i],
+      }));
+      const redColors=['#e1306c','#1877f2','#000','#0088cc','#fe2c55','#f7931e'];
+      return `<div class="det-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:14px">
+        <div class="det-item"><div class="det-item-lbl">Sentiment global</div><div class="det-item-val" style="color:#34d399">+0.62</div><div class="det-item-sub">😊 Positivo dominante</div></div>
+        <div class="det-item"><div class="det-item-lbl">Publicaciones positivas</div><div class="det-item-val" style="color:#3fb950">1.865</div><div class="det-item-sub">38.6% del total</div></div>
+        <div class="det-item"><div class="det-item-lbl">Publicaciones negativas</div><div class="det-item-val" style="color:#f85149">442</div><div class="det-item-sub">9.1% del total</div></div>
+      </div>
+      ${datos.map((d,i)=>{
+        const pctP=((d.pos/d.total)*100).toFixed(0);
+        const pctN=((d.neg/d.total)*100).toFixed(0);
+        const score=(((d.pos-d.neg)/d.total)).toFixed(2);
+        return `<div class="det-row">
+          <div style="width:110px;font-size:.8rem;font-weight:600;color:${redColors[i]}">${d.red}</div>
+          <div style="flex:1;padding:0 10px">
+            <div style="height:10px;border-radius:5px;overflow:hidden;display:flex">
+              <div style="width:${pctP}%;background:#3fb950"></div>
+              <div style="flex:1;background:#484f58"></div>
+              <div style="width:${pctN}%;background:#f85149"></div>
+            </div>
+          </div>
+          <div style="font-size:.73rem;display:flex;gap:10px;min-width:160px;justify-content:flex-end">
+            <span style="color:#3fb950">▲${pctP}%</span>
+            <span style="color:#7d8590">${((d.neu/d.total)*100).toFixed(0)}%</span>
+            <span style="color:#f85149">▼${pctN}%</span>
+            <span style="color:${score>0?'#3fb950':'#f85149'};font-weight:700;width:40px;text-align:right">${score>0?'+':''}${score}</span>
+          </div>
+        </div>`;
+      }).join('')}
+      <div style="margin-top:8px;font-size:.68rem;color:var(--muted);display:flex;gap:16px;padding:6px 0">
+        <span><span style="color:#3fb950">■</span> Positivo</span>
+        <span><span style="color:#484f58">■</span> Neutro</span>
+        <span><span style="color:#f85149">■</span> Negativo</span>
+        <span style="margin-left:auto">Score = (pos-neg)/total</span>
+      </div>`;
+    }
+  },
+
+  ultima:{
+    titulo:'🕐 Actividad Reciente — Últimas publicaciones registradas',
+    color:'#7d8590',
+    render:()=>`
+      <div class="det-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:14px">
+        <div class="det-item"><div class="det-item-lbl">Última publ.</div><div class="det-item-val" style="color:#e6edf3;font-size:1rem">Hace 8 min</div><div class="det-item-sub">Instagram</div></div>
+        <div class="det-item"><div class="det-item-lbl">Hoy</div><div class="det-item-val" style="color:#1f6feb">142</div><div class="det-item-sub">publicaciones</div></div>
+        <div class="det-item"><div class="det-item-lbl">Fuente más activa</div><div class="det-item-val" style="color:#e1306c;font-size:1rem">Instagram</div><div class="det-item-sub">760 hoy</div></div>
+        <div class="det-item"><div class="det-item-lbl">Últ. municipio</div><div class="det-item-val" style="color:#3fb950;font-size:1rem">Sn. Cristóbal</div><div class="det-item-sub">hace 8 min</div></div>
+      </div>
+      ${FEED_DATA.slice(0,5).map(f=>`
+        <div class="det-row">
+          <div class="feed-plt plt-${f.plt}" style="width:26px;height:26px;border-radius:6px;font-size:.78rem;flex-shrink:0;display:flex;align-items:center;justify-content:center">${PICONS[f.plt]}</div>
+          <div style="flex:1;margin-left:10px">
+            <div style="font-size:.78rem;font-weight:600">${f.ent}</div>
+            <div style="font-size:.72rem;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:400px">${f.txt}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;margin-left:10px;flex-shrink:0">
+            <span class="bc b${f.cat}" style="font-size:.6rem">${f.cat}</span>
+            <span style="font-size:.66rem;color:var(--muted)">${f.t}</span>
+          </div>
+        </div>`).join('')}`,
+  },
+};
+
+let kpiActivo = null;
+
+function mostrarDetalleKPI(tipo, card){
+  const panel  = document.getElementById('kpi-panel');
+  const titulo = document.getElementById('kpi-panel-titulo');
+  const body   = document.getElementById('kpi-panel-body');
+  const det    = DETALLE_KPI[tipo];
+  if(!det || !panel) return;
+
+  // Si se hace click en el mismo, cerrar
+  if(kpiActivo === tipo){
+    cerrarPanelKPI();
+    return;
+  }
+
+  // Quitar activo de todos
+  document.querySelectorAll('.kpi').forEach(k=>k.classList.remove('activo'));
+  card.classList.add('activo');
+  kpiActivo = tipo;
+
+  titulo.innerHTML = `<span style="color:${det.color}">${det.titulo}</span>`;
+  body.innerHTML   = det.render();
+  panel.classList.add('visible');
+  panel.style.borderTopColor = det.color;
+
+  // Scroll suave al panel
+  setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'nearest'}), 50);
+}
+
+function cerrarPanelKPI(){
+  document.getElementById('kpi-panel')?.classList.remove('visible');
+  document.querySelectorAll('.kpi').forEach(k=>k.classList.remove('activo'));
+  kpiActivo = null;
 }
 
 // ══════════════════════════════════════════════════════════════
