@@ -42,6 +42,13 @@
   </div>
 
   <div class="ms-auto d-flex align-items-center gap-16" style="gap:16px">
+    <!-- Badge alertas -->
+    <div style="position:relative;cursor:pointer" onclick="document.getElementById('sec-ranking').scrollIntoView({behavior:'smooth'})">
+      <i class="bi bi-bell" style="color:#7d8590;font-size:1rem"></i>
+      <span id="badge-alertas" style="display:none;position:absolute;top:-4px;right:-4px;background:#f85149;color:#fff;font-size:0.55rem;font-weight:700;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center"></span>
+    </div>
+    <!-- Usuario -->
+    <div id="topbar-user" class="d-flex align-items-center gap-2"></div>
     <div class="topbar-refresh">
       <div class="dot-live"></div>
       <span id="countdown">En vivo</span>
@@ -436,9 +443,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <!-- Configurar URL del API -->
-<script>window.API_BASE = 'http://localhost:3000/api/v1';</script>
+<script>window.API_BASE = 'http://localhost:3000/api/v1'; window.REQUIRE_AUTH = false;</script>
 
 <!-- Módulos del dashboard -->
+<script src="assets/js/auth.js"></script>
 <script src="assets/js/api.js"></script>
 <script src="assets/js/charts.js"></script>
 <script src="assets/js/maps.js"></script>

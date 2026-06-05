@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMGP Táchira — Administración</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="../../assets/css/dashboard.css" rel="stylesheet" />
+  <style>
+    .admin-topbar { background:#0d1117;border-bottom:1px solid #21262d;padding:12px 24px;display:flex;align-items:center;gap:12px;position:fixed;top:0;left:0;right:0;z-index:999; }
+    .tab-nav { display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #21262d;padding-bottom:0; }
+    .tab-btn { background:none;border:none;color:#7d8590;padding:10px 18px;font-size:0.84rem;font-weight:600;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s; }
+    .tab-btn.active,.tab-btn:hover { color:#e6edf3;border-bottom-color:#1f6feb; }
+    .tab-pane { display:none; }
+    .tab-pane.active { display:block; }
+    .stat-mini { background:#161b22;border:1px solid #21262d;border-radius:8px;padding:14px 18px;text-align:center; }
+    .stat-mini .val { font-size:1.8rem;font-weight:700;line-height:1; }
+    .stat-mini .lbl { font-size:0.68rem;color:#7d8590;text-transform:uppercase;margin-top:4px; }
+    .table-dark-custom th  { background:#0d1117!important;color:#7d8590!important;font-size:0.72rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #21262d!important; }
+    .table-dark-custom td  { border-bottom:1px solid #21262d!important;vertical-align:middle;font-size:0.82rem; }
+    .table-dark-custom tr:hover td { background:#1c2333!important; }
+    .badge-rol { font-size:0.65rem;padding:3px 9px;border-radius:10px;font-weight:700; }
+    .rol-super_admin { background:rgba(248,81,73,0.15);color:#f85149; }
+    .rol-admin       { background:rgba(31,111,235,0.15);color:#1f6feb; }
+    .rol-analista    { background:rgba(210,153,34,0.15);color:#d29922; }
+    .rol-monitor     { background:rgba(63,185,80,0.15);color:#3fb950; }
+    .btn-sm-icon { padding:4px 8px;font-size:0.78rem; }
+    .form-dark { background:#0d1117;border:1px solid #21262d;color:#e6edf3;border-radius:6px;padding:8px 12px;font-size:0.84rem;width:100%; }
+    .form-dark:focus { border-color:#1f6feb;outline:none;box-shadow:0 0 0 3px rgba(31,111,235,0.15); }
+    option { background:#161b22; }
+    .severity-critica { color:#f85149;font-weight:700; }
+    .severity-alta    { color:#d29922;font-weight:700; }
+    .severity-media   { color:#1f6feb; }
+    .severity-info    { color:#3fb950; }
+  </style>
+</head>
+<body>
+
+<div class="admin-topbar">
+  <a href="/" style="color:#7d8590;text-decoration:none"><i class="bi bi-arrow-left"></i></a>
+  <div class="brand-dot" style="width:10px;height:10px;border-radius:50%;background:#1f6feb;box-shadow:0 0 8px rgba(31,111,235,0.4)"></div>
+  <span style="font-weight:700;font-size:0.9rem">Panel de Administración — SIMGP Táchira</span>
+  <div class="ms-auto d-flex align-items-center gap-3">
+    <span id="admin-user-name" style="font-size:0.78rem;color:#7d8590"></span>
+    <button onclick="logout()" class="export-btn"><i class="bi bi-box-arrow-right"></i> Salir</button>
+  </div>
+</div>
+
+<div style="padding:80px 24px 40px">
+
+  <!-- Stats globales -->
+  <div class="row g-3 mb-4" id="admin-stats">
+    <div class="col"><div class="stat-mini"><div class="val" id="st-entidades" style="color:#1f6feb">—</div><div class="lbl">Entidades activas</div></div></div>
+    <div class="col"><div class="stat-mini"><div class="val" id="st-fuentes"   style="color:#3fb950">—</div><div class="lbl">Fuentes activas</div></div></div>
+    <div class="col"><div class="stat-mini"><div class="val" id="st-pubs"      style="color:#d29922">—</div><div class="lbl">Publicaciones 24h</div></div></div>
+    <div class="col"><div class="stat-mini"><div class="val" id="st-alertas"   style="color:#f85149">—</div><div class="lbl">Alertas sin leer</div></div></div>
+    <div class="col"><div class="stat-mini"><div class="val" id="st-jobs"      style="color:#bc8cff">—</div><div class="lbl">Jobs activos</div></div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-nav">
+    <button class="tab-btn active" onclick="showTab('entidades')"><i class="bi bi-building me-1"></i>Entidades</button>
+    <button class="tab-btn" onclick="showTab('fuentes')"><i class="bi bi-rss me-1"></i>Fuentes</button>
+    <button class="tab-btn" onclick="showTab('alertas')"><i class="bi bi-bell me-1"></i>Alertas</button>
+    <button class="tab-btn" onclick="showTab('usuarios')"><i class="bi bi-people me-1"></i>Usuarios</button>
+    <button class="tab-btn" onclick="showTab('etl')"><i class="bi bi-gear me-1"></i>ETL Jobs</button>
+  </div>
+
+  <!-- ══ Entidades ══════════════════════════════════════ -->
+  <div id="tab-entidades" class="tab-pane active">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 style="color:#e6edf3;margin:0">Entidades monitoreadas</h6>
+      <button class="export-btn" onclick="modalEntidad()"><i class="bi bi-plus"></i> Nueva entidad</button>
+    </div>
+    <div class="chart-card">
+      <table id="tbl-entidades" class="table w-100 table-dark-custom">
+        <thead><tr><th>Nombre</th><th>Tipo</th><th>Municipio</th><th>Titular</th><th>Fuentes</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-entidades"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ Fuentes ════════════════════════════════════════ -->
+  <div id="tab-fuentes" class="tab-pane">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 style="color:#e6edf3;margin:0">Fuentes de recolección</h6>
+      <button class="export-btn" onclick="modalFuente()"><i class="bi bi-plus"></i> Nueva fuente</button>
+    </div>
+    <div class="chart-card">
+      <table id="tbl-fuentes" class="table w-100 table-dark-custom">
+        <thead><tr><th>Entidad</th><th>Plataforma</th><th>Handle</th><th>Intervalo</th><th>Última sync</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-fuentes"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ Alertas ════════════════════════════════════════ -->
+  <div id="tab-alertas" class="tab-pane">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 style="color:#e6edf3;margin:0">Alertas del sistema</h6>
+      <button class="export-btn" onclick="cargarAlertas()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+    </div>
+    <div class="chart-card">
+      <table id="tbl-alertas" class="table w-100 table-dark-custom">
+        <thead><tr><th>Severidad</th><th>Título</th><th>Mensaje</th><th>Generada</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-alertas"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ Usuarios ═══════════════════════════════════════ -->
+  <div id="tab-usuarios" class="tab-pane">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 style="color:#e6edf3;margin:0">Usuarios del sistema</h6>
+      <button class="export-btn" onclick="modalUsuario()"><i class="bi bi-plus"></i> Nuevo usuario</button>
+    </div>
+    <div class="chart-card">
+      <table id="tbl-usuarios" class="table w-100 table-dark-custom">
+        <thead><tr><th>Nombre</th><th>Email</th><th>Rol</th><th>Último acceso</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody id="tbody-usuarios"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══ ETL Jobs ═══════════════════════════════════════ -->
+  <div id="tab-etl" class="tab-pane">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 style="color:#e6edf3;margin:0">Jobs de recolección ETL</h6>
+      <div class="d-flex gap-2">
+        <button class="export-btn" onclick="ejecutarETL()"><i class="bi bi-play"></i> Ejecutar ahora</button>
+        <button class="export-btn" onclick="cargarJobs()"><i class="bi bi-arrow-clockwise"></i> Actualizar</button>
+      </div>
+    </div>
+    <div class="chart-card">
+      <table id="tbl-jobs" class="table w-100 table-dark-custom">
+        <thead><tr><th>Plataforma</th><th>Entidad</th><th>Estado</th><th>Nuevos</th><th>Errores</th><th>Duración</th><th>Completado</th></tr></thead>
+        <tbody id="tbody-jobs"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══ Modal nuevo usuario ═══════════════════════════════ -->
+<div class="modal fade" id="modal-usuario" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content" style="background:#161b22;border:1px solid #21262d;color:#e6edf3">
+      <div class="modal-header" style="border-bottom:1px solid #21262d">
+        <h5 class="modal-title">Nuevo usuario</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3"><label class="form-label" style="font-size:0.75rem;color:#7d8590">Nombre completo</label>
+          <input type="text" id="u-nombre" class="form-dark" /></div>
+        <div class="mb-3"><label class="form-label" style="font-size:0.75rem;color:#7d8590">Email</label>
+          <input type="email" id="u-email" class="form-dark" /></div>
+        <div class="mb-3"><label class="form-label" style="font-size:0.75rem;color:#7d8590">Contraseña</label>
+          <input type="password" id="u-password" class="form-dark" /></div>
+        <div class="mb-3"><label class="form-label" style="font-size:0.75rem;color:#7d8590">Rol</label>
+          <select id="u-rol" class="form-dark">
+            <option value="monitor">Monitor (solo lectura)</option>
+            <option value="analista">Analista</option>
+            <option value="admin">Administrador</option>
+            <option value="super_admin">Super Admin</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer" style="border-top:1px solid #21262d">
+        <button class="export-btn" data-bs-dismiss="modal">Cancelar</button>
+        <button class="export-btn" style="border-color:#1f6feb;color:#1f6feb" onclick="crearUsuario()">Crear usuario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Toast ═════════════════════════════════════════════ -->
+<div class="toast-container"></div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+const API_BASE = window.API_BASE || 'http://localhost:3000/api/v1';
+const TOKEN    = localStorage.getItem('simgp_token');
+const USER     = JSON.parse(localStorage.getItem('simgp_user') || '{}');
+
+if (!TOKEN) window.location.href = '/login?next=/admin';
+
+document.getElementById('admin-user-name').textContent = `${USER.nombre || ''} (${USER.rol || ''})`;
+
+const headers = { 'Content-Type':'application/json', Authorization:`Bearer ${TOKEN}` };
+
+function showToast(msg, tipo='info') {
+  const icons = {success:'✅',error:'❌',info:'ℹ️',warning:'⚠️'};
+  const el = document.createElement('div');
+  el.className = 'toast-custom';
+  el.textContent = `${icons[tipo]||''} ${msg}`;
+  document.querySelector('.toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+
+function logout() {
+  localStorage.removeItem('simgp_token');
+  localStorage.removeItem('simgp_user');
+  window.location.href = '/login';
+}
+
+function showTab(name) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`tab-${name}`).classList.add('active');
+  event.currentTarget.classList.add('active');
+  const loaders = {entidades:cargarEntidades,fuentes:cargarFuentes,alertas:cargarAlertas,usuarios:cargarUsuarios,etl:cargarJobs};
+  loaders[name]?.();
+}
+
+function timeAgo(d) {
+  if (!d) return '—';
+  const m = Math.floor((Date.now()-new Date(d))/60000);
+  if (m<1) return 'Ahora'; if (m<60) return `Hace ${m}m`;
+  if (m<1440) return `Hace ${Math.floor(m/60)}h`;
+  return new Date(d).toLocaleDateString('es-VE');
+}
+
+// ── Stats ─────────────────────────────────────────────────
+async function cargarStats() {
+  try {
+    const res  = await fetch(`${API_BASE}/admin/stats`, { headers });
+    const json = await res.json();
+    if (!json.ok) return;
+    const d = json.data;
+    document.getElementById('st-entidades').textContent = d.entidades_activas;
+    document.getElementById('st-fuentes').textContent   = d.fuentes_activas;
+    document.getElementById('st-pubs').textContent      = d.publicaciones_24h;
+    document.getElementById('st-alertas').textContent   = d.alertas_no_leidas;
+    document.getElementById('st-jobs').textContent      = d.jobs_en_proceso;
+  } catch(e) { console.error(e); }
+}
+
+// ── Entidades ─────────────────────────────────────────────
+async function cargarEntidades() {
+  const res  = await fetch(`${API_BASE}/admin/entidades`, { headers });
+  const json = await res.json();
+  document.getElementById('tbody-entidades').innerHTML = (json.data||[]).map(e => `
+    <tr>
+      <td><strong>${e.nombre_corto||e.nombre}</strong><div style="font-size:0.7rem;color:#7d8590">${e.nombre}</div></td>
+      <td><span class="badge-cat cat-${e.tipo==='gobernacion'?'infraestructura':e.tipo==='alcaldia'?'educacion':'otro'}">${e.tipo}</span></td>
+      <td style="color:#7d8590">${e.municipio_nombre||'—'}</td>
+      <td>${e.titular||'—'}</td>
+      <td><span style="color:#1f6feb;font-weight:600">${e.total_fuentes}</span></td>
+      <td><span class="semaforo ${e.activo?'verde':'rojo'}">${e.activo?'Activo':'Inactivo'}</span></td>
+      <td>
+        <button class="export-btn btn-sm-icon" onclick="editarEntidad('${e.id}')"><i class="bi bi-pencil"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── Fuentes ───────────────────────────────────────────────
+async function cargarFuentes() {
+  const res  = await fetch(`${API_BASE}/admin/fuentes`, { headers });
+  const json = await res.json();
+  document.getElementById('tbody-fuentes').innerHTML = (json.data||[]).map(f => `
+    <tr>
+      <td>${f.entidad||'—'}</td>
+      <td><span class="feed-platform ${f.plataforma}" style="display:inline-flex;width:24px;height:24px;border-radius:5px;align-items:center;justify-content:center;font-size:0.75rem;margin-right:4px"></span>${f.plataforma}</td>
+      <td><a href="${f.url}" target="_blank" style="color:#1f6feb">${f.handle||f.url.substring(0,30)}</a></td>
+      <td>${f.intervalo_sync} min</td>
+      <td style="color:#7d8590">${timeAgo(f.ultima_sync)}</td>
+      <td><span class="semaforo ${f.activa?'verde':'rojo'}">${f.activa?'Activa':'Pausada'}</span></td>
+      <td>
+        <button class="export-btn btn-sm-icon" onclick="toggleFuente('${f.id}',this)"><i class="bi bi-${f.activa?'pause':'play'}"></i></button>
+        <button class="export-btn btn-sm-icon" style="color:#f85149;border-color:#f85149" onclick="borrarFuente('${f.id}',this)"><i class="bi bi-trash"></i></button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── Alertas ───────────────────────────────────────────────
+async function cargarAlertas() {
+  const res  = await fetch(`${API_BASE}/admin/alertas`, { headers });
+  const json = await res.json();
+  document.getElementById('tbody-alertas').innerHTML = (json.data||[]).map(a => `
+    <tr>
+      <td><span class="severity-${a.severidad}">${a.severidad.toUpperCase()}</span></td>
+      <td><strong>${a.titulo||'—'}</strong></td>
+      <td style="color:#7d8590;max-width:300px;font-size:0.78rem">${a.mensaje||'—'}</td>
+      <td style="color:#7d8590">${timeAgo(a.generada_en)}</td>
+      <td>
+        ${a.resuelta  ? '<span class="semaforo verde">Resuelta</span>'  :
+          a.leida     ? '<span class="semaforo amarillo">Leída</span>' :
+          '<span class="semaforo rojo">Nueva</span>'}
+      </td>
+      <td>
+        ${!a.leida    ? `<button class="export-btn btn-sm-icon" onclick="leerAlerta('${a.id}',this)"><i class="bi bi-check"></i></button>` : ''}
+        ${!a.resuelta ? `<button class="export-btn btn-sm-icon" onclick="resolverAlerta('${a.id}',this)"><i class="bi bi-check2-all"></i></button>` : ''}
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── Usuarios ──────────────────────────────────────────────
+async function cargarUsuarios() {
+  const res  = await fetch(`${API_BASE}/auth/usuarios`, { headers });
+  const json = await res.json();
+  document.getElementById('tbody-usuarios').innerHTML = (json.data||[]).map(u => `
+    <tr>
+      <td><strong>${u.nombre}</strong></td>
+      <td>${u.email}</td>
+      <td><span class="badge-rol rol-${u.rol}">${u.rol}</span></td>
+      <td style="color:#7d8590">${timeAgo(u.ultimo_acceso)}</td>
+      <td><span class="semaforo ${u.activo?'verde':'rojo'}">${u.activo?'Activo':'Inactivo'}</span></td>
+      <td>
+        <button class="export-btn btn-sm-icon" onclick="toggleUsuarioAdmin('${u.id}',this)">
+          <i class="bi bi-${u.activo?'person-x':'person-check'}"></i>
+        </button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── ETL Jobs ──────────────────────────────────────────────
+async function cargarJobs() {
+  const res  = await fetch(`${API_BASE}/etl/jobs`, { headers });
+  const json = await res.json();
+  const estadoColor = { completado:'verde', fallido:'rojo', en_proceso:'amarillo', pendiente:'amarillo' };
+  document.getElementById('tbody-jobs').innerHTML = (json||[]).map(j => `
+    <tr>
+      <td>${j.plataforma||'—'}</td>
+      <td>${j.entidad||'—'}</td>
+      <td><span class="semaforo ${estadoColor[j.estado]||'amarillo'}">${j.estado}</span></td>
+      <td style="color:#3fb950;font-weight:600">${j.items_nuevos||0}</td>
+      <td style="color:${j.items_error>0?'#f85149':'#7d8590'}">${j.items_error||0}</td>
+      <td style="color:#7d8590">${j.duracion_ms ? Math.round(j.duracion_ms/1000)+'s' : '—'}</td>
+      <td style="color:#7d8590">${timeAgo(j.completado_en)}</td>
+    </tr>
+  `).join('');
+}
+
+async function ejecutarETL() {
+  await fetch(`${API_BASE}/etl/run`, { method:'POST', headers });
+  showToast('Pipeline ETL iniciado', 'success');
+  setTimeout(cargarJobs, 3000);
+}
+
+// ── Acciones ──────────────────────────────────────────────
+async function toggleFuente(id, btn) {
+  const res = await fetch(`${API_BASE}/admin/fuentes/${id}/toggle`, { method:'PATCH', headers });
+  if (res.ok) { showToast('Fuente actualizada', 'success'); cargarFuentes(); }
+}
+async function borrarFuente(id, btn) {
+  if (!confirm('¿Eliminar esta fuente?')) return;
+  await fetch(`${API_BASE}/admin/fuentes/${id}`, { method:'DELETE', headers });
+  showToast('Fuente eliminada', 'success'); cargarFuentes();
+}
+async function leerAlerta(id) {
+  await fetch(`${API_BASE}/admin/alertas/${id}/leer`, { method:'PATCH', headers });
+  cargarAlertas(); cargarStats();
+}
+async function resolverAlerta(id) {
+  await fetch(`${API_BASE}/admin/alertas/${id}/resolver`, { method:'PATCH', headers });
+  showToast('Alerta resuelta', 'success'); cargarAlertas(); cargarStats();
+}
+async function toggleUsuarioAdmin(id) {
+  await fetch(`${API_BASE}/auth/usuarios/${id}/toggle`, { method:'PATCH', headers });
+  showToast('Usuario actualizado', 'success'); cargarUsuarios();
+}
+
+function modalUsuario() {
+  new bootstrap.Modal(document.getElementById('modal-usuario')).show();
+}
+async function crearUsuario() {
+  const body = {
+    nombre:   document.getElementById('u-nombre').value,
+    email:    document.getElementById('u-email').value,
+    password: document.getElementById('u-password').value,
+    rol:      document.getElementById('u-rol').value,
+  };
+  const res = await fetch(`${API_BASE}/auth/usuarios`, { method:'POST', headers, body: JSON.stringify(body) });
+  if (res.ok) {
+    bootstrap.Modal.getInstance(document.getElementById('modal-usuario')).hide();
+    showToast('Usuario creado', 'success'); cargarUsuarios();
+  } else {
+    const err = await res.json();
+    showToast(err.error || 'Error', 'error');
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────
+cargarStats();
+cargarEntidades();
+setInterval(cargarStats, 30000);
+
+// WebSocket para actualizaciones en tiempo real
+try {
+  const ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onmessage = e => {
+    const msg = JSON.parse(e.data);
+    if (msg.tipo === 'nueva_alerta') { cargarStats(); showToast(`Nueva alerta: ${msg.payload?.titulo}`, 'warning'); }
+  };
+} catch(e) {}
+</script>
+</body>
+</html>

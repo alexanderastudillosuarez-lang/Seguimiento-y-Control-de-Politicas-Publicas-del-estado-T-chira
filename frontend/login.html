@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMGP Táchira — Acceso</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root { --accent:#1f6feb; }
+    * { box-sizing:border-box; margin:0; padding:0; }
+    body {
+      font-family:'Inter',system-ui,sans-serif;
+      background:#0e1117;
+      color:#e6edf3;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+    .login-card {
+      background:#161b22;
+      border:1px solid #21262d;
+      border-radius:12px;
+      padding:40px 36px;
+      width:100%;
+      max-width:400px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.5);
+    }
+    .brand {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom:28px;
+    }
+    .brand-dot {
+      width:12px;height:12px;border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 10px rgba(31,111,235,0.5);
+    }
+    .brand-text { font-size:0.95rem;font-weight:700; }
+    .brand-sub  { font-size:0.72rem;color:#7d8590;margin-top:2px; }
+    h2 { font-size:1.4rem;font-weight:700;margin-bottom:4px; }
+    .subtitle { font-size:0.8rem;color:#7d8590;margin-bottom:28px; }
+    .form-label { font-size:0.75rem;color:#7d8590;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:5px; }
+    .form-control {
+      background:#0e1117;border:1px solid #21262d;color:#e6edf3;
+      border-radius:8px;padding:10px 14px;font-size:0.88rem;
+      transition:border-color 0.2s;
+    }
+    .form-control:focus { border-color:var(--accent);background:#0e1117;color:#e6edf3;box-shadow:0 0 0 3px rgba(31,111,235,0.15); }
+    .form-control::placeholder { color:#484f58; }
+    .btn-login {
+      width:100%;padding:11px;background:var(--accent);border:none;
+      border-radius:8px;color:#fff;font-weight:700;font-size:0.9rem;
+      cursor:pointer;transition:all 0.2s;margin-top:8px;
+    }
+    .btn-login:hover { background:#388bfd; }
+    .btn-login:disabled { opacity:0.6;cursor:not-allowed; }
+    .alert-error {
+      background:rgba(248,81,73,0.12);border:1px solid rgba(248,81,73,0.3);
+      color:#f85149;border-radius:8px;padding:10px 14px;font-size:0.82rem;
+      display:none;margin-bottom:16px;
+    }
+    .spinner { display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .footer-note { font-size:0.7rem;color:#484f58;text-align:center;margin-top:24px; }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-dot"></div>
+      <div>
+        <div class="brand-text">SIMGP Táchira</div>
+        <div class="brand-sub">Sistema de Monitoreo de Gestión Pública</div>
+      </div>
+    </div>
+
+    <h2>Iniciar sesión</h2>
+    <p class="subtitle">Acceso restringido a personal autorizado</p>
+
+    <div class="alert-error" id="error-msg"></div>
+
+    <form id="login-form">
+      <div class="mb-3">
+        <label class="form-label" for="email">Correo electrónico</label>
+        <input type="email" id="email" class="form-control" placeholder="usuario@tachira.gob.ve" required autocomplete="email" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label" for="password">Contraseña</label>
+        <div style="position:relative">
+          <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password" style="padding-right:42px" />
+          <button type="button" id="toggle-pw" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:#7d8590;cursor:pointer;padding:0">
+            <i class="bi bi-eye" id="eye-icon"></i>
+          </button>
+        </div>
+      </div>
+      <button type="submit" class="btn-login" id="btn-submit">
+        <span id="btn-text">Entrar</span>
+      </button>
+    </form>
+
+    <p class="footer-note">Gobernación del Estado Táchira © 2025</p>
+  </div>
+
+  <script>
+    const API_BASE = window.API_BASE || 'http://localhost:3000/api/v1';
+
+    // Redirigir si ya hay token válido
+    const token = localStorage.getItem('simgp_token');
+    if (token) window.location.href = '/';
+
+    // Toggle contraseña
+    document.getElementById('toggle-pw').addEventListener('click', () => {
+      const inp  = document.getElementById('password');
+      const icon = document.getElementById('eye-icon');
+      if (inp.type === 'password') { inp.type = 'text';     icon.className = 'bi bi-eye-slash'; }
+      else                         { inp.type = 'password'; icon.className = 'bi bi-eye'; }
+    });
+
+    // Login
+    document.getElementById('login-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const btn     = document.getElementById('btn-submit');
+      const errEl   = document.getElementById('error-msg');
+      errEl.style.display = 'none';
+      btn.disabled  = true;
+      btn.innerHTML = '<span class="spinner"></span>';
+
+      try {
+        const res = await fetch(`${API_BASE}/auth/login`, {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            email:    document.getElementById('email').value,
+            password: document.getElementById('password').value,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Error de autenticación');
+
+        localStorage.setItem('simgp_token', data.token);
+        localStorage.setItem('simgp_user',  JSON.stringify(data.user));
+
+        const next = new URLSearchParams(location.search).get('next') || '/';
+        window.location.href = next;
+      } catch (err) {
+        errEl.textContent    = err.message;
+        errEl.style.display  = 'block';
+        btn.disabled         = false;
+        btn.innerHTML        = 'Entrar';
+      }
+    });
+  </script>
+</body>
+</html>
