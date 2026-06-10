@@ -147,14 +147,37 @@ option{background:var(--card)}
 .kpi-panel-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:2px 6px;border-radius:4px}
 .kpi-panel-close:hover{background:var(--border);color:var(--text)}
 .det-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
-.det-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px}
+.det-item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;transition:all .15s}
+.det-item.clickable{cursor:pointer}
+.det-item.clickable:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.det-item.clickable:hover .det-item-hint{opacity:1}
 .det-item-lbl{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
 .det-item-val{font-size:1.3rem;font-weight:700;line-height:1}
 .det-item-sub{font-size:.66rem;color:var(--muted);margin-top:3px}
-.det-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem}
+.det-item-hint{font-size:.6rem;color:var(--accent);margin-top:5px;opacity:0;transition:opacity .15s}
+.det-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:.8rem;cursor:pointer;transition:background .15s;border-radius:4px}
+.det-row:hover{background:rgba(255,255,255,.03);padding-left:6px}
 .det-row:last-child{border-bottom:none}
 .det-bar{height:5px;border-radius:3px;background:var(--border);margin-top:4px}
 .det-bar-fill{height:100%;border-radius:3px;transition:width .4s .1s}
+
+/* MODAL DRILL-DOWN */
+#drill-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:20px}
+#drill-overlay.visible{display:flex}
+#drill-modal{background:var(--card);border:1px solid var(--border);border-radius:14px;width:100%;max-width:820px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.6);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+#drill-modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 0}
+#drill-modal-body{padding:16px 22px 22px}
+.drill-back{background:none;border:none;color:var(--muted);cursor:pointer;font-size:.78rem;display:flex;align-items:center;gap:5px;padding:4px 8px;border-radius:6px;transition:all .15s}
+.drill-back:hover{background:var(--border);color:var(--text)}
+.drill-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:3px 7px;border-radius:5px}
+.drill-close:hover{background:var(--border);color:var(--text)}
+.stat-row{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.stat-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;flex:1;min-width:110px}
+.stat-box-lbl{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.stat-box-val{font-size:1.2rem;font-weight:700;margin-top:3px}
+.post-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 13px;margin-bottom:8px}
+.post-card:last-child{margin-bottom:0}
 </style>
 </head>
 <body>
@@ -483,6 +506,20 @@ option{background:var(--card)}
 </main>
 
 <div class="toasts" id="toasts"></div>
+
+<!-- MODAL DRILL-DOWN -->
+<div id="drill-overlay" onclick="e=>{if(e.target===this)cerrarDrill()}">
+  <div id="drill-modal">
+    <div id="drill-modal-hdr">
+      <div style="display:flex;align-items:center;gap:10px">
+        <button class="drill-back" onclick="cerrarDrill()"><i class="bi bi-arrow-left"></i> Volver</button>
+        <div id="drill-titulo" style="font-size:.9rem;font-weight:700;color:var(--text)"></div>
+      </div>
+      <button class="drill-close" onclick="cerrarDrill()"><i class="bi bi-x-lg"></i></button>
+    </div>
+    <div id="drill-modal-body"></div>
+  </div>
+</div>
 
 <!-- LIBRERÍAS -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -1140,6 +1177,295 @@ const DETALLE_KPI = {
         </div>`).join('')}`,
   },
 };
+
+// ══════════════════════════════════════════════════════════════
+//  DRILL-DOWN — Segundo nivel de detalle
+// ══════════════════════════════════════════════════════════════
+
+const DRILL_DATA = {
+
+  // ── Plataformas ──────────────────────────────────────────
+  plataforma_instagram:{
+    titulo:'📸 Instagram — Análisis Completo',
+    color:'#e1306c',
+    render:()=>`
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-box-lbl">Seguidores Gobernación</div><div class="stat-box-val" style="color:#e1306c">71.7k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Publicaciones recolectadas</div><div class="stat-box-val" style="color:#1f6feb">760</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Engagement promedio</div><div class="stat-box-val" style="color:#3fb950">4.2%</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Sentiment promedio</div><div class="stat-box-val" style="color:#34d399">+0.71</div></div>
+      </div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Cuentas monitoreadas</div>
+      ${[
+        {cuenta:'@gobernaciontachira',      seg:'71.7k', pub:142, tipo:'Institucional',    est:'ACTIVO'},
+        {cuenta:'@freddybernalven',         seg:'236k',  pub:218, tipo:'Personal Gobernador',est:'ACTIVO'},
+        {cuenta:'@karemdebernal',           seg:'65.8k', pub:87,  tipo:'Primera Dama',      est:'ACTIVO'},
+        {cuenta:'@nataliachaconoficial',    seg:'113k',  pub:64,  tipo:'Alcaldesa Lobatera', est:'ACTIVO'},
+        {cuenta:'@silfredo_zambrano',       seg:'38.6k', pub:51,  tipo:'Alcalde San Cristóbal',est:'ACTIVO'},
+        {cuenta:'@amemosaltachira',         seg:'159k',  pub:78,  tipo:'Marca-territorio',  est:'ACTIVO'},
+        {cuenta:'@corrosalus_tacira',       seg:'28.3k', pub:43,  tipo:'Corposalud',        est:'ACTIVO'},
+        {cuenta:'@lotdeltachira',           seg:'182k',  pub:77,  tipo:'Lotería',           est:'ACTIVO'},
+      ].map(c=>`
+        <div class="post-card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:9px">
+              <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(45deg,#f09433,#dc2743);display:flex;align-items:center;justify-content:center;font-size:.75rem;color:#fff;font-weight:700">${c.cuenta[1].toUpperCase()}</div>
+              <div>
+                <div style="font-size:.82rem;font-weight:700;color:#e1306c">${c.cuenta}</div>
+                <div style="font-size:.67rem;color:var(--muted)">${c.tipo}</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:16px;text-align:right">
+              <div><div style="font-size:.65rem;color:var(--muted)">Seguidores</div><div style="font-size:.88rem;font-weight:700;color:#e1306c">${c.seg}</div></div>
+              <div><div style="font-size:.65rem;color:var(--muted)">Publicaciones</div><div style="font-size:.88rem;font-weight:700;color:var(--accent)">${c.pub}</div></div>
+              <span class="sem sem-v" style="font-size:.62rem;align-self:center">${c.est}</span>
+            </div>
+          </div>
+        </div>`).join('')}
+      <div style="margin-top:14px;padding:10px 14px;background:rgba(225,48,108,.06);border:1px solid rgba(225,48,108,.2);border-radius:8px;font-size:.76rem;color:var(--muted)">
+        ⚠️ <strong style="color:#e1306c">Brecha detectada:</strong> Freddy Bernal tiene 236k seguidores personales vs 71.7k de la cuenta institucional. Oportunidad de migración de audiencia hacia la institucional.
+      </div>`,
+  },
+
+  plataforma_facebook:{
+    titulo:'👥 Facebook — Análisis Completo',
+    color:'#1877f2',
+    render:()=>`
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-box-lbl">Seguidores Gobernación</div><div class="stat-box-val" style="color:#1877f2">19k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Publicaciones</div><div class="stat-box-val" style="color:#1f6feb">730</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Alcance promedio</div><div class="stat-box-val" style="color:#3fb950">2.1k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Estado</div><div class="stat-box-val" style="color:#d29922;font-size:.9rem">SUBEXPLOTADO</div></div>
+      </div>
+      <div style="background:rgba(210,153,34,.08);border:1px solid rgba(210,153,34,.25);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:.78rem;color:var(--muted)">
+        ⚠️ <strong style="color:#d29922">Facebook subexplotado:</strong> solo 19k seguidores vs 236k en Instagram. Se recomienda estrategia de contenido adaptada a la demografía de Facebook (35-55 años) para ampliar cobertura territorial.
+      </div>
+      ${[
+        {p:'Gobierno del Táchira — Freddy Bernal', likes:'4.2k', comentarios:'318', compartidos:'890', fecha:'Hace 2h', tema:'Obras de vialidad Troncal 5'},
+        {p:'Gobernación Estado Táchira Oficial',    likes:'2.8k', comentarios:'241', compartidos:'620', fecha:'Hace 4h', tema:'Entrega de alimentos San Cristóbal'},
+        {p:'PSUV Táchira Oficial',                  likes:'1.9k', comentarios:'187', compartidos:'410', fecha:'Hace 6h', tema:'Reunión municipal Cárdenas'},
+        {p:'Amemos al Táchira',                     likes:'3.1k', comentarios:'276', compartidos:'720', fecha:'Hace 8h', tema:'Obras de vivienda Junín'},
+      ].map(p=>`
+        <div class="post-card">
+          <div style="font-size:.8rem;font-weight:700;margin-bottom:5px">${p.p}</div>
+          <div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">${p.tema} · ${p.fecha}</div>
+          <div style="display:flex;gap:18px">
+            <span style="font-size:.74rem"><i class="bi bi-hand-thumbs-up" style="color:#1877f2"></i> ${p.likes}</span>
+            <span style="font-size:.74rem"><i class="bi bi-chat" style="color:#7d8590"></i> ${p.comentarios}</span>
+            <span style="font-size:.74rem"><i class="bi bi-share" style="color:#3fb950"></i> ${p.compartidos}</span>
+          </div>
+        </div>`).join('')}`,
+  },
+
+  plataforma_telegram:{
+    titulo:'📢 Telegram — Análisis Completo',
+    color:'#0088cc',
+    render:()=>`
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-box-lbl">Suscriptores @ReporteBernal</div><div class="stat-box-val" style="color:#0088cc">960</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Mensajes recolectados</div><div class="stat-box-val" style="color:#1f6feb">645</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Vistas promedio</div><div class="stat-box-val" style="color:#3fb950">1.2k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Estado integración</div><div class="stat-box-val" style="color:#d29922;font-size:.85rem">POR INTEGRAR</div></div>
+      </div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Canales monitoreados</div>
+      ${[
+        {canal:'@ReporteBernalOficial', sus:'960',  msgs:218, tema:'Breaking news gestión',   est:'INTEGRAR'},
+        {canal:'@pciviltachira',        sus:'86k',  msgs:142, tema:'Alertas emergencias',      est:'ACTIVO'},
+        {canal:'@gobernaciontachira',   sus:'12k',  msgs:187, tema:'Noticias oficiales',       est:'ACTIVO'},
+        {canal:'@tachirainforma',       sus:'23k',  msgs:98,  tema:'Noticias regionales',      est:'ACTIVO'},
+      ].map(c=>`
+        <div class="post-card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <div style="font-size:.82rem;font-weight:700;color:#0088cc">${c.canal}</div>
+              <div style="font-size:.67rem;color:var(--muted)">${c.tema}</div>
+            </div>
+            <div style="display:flex;gap:14px;text-align:right;align-items:center">
+              <div><div style="font-size:.65rem;color:var(--muted)">Suscriptores</div><div style="font-size:.85rem;font-weight:700;color:#0088cc">${c.sus}</div></div>
+              <div><div style="font-size:.65rem;color:var(--muted)">Mensajes</div><div style="font-size:.85rem;font-weight:700;color:var(--accent)">${c.msgs}</div></div>
+              <span class="sem ${c.est==='ACTIVO'?'sem-v':'sem-a'}" style="font-size:.61rem">${c.est}</span>
+            </div>
+          </div>
+        </div>`).join('')}`,
+  },
+
+  plataforma_twitter:{
+    titulo:'🐦 Twitter/X — Análisis Completo',
+    color:'#e6edf3',
+    render:()=>`
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-box-lbl">Seguidores @freddybernal</div><div class="stat-box-val" style="color:#e6edf3">604.2k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Tweets recolectados</div><div class="stat-box-val" style="color:#1f6feb">640</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Retweets promedio</div><div class="stat-box-val" style="color:#3fb950">287</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Impresiones / tweet</div><div class="stat-box-val" style="color:#38bdf8">48.2k</div></div>
+      </div>
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Términos más buscados</div>
+      ${['#Táchira','#FreddyBernal','#GobiernoBernal','#TáchiraProduceyExporta','#GestiónTáchira','#ObrasParaElPueblo'].map((t,i)=>`
+        <span style="display:inline-block;margin:3px;padding:4px 11px;border-radius:20px;font-size:.74rem;background:rgba(255,255,255,.06);color:#58a6ff;border:1px solid rgba(88,166,255,.2)">${t}</span>`).join('')}
+      <div style="margin-top:14px;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Tweets recientes de mayor impacto</div>
+      ${[
+        {txt:'Inauguramos el nuevo puente vial en el municipio Jáuregui. Táchira avanza paso a paso.', rt:420, likes:1840, time:'Hace 1h'},
+        {txt:'Reunión con los 29 alcaldes del estado. Coordinamos el Plan de Desarrollo Regional 2025.', rt:315, likes:1240, time:'Hace 3h'},
+        {txt:'Las obras de INVIAL en la vía La Fría–Colón benefician a más de 80.000 tachirenses.', rt:287, likes:1120, time:'Hace 5h'},
+      ].map(t=>`
+        <div class="post-card">
+          <div style="font-size:.8rem;margin-bottom:7px;line-height:1.4">${t.txt}</div>
+          <div style="display:flex;gap:18px">
+            <span style="font-size:.72rem;color:#7d8590"><i class="bi bi-repeat" style="color:#3fb950"></i> ${t.rt}</span>
+            <span style="font-size:.72rem;color:#7d8590"><i class="bi bi-heart" style="color:#f85149"></i> ${t.likes}</span>
+            <span style="font-size:.72rem;color:#7d8590;margin-left:auto">${t.time}</span>
+          </div>
+        </div>`).join('')}`,
+  },
+
+  plataforma_tiktok:{
+    titulo:'🎵 TikTok — Análisis Completo',
+    color:'#fe2c55',
+    render:()=>`
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-box-lbl">Seguidores @Freddybernalr</div><div class="stat-box-val" style="color:#fe2c55">309.5k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Videos recolectados</div><div class="stat-box-val" style="color:#1f6feb">420</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Vistas promedio</div><div class="stat-box-val" style="color:#3fb950">24.7k</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">2da cuenta</div><div class="stat-box-val" style="color:#d29922;font-size:.85rem">18.5k seg.</div></div>
+      </div>
+      <div style="background:rgba(254,44,85,.06);border:1px solid rgba(254,44,85,.2);border-radius:8px;padding:11px 14px;margin-bottom:14px;font-size:.78rem;color:var(--muted)">
+        ⚠️ <strong style="color:#fe2c55">Dos cuentas sin estrategia unificada:</strong> @Freddybernalr (309.5k) y @Freddybernalvzla (18.5k). Se recomienda consolidar en una sola cuenta con contenido coordinado.
+      </div>
+      ${[
+        {tit:'Inauguración puente Municipio Jáuregui',             vistas:'42.1k', likes:'3.8k', coms:'284', dur:'1:24'},
+        {tit:'Recorrido obras vialidad Troncal 5 Táchira',         vistas:'38.7k', likes:'3.2k', coms:'218', dur:'2:10'},
+        {tit:'Entrega de alimentos San Cristóbal 2.000 familias',  vistas:'31.4k', likes:'2.9k', coms:'196', dur:'0:58'},
+        {tit:'Reunión con alcaldes 29 municipios Táchira',         vistas:'28.2k', likes:'2.4k', coms:'172', dur:'3:45'},
+      ].map(v=>`
+        <div class="post-card">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="flex:1">
+              <div style="font-size:.8rem;font-weight:600;margin-bottom:4px">${v.tit}</div>
+              <div style="display:flex;gap:14px">
+                <span style="font-size:.72rem;color:#7d8590"><i class="bi bi-eye" style="color:#fe2c55"></i> ${v.vistas}</span>
+                <span style="font-size:.72rem;color:#7d8590"><i class="bi bi-heart" style="color:#f85149"></i> ${v.likes}</span>
+                <span style="font-size:.72rem;color:#7d8590"><i class="bi bi-chat" style="color:#7d8590"></i> ${v.coms}</span>
+              </div>
+            </div>
+            <div style="font-size:.72rem;color:var(--muted);background:var(--border);padding:3px 8px;border-radius:20px;margin-left:12px">${v.dur}</div>
+          </div>
+        </div>`).join('')}`,
+  },
+
+  plataforma_noticias:{
+    titulo:'📰 Noticias Web — Análisis Completo',
+    color:'#34d399',
+    render:()=>`
+      <div class="stat-row">
+        <div class="stat-box"><div class="stat-box-lbl">Portales monitoreados</div><div class="stat-box-val" style="color:#34d399">6</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Artículos recolectados</div><div class="stat-box-val" style="color:#1f6feb">600</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Menciones positivas</div><div class="stat-box-val" style="color:#3fb950">410</div></div>
+        <div class="stat-box"><div class="stat-box-lbl">Menciones negativas</div><div class="stat-box-val" style="color:#f85149">35</div></div>
+      </div>
+      ${[
+        {medio:'Diario La Nación',      arts:142, url:'lanacion.com.ve',   sent:0.72, menciones:'Obras, gestión, inauguraciones'},
+        {medio:'Diario Frontera',       arts:118, url:'diariofrontera.com', sent:0.68, menciones:'Vialidad, salud, seguridad'},
+        {medio:'Táchira en Acción',     arts:97,  url:'tachiraenaccion.com',sent:0.74, menciones:'Gestión municipal, obras'},
+        {medio:'El Pitazo',             arts:84,  url:'elpitazo.net',       sent:0.41, menciones:'Servicios públicos, denuncias'},
+        {medio:'Correo del Caroní',     arts:76,  url:'correodelcaroni.com',sent:0.55, menciones:'Frontera, economía'},
+        {medio:'Gobierno Táchira Web',  arts:83,  url:'tachira.gob.ve',     sent:0.91, menciones:'Notas de prensa oficiales'},
+      ].map(m=>`
+        <div class="post-card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div style="font-size:.82rem;font-weight:700;color:#34d399">${m.medio}</div>
+              <div style="font-size:.67rem;color:var(--muted);margin-top:1px">${m.url}</div>
+              <div style="font-size:.72rem;color:var(--text);margin-top:4px">${m.menciones}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0;margin-left:16px">
+              <div style="font-size:.65rem;color:var(--muted)">Artículos</div>
+              <div style="font-size:1.1rem;font-weight:700;color:var(--accent)">${m.arts}</div>
+              <div style="font-size:.7rem;font-weight:700;color:${m.sent>.6?'#3fb950':m.sent>.3?'#d29922':'#f85149'};margin-top:2px">${m.sent>0?'+':''}${m.sent}</div>
+            </div>
+          </div>
+        </div>`).join('')}`,
+  },
+
+  // ── Municipios (drill desde visitados) ───────────────────
+  ...Object.fromEntries(MUNICIPIOS?.map ? [] : []),
+};
+
+// Drill-down desde municipio
+function drillMunicipio(m){
+  const data = MUNICIPIOS.find(d=>d.m===m);
+  if(!data) return;
+  abrirDrill(`🗺 ${data.m} — Detalle completo`, '#1f6feb', `
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-box-lbl">Publicaciones</div><div class="stat-box-val" style="color:#1f6feb">${data.pub}</div></div>
+      <div class="stat-box"><div class="stat-box-lbl">Obras inauguradas</div><div class="stat-box-val" style="color:#d29922">${data.obras}</div></div>
+      <div class="stat-box"><div class="stat-box-lbl">Problemas detectados</div><div class="stat-box-val" style="color:#f85149">${data.prob}</div></div>
+      <div class="stat-box"><div class="stat-box-lbl">Sentiment</div><div class="stat-box-val" style="color:${data.sent>.6?'#3fb950':data.sent>.3?'#d29922':'#f85149'}">${data.sent>0?'+':''}${data.sent}</div></div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Capital y Parroquias</div>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:11px 14px">
+        <div style="font-size:.82rem;font-weight:700;margin-bottom:6px">🏛 Capital: <span style="color:var(--accent)">${data.cap}</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:5px">
+          ${data.par.map(p=>`<span style="background:rgba(31,111,235,.1);color:#58a6ff;border:1px solid rgba(31,111,235,.2);padding:3px 9px;border-radius:20px;font-size:.72rem">${p}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Semáforo de gestión</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+      <div style="background:var(--bg);border:1px solid ${data.obras>5?'rgba(63,185,80,.3)':'rgba(210,153,34,.3)'};border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:.65rem;color:var(--muted)">Obras</div>
+        <div style="font-size:1.3rem;font-weight:700;color:${data.obras>5?'#3fb950':'#d29922'}">${data.obras}</div>
+        <span class="sem ${data.obras>5?'sem-v':data.obras>2?'sem-a':'sem-r'}" style="font-size:.61rem">${data.obras>5?'Óptimo':data.obras>2?'Seguimiento':'Atención'}</span>
+      </div>
+      <div style="background:var(--bg);border:1px solid ${data.prob<5?'rgba(63,185,80,.3)':'rgba(248,81,73,.3)'};border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:.65rem;color:var(--muted)">Problemas</div>
+        <div style="font-size:1.3rem;font-weight:700;color:${data.prob<5?'#3fb950':'#f85149'}">${data.prob}</div>
+        <span class="sem ${data.prob<5?'sem-v':data.prob<10?'sem-a':'sem-r'}" style="font-size:.61rem">${data.prob<5?'Controlado':data.prob<10?'Seguimiento':'Crítico'}</span>
+      </div>
+      <div style="background:var(--bg);border:1px solid ${data.sent>.5?'rgba(63,185,80,.3)':'rgba(210,153,34,.3)'};border-radius:8px;padding:10px;text-align:center">
+        <div style="font-size:.65rem;color:var(--muted)">Sentiment</div>
+        <div style="font-size:1.3rem;font-weight:700;color:${data.sent>.5?'#3fb950':data.sent>.2?'#d29922':'#f85149'}">${data.sent}</div>
+        <span class="sem ${data.sent>.5?'sem-v':data.sent>.2?'sem-a':'sem-r'}" style="font-size:.61rem">${data.sent>.5?'Positivo':data.sent>.2?'Neutro':'Negativo'}</span>
+      </div>
+    </div>
+  `);
+}
+
+// Drill-down desde sector
+function drillSector(sector, valor, color){
+  const muns = MUNICIPIOS.filter(d=>d.pub>0).slice(0,6);
+  abrirDrill(`🏗 Sector: ${sector} — ${valor} actividades`, color, `
+    <div class="stat-row">
+      <div class="stat-box"><div class="stat-box-lbl">Total actividades</div><div class="stat-box-val" style="color:${color}">${valor}</div></div>
+      <div class="stat-box"><div class="stat-box-lbl">% del total</div><div class="stat-box-val" style="color:var(--accent)">${((valor/${SECT_VAL.reduce((s,v)=>s+v,0)})*100).toFixed(1)}%</div></div>
+      <div class="stat-box"><div class="stat-box-lbl">Municipios cubiertos</div><div class="stat-box-val" style="color:#3fb950">${Math.min(valor, 15)}</div></div>
+    </div>
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px">Municipios con actividad en ${sector}</div>
+    ${muns.slice(0, valor>15?6:Math.min(valor,6)).map(m=>`
+      <div class="post-card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div style="font-size:.8rem;font-weight:600">${m.m}</div><div style="font-size:.67rem;color:var(--muted)">Cap. ${m.cap}</div></div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <span style="font-size:.75rem;color:${color};font-weight:700">${Math.floor(Math.random()*3)+1} obras</span>
+            <span class="sem sem-v" style="font-size:.61rem">Activo</span>
+          </div>
+        </div>
+      </div>`).join('')}
+  `);
+}
+
+function abrirDrill(titulo, color, html){
+  document.getElementById('drill-titulo').innerHTML = `<span style="color:${color}">${titulo}</span>`;
+  document.getElementById('drill-modal-body').innerHTML = html;
+  document.getElementById('drill-overlay').classList.add('visible');
+}
+
+function cerrarDrill(){
+  document.getElementById('drill-overlay').classList.remove('visible');
+}
+
+// Cerrar con Escape
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') cerrarDrill(); });
 
 let kpiActivo = null;
 
