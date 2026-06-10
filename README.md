@@ -15,8 +15,8 @@ Dashboard ejecutivo en tiempo real para monitorear la actividad de la Gobernaci√
 ### 1. Clonar y configurar
 
 ```bash
-git clone https://github.com/alexanderastudillosuarez-lang/Seguimiento-e-indicadores-de-Gesti-n-T-chira.git
-cd Seguimiento-e-indicadores-de-Gesti-n-T-chira
+git clone https://github.com/alexanderastudillosuarez-lang/Seguimiento-y-Control-de-Politicas-Publicas-del-estado-T-chira.git
+cd Seguimiento-y-Control-de-Politicas-Publicas-del-estado-T-chira
 
 cp backend/.env.example backend/.env
 # Editar backend/.env con tus credenciales
