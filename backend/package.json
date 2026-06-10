@@ -7,7 +7,7 @@
     "start":   "node src/server.js",
     "dev":     "nodemon src/server.js",
     "migrate": "node ../database/migrate.js",
-    "seed":    "node ../database/seeds/seed.js",
+    "seed":    "node ../database/seeds/run-seeds.js",
     "test":    "jest --coverage --forceExit",
     "test:watch": "jest --watch",
     "etl:run": "node -e \"require('dotenv').config(); const {ejecutarPipeline}=require('./src/etl/pipeline'); ejecutarPipeline().then(r=>console.log(JSON.stringify(r,null,2)))\""
